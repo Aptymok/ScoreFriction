@@ -569,6 +569,35 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
 }
 .reflex-rule-item .rule-name { color: var(--verde); font-size: 10px; }
 .reflex-rule-item .rule-j { color: var(--oro); font-size: 9px; }
+
+/* ========== TAB XII · FRECUENCIAS CFF ========== */
+#tab-frecuencias .cell-v {
+  font-size: 22px;
+  font-family: var(--mono);
+  color: var(--azul);
+  margin: .4rem 0 .2rem;
+}
+#tab-frecuencias .cell-v.positive { color: var(--verde); }
+#tab-frecuencias .cell-v.negative { color: var(--rojo); }
+.ritual-card {
+  border-left: 2px solid var(--azul);
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  background: rgba(44,110,158,.06);
+}
+.ritual-card.priority-critical { border-color: var(--rojo); background: rgba(190,58,58,.06); }
+.ritual-card.priority-high     { border-color: var(--oro);  background: rgba(200,169,81,.06); }
+.ritual-card .ritual-name  { font-size: 11px; color: var(--t1); font-weight: 500; }
+.ritual-card .ritual-desc  { font-size: 10px; color: var(--t2); margin-top: 3px; line-height: 1.5; }
+.ritual-card .ritual-badge { font-size: 9px; color: var(--t3); font-family: var(--mono); }
+.zone-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 5px 0; border-bottom: .5px solid var(--bdr);
+}
+.zone-bar-wrap { flex: 1; background: var(--bg2); height: 4px; border-radius: 2px; }
+.zone-bar      { height: 4px; border-radius: 2px; background: var(--azul); transition: width .4s; }
+.zone-label    { width: 80px; font-size: 9px; color: var(--t3); font-family: var(--mono); }
+.zone-val      { width: 40px; font-size: 9px; color: var(--oro); font-family: var(--mono); text-align: right; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -642,6 +671,7 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
     <button class="tab-btn" onclick="openTab('scenarios',this)">V · ESCENARIOS</button>
     <button class="tab-btn" onclick="openTab('notif',this)">VI · SISTEMA<span class="tab-badge" id="notif-badge" style="display:none">0</span></button>
     <button class="tab-btn" onclick="openTab('reflexion',this)">XI · REFLEXIÓN</button>
+    <button class="tab-btn" onclick="openTab('frecuencias',this)">XII · FRECUENCIAS</button>
   </nav>
  
   <div class="wrap">
@@ -1100,6 +1130,147 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
         <div class="sec" style="margin-top:1.5rem">
           <div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">Log Meta-Control</span></div>
           <div id="reflex-log" style="background:var(--bg2);border:.5px solid var(--bdr);padding:1rem;font-family:var(--mono);font-size:9px;color:var(--t3);height:180px;overflow-y:auto;line-height:1.8"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- TAB XII: FRECUENCIAS – Coexistencia Social de Frecuencias -->
+    <div id="tab-frecuencias" class="tab-panel">
+      <div class="sec">
+        <div class="sec-hd"><span class="sec-n">XII</span><span class="sec-t">Coexistencia Social de Frecuencias · Campo CFF</span></div>
+
+        <!-- CFF + métricas principales -->
+        <div class="row3" style="margin-bottom:1rem">
+          <div class="cell">
+            <div class="cell-lbl">CFF</div>
+            <div class="cell-v" id="freq-cff">—</div>
+            <div class="cell-sub">Campo de Frecuencia Colectiva (–1…+1)</div>
+          </div>
+          <div class="cell">
+            <div class="cell-lbl">COSTO J</div>
+            <div class="cell-v" id="freq-costj">—</div>
+            <div class="cell-sub">J global tras coexistencia</div>
+          </div>
+          <div class="cell">
+            <div class="cell-lbl">u(t)</div>
+            <div class="cell-v" id="freq-u">—</div>
+            <div class="cell-sub">Señal de control MIHM</div>
+          </div>
+        </div>
+
+        <!-- Contexto social de sesión -->
+        <div class="pnl" style="margin-bottom:1rem">
+          <div class="pnl-hd"><span class="pnl-lbl">CONTEXTO DE SESIÓN</span></div>
+          <div class="pnl-body" style="display:flex;gap:1.5rem;flex-wrap:wrap;align-items:flex-end">
+            <div>
+              <label style="font-size:9px;color:var(--t3);font-family:var(--mono)">TAMAÑO GRUPO</label>
+              <br><input id="freq-group-size" type="number" min="1" max="200" value="10"
+                style="background:var(--bg2);border:.5px solid var(--bdr);color:var(--t1);padding:4px 8px;width:80px;font-family:var(--mono);font-size:12px">
+            </div>
+            <div>
+              <label style="font-size:9px;color:var(--t3);font-family:var(--mono)">DIVERSIDAD (0–1)</label>
+              <br><input id="freq-diversity" type="number" min="0" max="1" step="0.05" value="0.5"
+                style="background:var(--bg2);border:.5px solid var(--bdr);color:var(--t1);padding:4px 8px;width:80px;font-family:var(--mono);font-size:12px">
+            </div>
+            <div>
+              <label style="font-size:9px;color:var(--t3);font-family:var(--mono)">ESPACIO</label>
+              <br><select id="freq-setting"
+                style="background:var(--bg2);border:.5px solid var(--bdr);color:var(--t1);padding:4px 8px;font-family:var(--mono);font-size:12px">
+                <option value="studio">Studio</option>
+                <option value="live">Live</option>
+                <option value="classroom">Classroom</option>
+                <option value="club">Club</option>
+                <option value="outdoor">Outdoor</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- Activaciones de banda -->
+        <div class="pnl" style="margin-bottom:1rem">
+          <div class="pnl-hd"><span class="pnl-lbl">ACTIVACIONES DE BANDA FRECUENCIAL</span></div>
+          <div style="padding:1rem">
+            <canvas id="bandChart" height="140"></canvas>
+          </div>
+        </div>
+
+        <!-- CFF en el tiempo -->
+        <div class="pnl" style="margin-bottom:1rem">
+          <div class="pnl-hd"><span class="pnl-lbl">EVOLUCIÓN CFF · Campo de Frecuencia Colectiva</span></div>
+          <div style="padding:1rem">
+            <canvas id="cffChart" height="140"></canvas>
+          </div>
+        </div>
+
+        <!-- Zonas sociales activas -->
+        <div class="pnl" style="margin-bottom:1rem">
+          <div class="pnl-hd"><span class="pnl-lbl">ZONAS SOCIALES ACTIVAS</span><span class="pnl-st" id="freq-zones-count">—</span></div>
+          <div class="pnl-body">
+            <div id="freq-zones-list" style="font-size:11px;color:var(--t2);line-height:1.8">
+              <span style="color:var(--t4)">Sin análisis. Ejecuta un análisis de frecuencias.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rituales propuestos -->
+        <div class="pnl" style="margin-bottom:1rem">
+          <div class="pnl-hd"><span class="pnl-lbl">RITUALES DE COEXISTENCIA PROPUESTOS</span><span class="pnl-st" id="freq-rituals-count">—</span></div>
+          <div class="pnl-body">
+            <div id="freq-rituals-list">
+              <span style="color:var(--t4);font-size:10px">Sin rituales aún.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tensiones y puentes -->
+        <div class="pnl" style="margin-bottom:1rem">
+          <div class="pnl-hd"><span class="pnl-lbl">TENSIONES FRECUENCIALES · FRECUENCIAS PUENTE</span></div>
+          <div class="pnl-body" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+            <div>
+              <div style="font-size:9px;color:var(--t3);font-family:var(--mono);margin-bottom:.5rem">TENSIONES</div>
+              <div id="freq-tensions-list" style="font-size:11px;color:var(--t2)">—</div>
+            </div>
+            <div>
+              <div style="font-size:9px;color:var(--t3);font-family:var(--mono);margin-bottom:.5rem">FRECUENCIAS PUENTE (Hz)</div>
+              <div id="freq-bridges-list" style="font-size:13px;color:var(--oro);font-family:var(--mono)">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Narrativa Groq -->
+        <div class="pnl" style="margin-bottom:1.5rem">
+          <div class="pnl-hd"><span class="pnl-lbl">NARRATIVA DE COEXISTENCIA</span></div>
+          <div class="pnl-body">
+            <div id="freq-narrative" style="font-size:12px;color:var(--t2);font-family:var(--mono);line-height:1.7">—</div>
+          </div>
+        </div>
+
+        <!-- Botones -->
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap">
+          <button class="kf-btn" onclick="freqAnalyzeNeutral()" style="font-size:10px;padding:8px 18px">
+            ANALIZAR (CAMPO NEUTRAL)
+          </button>
+          <button class="kf-btn" onclick="freqProposeRitual()" style="font-size:10px;padding:8px 18px;border-color:var(--verde);color:var(--verde)">
+            PROPONER RITUAL DE SESIÓN
+          </button>
+          <button class="kf-btn" onclick="freqLoadMap()" style="font-size:10px;padding:8px 18px;border-color:var(--azul);color:var(--azul)">
+            VER MAPA DE BANDAS
+          </button>
+        </div>
+
+        <!-- Mapa de bandas -->
+        <div class="pnl" id="freq-map-panel" style="margin-top:1.5rem;display:none">
+          <div class="pnl-hd"><span class="pnl-lbl">MAPA COMPLETO DE BANDAS Y ZONAS SOCIALES</span></div>
+          <div class="pnl-body">
+            <div id="freq-map-content" style="font-size:10px;font-family:var(--mono);color:var(--t2);line-height:1.9"></div>
+          </div>
+        </div>
+
+        <!-- Log -->
+        <div class="sec" style="margin-top:1.5rem">
+          <div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">Log Frecuencias</span></div>
+          <div id="freq-log" style="background:var(--bg2);border:.5px solid var(--bdr);padding:1rem;font-family:var(--mono);font-size:9px;color:var(--t3);height:160px;overflow-y:auto;line-height:1.8"></div>
         </div>
 
       </div>
@@ -2614,7 +2785,292 @@ window.openTab = function(name, btn) {
     initReflexCharts();
     reflexLoadHealth();
   }
+  if (name === 'frecuencias') {
+    initFreqCharts();
+    freqAnalyzeNeutral();
+  }
 };
+
+// ========== TAB XII: FRECUENCIAS – Coexistencia Social ==========
+
+let bandChart = null;
+let cffChart  = null;
+const cffHistory = [];
+
+function freqLog(msg) {
+  const el = safeEl('freq-log');
+  if (!el) return;
+  const ts = new Date().toLocaleTimeString('es', { hour12: false });
+  el.textContent = `[${ts}] ${msg}\n` + el.textContent;
+}
+
+function initFreqCharts() {
+  const baseOpts = {
+    responsive: true,
+    animation: false,
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { ticks: { color: '#5c5a52', font: { size: 9, family: 'Courier New' } }, grid: { color: '#2f2d28' } },
+      y: { ticks: { color: '#5c5a52', font: { size: 9, family: 'Courier New' } }, grid: { color: '#2f2d28' } }
+    }
+  };
+
+  const bandCtx = safeEl('bandChart');
+  if (bandCtx && !bandChart) {
+    bandChart = new Chart(bandCtx, {
+      type: 'bar',
+      data: {
+        labels: ['SUB-BASS', 'BASS', 'LOW-MID', 'MID', 'HIGH-MID', 'HIGH'],
+        datasets: [{
+          label: 'Activación',
+          data: [0, 0, 0, 0, 0, 0],
+          backgroundColor: [
+            'rgba(44,110,158,.7)',
+            'rgba(44,110,158,.6)',
+            'rgba(200,169,81,.6)',
+            'rgba(23,122,94,.6)',
+            'rgba(200,169,81,.5)',
+            'rgba(190,58,58,.5)',
+          ],
+          borderWidth: 0,
+          borderRadius: 2,
+        }]
+      },
+      options: {
+        ...baseOpts,
+        scales: { ...baseOpts.scales, y: { ...baseOpts.scales.y, min: 0, max: 1 } }
+      }
+    });
+  }
+
+  const cffCtx = safeEl('cffChart');
+  if (cffCtx && !cffChart) {
+    cffChart = new Chart(cffCtx, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'CFF',
+          data: [],
+          borderColor: '#2c6e9e',
+          backgroundColor: 'rgba(44,110,158,0.1)',
+          borderWidth: 1.5,
+          pointRadius: 2,
+          tension: 0.4,
+          fill: true,
+        }]
+      },
+      options: {
+        ...baseOpts,
+        scales: { ...baseOpts.scales, y: { ...baseOpts.scales.y, min: -1, max: 1 } }
+      }
+    });
+  }
+}
+
+function updateBandChart(activations) {
+  if (!bandChart || !activations) return;
+  bandChart.data.datasets[0].data = [
+    activations.sub_bass || 0,
+    activations.bass     || 0,
+    activations.low_mid  || 0,
+    activations.mid      || 0,
+    activations.high_mid || 0,
+    activations.high     || 0,
+  ];
+  bandChart.update('none');
+}
+
+function updateCffChart(cff) {
+  if (!cffChart) return;
+  const ts = new Date().toLocaleTimeString('es', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  cffHistory.push({ ts, cff });
+  if (cffHistory.length > 60) cffHistory.shift();
+  cffChart.data.labels = cffHistory.map(h => h.ts);
+  cffChart.data.datasets[0].data = cffHistory.map(h => h.cff);
+  cffChart.update('none');
+}
+
+function renderFreqZones(zones) {
+  const el = safeEl('freq-zones-list');
+  if (!el) return;
+  safeText('freq-zones-count', zones ? `${zones.length} zonas activas` : '0');
+  if (!zones || !zones.length) {
+    el.innerHTML = '<span style="color:var(--t4)">Sin zonas activas detectadas.</span>';
+    return;
+  }
+  el.innerHTML = zones.map(z => `
+    <div class="zone-item">
+      <span class="zone-label">${(z.band || '').toUpperCase()}</span>
+      <div class="zone-bar-wrap"><div class="zone-bar" style="width:${Math.round((z.activation||0)*100)}%"></div></div>
+      <span class="zone-val">${((z.activation||0)*100).toFixed(0)}%</span>
+      <span style="font-size:9px;color:var(--t3);font-family:var(--mono);width:140px">${z.social_mode || ''}</span>
+    </div>
+  `).join('');
+}
+
+function renderFreqRituals(rituals) {
+  const el = safeEl('freq-rituals-list');
+  if (!el) return;
+  safeText('freq-rituals-count', rituals ? `${rituals.length} rituales` : '0');
+  if (!rituals || !rituals.length) {
+    el.innerHTML = '<span style="color:var(--t4);font-size:10px">Sin rituales propuestos.</span>';
+    return;
+  }
+  el.innerHTML = rituals.slice(0, 4).map(r => `
+    <div class="ritual-card priority-${r.priority || 'medium'}">
+      <div class="ritual-name">${r.name || '—'}</div>
+      <div class="ritual-desc">${r.description || ''}</div>
+      <div class="ritual-badge">${(r.priority || '').toUpperCase()} · CFF +${r.cff_boost || 0}</div>
+    </div>
+  `).join('');
+}
+
+function renderFreqData(data) {
+  if (!data) { freqLog('⚠️ Sin respuesta'); return; }
+
+  const fmt  = v => (typeof v === 'number' ? v.toFixed(4) : '—');
+  const cff  = data.cff ?? 0;
+  const cffEl = safeEl('freq-cff');
+
+  safeText('freq-cff',   fmt(cff));
+  safeText('freq-costj', fmt(data.cost_j));
+  safeText('freq-u',     fmt(data.u));
+
+  if (cffEl) {
+    cffEl.className = 'cell-v' + (cff > 0.15 ? ' positive' : cff < -0.15 ? ' negative' : '');
+  }
+
+  renderFreqZones(data.active_zones);
+  renderFreqRituals(data.proposed_rituals);
+  updateBandChart(data.band_activations);
+  updateCffChart(cff);
+
+  // Tensiones
+  const tensionsEl = safeEl('freq-tensions-list');
+  if (tensionsEl) {
+    const tensions = data.tensions || [];
+    tensionsEl.innerHTML = tensions.length
+      ? tensions.map(t => `<div style="margin-bottom:4px;font-size:10px">
+          <span style="color:var(--rojo)">${(t.bands||[]).join(' ↔ ')}</span>
+          <span style="color:var(--t3)"> · ${(t.intensity||0).toFixed(2)}</span>
+        </div>`).join('')
+      : '<span style="color:var(--t4)">Sin tensiones detectadas.</span>';
+  }
+
+  // Puentes
+  const bridgesEl = safeEl('freq-bridges-list');
+  if (bridgesEl) {
+    const bridges = data.bridge_frequencies || [];
+    bridgesEl.textContent = bridges.length ? bridges.map(f => `${f} Hz`).join('  ·  ') : '—';
+  }
+
+  // Narrativa
+  const narrativeEl = safeEl('freq-narrative');
+  if (narrativeEl) {
+    const groq = data.groq_analysis || {};
+    narrativeEl.textContent = groq.narrative || data.narrative || '—';
+  }
+
+  freqLog(`OK · CFF=${fmt(cff)} · J=${fmt(data.cost_j)} · ${(data.active_zones||[]).length} zonas activas`);
+}
+
+async function freqAnalyzeNeutral() {
+  const groupSize  = parseInt(safeEl('freq-group-size')?.value || 10);
+  const diversity  = parseFloat(safeEl('freq-diversity')?.value || 0.5);
+  const setting    = safeEl('freq-setting')?.value || 'studio';
+
+  freqLog(`Analizando campo neutral (grupo=${groupSize}, diversidad=${diversity}, espacio=${setting})...`);
+
+  const data = await apiCall('/frequency/analyze', 'POST', {
+    features: {
+      band_energy_low:   0.38,
+      band_energy_mid:   0.35,
+      band_energy_high:  0.27,
+      onset_density:     2.5,
+      spectral_entropy:  5.8,
+      dynamic_range:     58.0,
+      periodicity:       0.35,
+    },
+    social_context: { group_size: groupSize, diversity_index: diversity, setting }
+  });
+
+  renderFreqData(data);
+}
+
+async function freqProposeRitual() {
+  const groupSize = parseInt(safeEl('freq-group-size')?.value || 10);
+  const diversity = parseFloat(safeEl('freq-diversity')?.value || 0.5);
+  const setting   = safeEl('freq-setting')?.value || 'studio';
+
+  freqLog(`Proponiendo ritual (grupo=${groupSize})...`);
+
+  const data = await apiCall('/frequency/ritual', 'POST', {
+    group_size:      groupSize,
+    diversity_index: diversity,
+    setting,
+  });
+
+  if (!data) { freqLog('⚠️ Error al proponer ritual'); return; }
+
+  const ritual = data.ritual || {};
+  freqLog(`RITUAL: ${ritual.name || '—'}`);
+  freqLog(`→ ${ritual.description || ''}`);
+  freqLog(`→ Resultado social: ${ritual.social_outcome || ''}`);
+
+  if (data.mihm_state) {
+    safeText('freq-cff',   (data.mihm_state.cff || 0).toFixed(4));
+    safeText('freq-costj', (data.cost_j || 0).toFixed(4));
+    safeText('freq-u',     (data.u || 0).toFixed(4));
+    updateCffChart(data.mihm_state.cff || 0);
+  }
+
+  // Mostrar ritual en panel de rituales
+  const el = safeEl('freq-rituals-list');
+  if (el && data.ritual) {
+    el.innerHTML = `<div class="ritual-card priority-high">
+      <div class="ritual-name">★ ${ritual.name || '—'}</div>
+      <div class="ritual-desc">${ritual.description || ''}</div>
+      ${ritual.adaptation ? `<div class="ritual-desc" style="color:var(--azul)">${ritual.adaptation}</div>` : ''}
+      <div class="ritual-badge">Resultado: ${ritual.social_outcome || ''}</div>
+    </div>` + el.innerHTML;
+    safeText('freq-rituals-count', 'ritual activo');
+  }
+
+  const narrativeEl = safeEl('freq-narrative');
+  if (narrativeEl && data.rationale) {
+    narrativeEl.textContent = data.rationale;
+  }
+}
+
+async function freqLoadMap() {
+  freqLog('Cargando mapa de bandas...');
+  const data = await apiCall('/frequency/map');
+  if (!data) { freqLog('⚠️ Error al cargar mapa'); return; }
+
+  const mapPanel = safeEl('freq-map-panel');
+  const mapContent = safeEl('freq-map-content');
+  if (!mapPanel || !mapContent) return;
+
+  mapPanel.style.display = 'block';
+
+  const bands = data.bands || {};
+  mapContent.innerHTML = Object.entries(bands).map(([key, band]) => `
+    <div style="margin-bottom:.8rem;padding-bottom:.6rem;border-bottom:.5px solid var(--bdr)">
+      <span style="color:var(--oro)">${key.toUpperCase().replace('_', '-')}</span>
+      <span style="color:var(--t3)"> ${band.range_hz ? band.range_hz[0]+' – '+band.range_hz[1]+' Hz' : ''}</span>
+      <span style="color:var(--azul);float:right">${band.social_mode || ''}</span>
+      <br>
+      <span style="color:var(--t2)">${band.description || ''}</span>
+    </div>
+  `).join('');
+
+  freqLog(`Mapa cargado · CFF actual: ${(data.current_cff || 0).toFixed(4)}`);
+}
+
+window.freqAnalyzeNeutral = freqAnalyzeNeutral;
+window.freqProposeRitual  = freqProposeRitual;
+window.freqLoadMap        = freqLoadMap;
 </script>
 </body>
 </html>

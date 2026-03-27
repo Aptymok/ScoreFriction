@@ -1,3 +1,13 @@
+"""
+app.py – Servidor central de System Friction v4.1
+Motor: MIHM + MCM-A + Campo de Frecuencia Colectiva (CFF)
+
+Principio: mihm es la única instancia compartida.
+Todos los módulos reciben mihm por inyección de dependencia.
+Ningún endpoint modifica mihm.state directamente –
+solo a través de apply_delta().
+"""
+
 import os
 import uuid
 from datetime import datetime
@@ -11,38 +21,39 @@ from groq_client import GroqClient
 from audio_features import extract_features
 from mihm import MIHM
 
-# Módulos del framework System Friction
-from modules.social_analyzer import SocialAnalyzer
-from modules.audio_analyzer_advanced import AudioAnalyzerAdvanced
-from modules.scraping_spotify import SpotifyScraper
-from modules.project_proposals import ProjectProposals
-from modules.marketing_engine import MarketingEngine
-from modules.project_manager import ProjectManager
-from modules.ml_friction import MLFriction
-from modules.integrations import Integrations
-from modules.reflexive_engine import ReflexiveEngine
+# ── Módulos del framework System Friction ────────────────────────────
+from modules.social_analyzer          import SocialAnalyzer
+from modules.audio_analyzer_advanced  import AudioAnalyzerAdvanced
+from modules.scraping_spotify         import SpotifyScraper
+from modules.project_proposals        import ProjectProposals
+from modules.marketing_engine         import MarketingEngine
+from modules.project_manager          import ProjectManager
+from modules.ml_friction              import MLFriction
+from modules.integrations             import Integrations
+from modules.reflexive_engine         import ReflexiveEngine
+from modules.frequency_coexistence    import FrequencyCoexistenceEngine
 
-# ─────────────────────────────────────────────
-# Inicialización central
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
+# INICIALIZACIÓN CENTRAL
+# ══════════════════════════════════════════════════════════════════════
 
-app = Flask(__name__)
+app  = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
 
-db     = Database('instance/friction.db')
-groq   = GroqClient()
-mihm   = MIHM()
+db   = Database('instance/friction.db')
+groq = GroqClient()
+mihm = MIHM()
 
-# Inyectar groq en mihm para propose_new_rule_via_groq
+# Inyectar groq en MIHM para meta_control → propose_new_rule_via_groq
 mihm._groq = groq
 
-# Cargar parámetros guardados
+# Cargar parámetros persistidos
 saved_params = db.get_parameters('mihm_params')
 if saved_params:
     mihm.params.update(saved_params)
 
-# Instanciar todos los módulos con el mismo mihm (inyección de dependencia)
+# ── Instanciar módulos con mihm compartido ───────────────────────────
 social    = SocialAnalyzer(mihm)
 audio_adv = AudioAnalyzerAdvanced(mihm)
 spotify   = SpotifyScraper(mihm)
@@ -52,21 +63,22 @@ pm        = ProjectManager(mihm)
 ml        = MLFriction(mihm)
 integs    = Integrations(mihm)
 reflexive = ReflexiveEngine(mihm)
+freq_coex = FrequencyCoexistenceEngine(mihm, groq)
 
 
-def gen_id():
+def gen_id() -> str:
     return str(uuid.uuid4())
 
 
-# ─────────────────────────────────────────────
-# ENDPOINTS LEGACY (compatibilidad total)
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
+# ENDPOINTS CORE
+# ══════════════════════════════════════════════════════════════════════
 
 @app.route('/health', methods=['GET'])
 def health():
     return jsonify({
         'status':  'ok',
-        'version': '4.0-MIHM-MCM-A',
+        'version': '4.1-CFF',
         'mihm':    'active',
         'state':   mihm.state,
         'cost_j':  mihm.cost_function(),
@@ -85,7 +97,6 @@ def predict():
     nti = data.get('nti', mihm.state['nti'])
     r   = data.get('r',   mihm.state['r'])
 
-    # Aplicar mediante apply_delta (regla de oro)
     delta = {
         'ihg': ihg - mihm.state['ihg'],
         'nti': nti - mihm.state['nti'],
@@ -97,11 +108,12 @@ def predict():
     proyeccion = mihm.monte_carlo_projection()
     stability  = mihm.stability_analysis()
 
-    if mihm.state['ihg'] < -1.2:
+    ihg_v = mihm.state['ihg']
+    if ihg_v < -1.2:
         intervencion = "CRITICO: Hegemonía extrema. Se requiere redistribución de decisiones."
-    elif mihm.state['ihg'] < -0.8:
+    elif ihg_v < -0.8:
         intervencion = "ALERTA: Alta concentración de poder. Revisar roles."
-    elif mihm.state['ihg'] < -0.4:
+    elif ihg_v < -0.4:
         intervencion = "TENSION: Equilibrio inestable. Monitorear flujo de decisiones."
     else:
         intervencion = "ESTABLE: La homeostasis está dentro de rangos aceptables."
@@ -139,27 +151,25 @@ def learn():
     error          = outcome - mihm.state['ihg']
     error_smoothed = 0.7 * error + 0.3 * (db.get_parameters('last_error') or 0)
     db.save_parameters('last_error', error_smoothed)
-
     new_params = mihm.learn(pred_id, outcome, db)
 
     with db.get_connection() as conn:
         conn.execute(
             'UPDATE predictions SET error=?, error_smoothed=? WHERE prediction_id=?',
-            (error, error_smoothed, pred_id)
+            (error, error_smoothed, pred_id),
         )
 
     return jsonify({
-        'error':         error,
+        'error':          error,
         'error_smoothed': error_smoothed,
-        'new_params':    new_params,
+        'new_params':     new_params,
     })
 
 
 @app.route('/history', methods=['GET'])
 def history():
     limit = request.args.get('limit', 100, type=int)
-    rows  = db.get_history(limit)
-    return jsonify({'history': rows})
+    return jsonify({'history': db.get_history(limit)})
 
 
 @app.route('/reset', methods=['POST'])
@@ -172,6 +182,7 @@ def reset():
         'psi_i':       0.000,
         'h_scale':     0.500,
         'ml_success':  0.500,
+        'cff':         0.000,
     }
     mihm.integral   = 0.0
     mihm.prev_error = 0.0
@@ -195,9 +206,8 @@ def groq_analyze():
 
 @app.route('/scenario/select', methods=['POST'])
 def scenario_select():
-    data     = request.get_json()
-    scenario = data.get('scenario')
-    db.save_scenario(scenario)
+    data = request.get_json()
+    db.save_scenario(data.get('scenario'))
     return jsonify({'status': 'registered'})
 
 
@@ -205,8 +215,7 @@ def scenario_select():
 def export():
     with db.get_connection() as conn:
         cur  = conn.execute('SELECT * FROM predictions ORDER BY timestamp')
-        rows = cur.fetchall()
-        data = [dict(row) for row in rows]
+        data = [dict(row) for row in cur.fetchall()]
     return jsonify(data)
 
 
@@ -220,9 +229,9 @@ def generate_midi_route():
     return send_file(midi_file, as_attachment=True)
 
 
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
 # AUDIO
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
 
 @app.route('/audio/analyze', methods=['POST'])
 def audio_analyze():
@@ -233,36 +242,100 @@ def audio_analyze():
 
     results = []
     for file in files:
-        filename   = file.filename
+        filename    = file.filename
         audio_bytes = file.read()
-        features   = extract_features(audio_bytes, filename)
+        features    = extract_features(audio_bytes, filename)
 
-        # Análisis avanzado con acoplamiento al MIHM
+        # Análisis avanzado con acoplamiento MIHM
         adv = audio_adv.analyze(features)
 
-        try:
-            analysis = groq.analyze_audio(features)
-        except Exception:
-            analysis = "No se pudo analizar con Groq."
+        # Coexistencia social de frecuencias
+        coex = freq_coex.analyze(features)
+
+        # Narrativa Groq
+        analysis = groq.analyze_audio(features)
 
         results.append({
-            'filename':  filename,
-            'features':  features,
-            'analysis':  analysis,
-            'advanced':  adv,
+            'filename':   filename,
+            'features':   features,
+            'analysis':   analysis,
+            'advanced':   adv,
+            'coexistence': coex,
         })
 
     return jsonify({
-        'results':   results,
+        'results':    results,
         'mihm_state': mihm.state,
-        'cost_j':    mihm.cost_function(),
-        'irc':       mihm.irc,
+        'cost_j':     mihm.cost_function(),
+        'irc':        mihm.irc,
     })
 
 
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
+# FRECUENCIAS – Coexistencia Social
+# ══════════════════════════════════════════════════════════════════════
+
+@app.route('/frequency/analyze', methods=['POST'])
+def frequency_analyze():
+    """
+    Análisis de coexistencia social-frecuencia.
+    Body: { "features": {...}, "social_context": {...} }
+    """
+    mihm.process_delayed_updates()
+    data           = request.get_json() or {}
+    features       = data.get('features', {})
+    social_context = data.get('social_context', {})
+
+    if not features:
+        # Si no vienen features, usar valores neutros
+        features = {
+            'band_energy_low':   0.33,
+            'band_energy_mid':   0.33,
+            'band_energy_high':  0.33,
+            'onset_density':     2.0,
+            'spectral_entropy':  5.0,
+            'dynamic_range':     60.0,
+            'periodicity':       0.3,
+        }
+
+    result = freq_coex.analyze(features, social_context)
+    db.save_state(mihm.state, mihm.irc, "frequency_analyze", mihm.cost_function())
+    return jsonify(result)
+
+
+@app.route('/frequency/ritual', methods=['POST'])
+def frequency_ritual():
+    """
+    Propone un ritual de apertura de sesión.
+    Body: { "group_size": int, "diversity_index": float, "setting": str }
+    """
+    mihm.process_delayed_updates()
+    data       = request.get_json() or {}
+    group_size = int(data.get('group_size', 10))
+    diversity  = float(data.get('diversity_index', 0.5))
+    setting    = data.get('setting', 'studio')
+
+    result = freq_coex.propose_session_ritual(group_size, diversity, setting)
+    db.save_state(mihm.state, mihm.irc, "frequency_ritual", mihm.cost_function())
+    return jsonify(result)
+
+
+@app.route('/frequency/map', methods=['GET'])
+def frequency_map():
+    """Mapa completo de bandas frecuenciales y zonas sociales."""
+    return jsonify(freq_coex.get_frequency_map())
+
+
+@app.route('/frequency/history', methods=['GET'])
+def frequency_history():
+    """Historial de análisis de coexistencia de la sesión."""
+    limit  = request.args.get('limit', 20, type=int)
+    return jsonify({'history': freq_coex.get_session_history(limit)})
+
+
+# ══════════════════════════════════════════════════════════════════════
 # SOCIAL
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
 
 @app.route('/social/analyze', methods=['POST'])
 def analyze_social():
@@ -271,50 +344,38 @@ def analyze_social():
     query = data.get('query', '')
     if not query:
         return jsonify({'error': 'Missing query'}), 400
-    result = social.analyze_social(query)
-    return jsonify(result)
+    return jsonify(social.analyze_social(query))
 
 
-# ─────────────────────────────────────────────
-# SPOTIFY
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
+# SPOTIFY / TIKTOK
+# ══════════════════════════════════════════════════════════════════════
 
 @app.route('/spotify/trends', methods=['GET'])
 def spotify_trends():
     mihm.process_delayed_updates()
     genre = request.args.get('genre', 'reggaeton')
     limit = request.args.get('limit', 20, type=int)
-    result = spotify.analyze_trends(genre, limit)
-    return jsonify(result)
+    return jsonify(spotify.analyze_trends(genre, limit))
 
-
-# ─────────────────────────────────────────────
-# TIKTOK (legacy + nuevo acoplamiento)
-# ─────────────────────────────────────────────
 
 @app.route('/tiktok/scrape', methods=['GET'])
 def tiktok_scrape():
     mihm.process_delayed_updates()
-    query  = request.args.get('query', 'viral')
-    result = social.analyze_social(query)
-    return jsonify(result)
+    query = request.args.get('query', 'viral')
+    return jsonify(social.analyze_social(query))
 
 
-# ─────────────────────────────────────────────
-# PROPUESTAS DE PROYECTOS
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
+# PROYECTOS / MARKETING / PM
+# ══════════════════════════════════════════════════════════════════════
 
 @app.route('/projects/propose', methods=['POST'])
 def projects_propose():
     mihm.process_delayed_updates()
-    data    = request.get_json() or {}
-    result  = proposals.generate(data)
-    return jsonify(result)
+    data = request.get_json() or {}
+    return jsonify(proposals.generate(data))
 
-
-# ─────────────────────────────────────────────
-# MARKETING
-# ─────────────────────────────────────────────
 
 @app.route('/marketing/campaign', methods=['POST'])
 def marketing_campaign():
@@ -323,23 +384,17 @@ def marketing_campaign():
     release_name = data.get('release_name', 'Untitled')
     budget       = float(data.get('budget', 1000.0))
     channels     = data.get('channels', ['tiktok', 'instagram', 'spotify'])
-    result       = marketing.plan_campaign(release_name, budget, channels)
-    return jsonify(result)
+    return jsonify(marketing.plan_campaign(release_name, budget, channels))
 
-
-# ─────────────────────────────────────────────
-# PROJECT MANAGER
-# ─────────────────────────────────────────────
 
 @app.route('/pm/project', methods=['POST'])
 def pm_create():
     mihm.process_delayed_updates()
-    data         = request.get_json()
-    name         = data.get('name', 'Proyecto sin nombre')
-    members      = data.get('members', [])
-    deadline     = int(data.get('deadline_days', 30))
-    result       = pm.create_project(name, members, deadline)
-    return jsonify(result)
+    data     = request.get_json()
+    name     = data.get('name', 'Proyecto sin nombre')
+    members  = data.get('members', [])
+    deadline = int(data.get('deadline_days', 30))
+    return jsonify(pm.create_project(name, members, deadline))
 
 
 @app.route('/pm/task', methods=['POST'])
@@ -349,8 +404,7 @@ def pm_task():
     project_id = data.get('project_id', '')
     task       = data.get('task', '')
     done       = bool(data.get('done', False))
-    result     = pm.update_task(project_id, task, done)
-    return jsonify(result)
+    return jsonify(pm.update_task(project_id, task, done))
 
 
 @app.route('/pm/projects', methods=['GET'])
@@ -358,17 +412,15 @@ def pm_list():
     return jsonify({'projects': pm.list_projects()})
 
 
-# ─────────────────────────────────────────────
-# ML FRICTION
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
+# ML
+# ══════════════════════════════════════════════════════════════════════
 
 @app.route('/ml/predict', methods=['POST'])
 def ml_predict():
     mihm.process_delayed_updates()
-    data     = request.get_json()
-    features = data.get('features', {})
-    result   = ml.predict_success(features)
-    return jsonify(result)
+    data = request.get_json()
+    return jsonify(ml.predict_success(data.get('features', {})))
 
 
 @app.route('/ml/train', methods=['POST'])
@@ -377,65 +429,59 @@ def ml_train():
     data         = request.get_json()
     features     = data.get('features', {})
     true_outcome = float(data.get('true_outcome', 0.5))
-    result       = ml.train(features, true_outcome)
-    return jsonify(result)
+    return jsonify(ml.train(features, true_outcome))
 
 
-# ─────────────────────────────────────────────
-# INTEGRATIONS
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
+# INTEGRACIONES
+# ══════════════════════════════════════════════════════════════════════
 
 @app.route('/integrations/youtube', methods=['POST'])
 def int_youtube():
     mihm.process_delayed_updates()
-    data     = request.get_json()
-    video_id = data.get('video_id', '')
-    metrics  = data.get('metrics', {})
-    result   = integs.ingest_youtube_analytics(video_id, metrics)
-    return jsonify(result)
+    data = request.get_json()
+    return jsonify(integs.ingest_youtube_analytics(
+        data.get('video_id', ''), data.get('metrics', {})))
 
 
 @app.route('/integrations/soundcloud', methods=['POST'])
 def int_soundcloud():
     mihm.process_delayed_updates()
-    data     = request.get_json()
-    track_id = data.get('track_id', '')
-    plays    = int(data.get('plays', 0))
-    reposts  = int(data.get('reposts', 0))
-    result   = integs.ingest_soundcloud(track_id, plays, reposts)
-    return jsonify(result)
+    data = request.get_json()
+    return jsonify(integs.ingest_soundcloud(
+        data.get('track_id', ''),
+        int(data.get('plays', 0)),
+        int(data.get('reposts', 0)),
+    ))
 
 
 @app.route('/integrations/generic', methods=['POST'])
 def int_generic():
     mihm.process_delayed_updates()
-    data        = request.get_json()
-    platform    = data.get('platform', 'unknown')
-    signal_name = data.get('signal_name', 'generic')
-    value       = float(data.get('value', 0.5))
-    weight      = float(data.get('weight', 0.1))
-    result      = integs.ingest_generic(platform, signal_name, value, weight)
-    return jsonify(result)
+    data = request.get_json()
+    return jsonify(integs.ingest_generic(
+        data.get('platform', 'unknown'),
+        data.get('signal_name', 'generic'),
+        float(data.get('value', 0.5)),
+        float(data.get('weight', 0.1)),
+    ))
 
 
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
 # SISTEMA REFLEXIVO (MCM-A)
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
 
 @app.route('/system/health', methods=['GET'])
 def system_health():
-    """Estado reflexivo completo del sistema."""
     mihm.process_delayed_updates()
     mihm.meta_control()
     result = reflexive.evaluate_system_health()
-    # Persistir en DB
     db.save_state(mihm.state, mihm.irc, "system_health_check", mihm.cost_function())
     return jsonify(result)
 
 
 @app.route('/system/meta_control', methods=['POST'])
 def force_meta_control():
-    """Fuerza meta_control independientemente del contador de historial."""
     mihm.process_delayed_updates()
     result = reflexive.force_meta_control()
     db.save_state(mihm.state, mihm.irc, "forced_meta_control", mihm.cost_function())
@@ -444,15 +490,13 @@ def force_meta_control():
 
 @app.route('/system/history', methods=['GET'])
 def state_history():
-    """Historial de estados del sistema."""
-    limit  = request.args.get('limit', 200, type=int)
-    rows   = db.get_state_history(limit)
+    limit = request.args.get('limit', 200, type=int)
+    rows  = db.get_state_history(limit)
     return jsonify({'state_history': rows, 'count': len(rows)})
 
 
 @app.route('/system/rules', methods=['GET'])
 def reflexive_rules():
-    """Reglas auto-descubiertas por el sistema."""
     rows = db.get_reflexive_rules(50)
     return jsonify({
         'rules':      rows,
@@ -462,7 +506,6 @@ def reflexive_rules():
 
 @app.route('/system/state', methods=['GET'])
 def system_state():
-    """Estado completo del MIHM en tiempo real."""
     mihm.process_delayed_updates()
     return jsonify({
         'state':           mihm.state,
@@ -477,9 +520,9 @@ def system_state():
     })
 
 
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
 # MAIN
-# ─────────────────────────────────────────────
+# ══════════════════════════════════════════════════════════════════════
 
 if __name__ == '__main__':
     app.run(debug=Config.DEBUG, host='0.0.0.0', port=5000)
