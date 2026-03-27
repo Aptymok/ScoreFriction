@@ -530,11 +530,20 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
 .btn:disabled { opacity: 0.3; cursor: default; }
 .btn-g { border-color: var(--oro); color: var(--oro); }
 
-/* MIDI panel */
-.midi-preview { background: var(--bg2); border: 0.5px solid var(--bdr); padding: 16px; margin-top: 1rem; }
-.roll-preview { background: #1b1b1b; margin-top: 8px; }
-canvas#roll-c { width: 100%; height: 110px; display: block; }
-.midi-buttons { display: flex; gap: 8px; margin-top: 16px; }
+/* MCM-C Studio */
+.mcmc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.mcmc-metric { background: var(--bg2); border: 0.5px solid var(--bdr); padding: 10px; text-align: center; border-radius: 2px; }
+.mcmc-metric-val { font-size: 20px; font-family: var(--mono); font-weight: 500; margin-top: 2px; }
+.mcmc-section-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.mcmc-section-btn { background: transparent; border: 0.5px solid var(--bdr); color: var(--t3); padding: 5px 10px; font-size: 10px; font-family: var(--mono); cursor: pointer; transition: 0.15s; }
+.mcmc-section-btn.active { border-color: var(--oro); color: var(--oro); background: rgba(200,169,81,0.06); }
+.mcmc-console { background: var(--bg); border: 0.5px solid var(--bdr); height: 100px; overflow-y: auto; padding: 8px; font-family: var(--mono); font-size: 9px; color: var(--t3); white-space: pre-wrap; word-break: break-all; }
+.mcmc-slider-row { display: flex; align-items: center; gap: 8px; margin-bottom: 7px; }
+.mcmc-slider-row label { width: 78px; font-size: 10px; color: var(--t2); font-family: var(--mono); flex-shrink: 0; }
+.mcmc-slider { flex: 1; accent-color: var(--oro); height: 3px; }
+.mcmc-slider-val { width: 34px; font-size: 10px; font-family: var(--mono); color: var(--oro); text-align: right; flex-shrink: 0; }
+.meme-heat { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 4px; }
+.meme-cell { width: 22px; height: 22px; border-radius: 2px; cursor: default; transition: 0.2s; }
 
 /* Responsive */
 @media (max-width: 800px) {
@@ -802,36 +811,115 @@ canvas#roll-c { width: 100%; height: 110px; display: block; }
       </div>
     </div>
  
-    <!-- TAB II: MIDI STUDIO (simplificado) -->
+    <!-- TAB II: MCM-C STUDIO -->
     <div id="tab-midi" class="tab-panel">
       <div class="sec">
-        <div class="sec-hd"><span class="sec-n">II</span><span class="sec-t">MIDI Studio · Generación de Partituras</span></div>
-        <div class="pnl">
-          <div class="pnl-body">
-            <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px;">
-              <div><span class="cell-lbl">Modo</span><div id="mp-mode" class="cell-v" style="font-size:14px">—</div></div>
-              <div><span class="cell-lbl">Raíz</span><div id="mp-root" class="cell-v" style="font-size:14px">—</div></div>
-              <div><span class="cell-lbl">Densidad</span><div id="mp-density" class="cell-v" style="font-size:14px">—</div></div>
-              <div><span class="cell-lbl">Duración</span><div id="mp-dur" class="cell-v" style="font-size:14px">—</div></div>
-              <div><span class="cell-lbl">Velocidad</span><div id="mp-vel" class="cell-v" style="font-size:14px">—</div></div>
-              <div><span class="cell-lbl">u(t)</span><div id="mp-ut" class="cell-v" style="font-size:14px">—</div></div>
-            </div>
-            <div id="midi-dir" style="margin-bottom:16px;"><span class="cell-lbl">Dirección armónica</span><div id="mp-dir" style="font-size:12px; color:var(--oro)">—</div></div>
-            <div class="midi-preview">
-              <div class="pnl-hd">PREVISUALIZACIÓN · ROLLO</div>
-              <canvas id="roll-c" height="110" style="width:100%"></canvas>
-              <div class="midi-buttons">
-                <button class="btn" id="btn-mel" onclick="genMIDI(false)" disabled>MELODÍA (MIDI)</button>
-                <button class="btn" id="btn-chd" onclick="genMIDI(true)" disabled>ACORDES (MIDI)</button>
-                <button class="btn btn-g" id="btn-both" onclick="genBoth()" disabled>AMBOS</button>
+        <div class="sec-hd"><span class="sec-n">II</span><span class="sec-t">MCM-C Studio · Sistema Coevolutivo Cultural</span></div>
+
+        <div class="mcmc-grid">
+          <div class="pnl">
+            <div class="pnl-hd">PARÁMETROS · MCM-C</div>
+            <div class="pnl-body">
+              <div class="mcmc-slider-row">
+                <label>Género</label>
+                <select id="mcmc-genre" style="flex:1;background:var(--bg2);border:0.5px solid var(--bdr);color:var(--t1);padding:4px 6px;font-size:10px;font-family:var(--mono);">
+                  <option>synthwave</option><option>pop</option><option>techno</option><option>lo-fi</option><option>jazz</option>
+                </select>
               </div>
-              <div id="midi-status" style="font-size:9px; margin-top:12px; color:var(--t3)"></div>
+              <div class="mcmc-slider-row"><label>IF objetivo</label><input type="range" id="mcmc-if-target" class="mcmc-slider" min="0.5" max="0.9" step="0.01" value="0.75" oninput="mcmcSyncSlider(this,'mcmc-if-tv')"><span id="mcmc-if-tv" class="mcmc-slider-val">0.75</span></div>
+              <div class="mcmc-slider-row"><label>ICC objetivo</label><input type="range" id="mcmc-icc-target" class="mcmc-slider" min="0.4" max="0.9" step="0.01" value="0.68" oninput="mcmcSyncSlider(this,'mcmc-icc-tv')"><span id="mcmc-icc-tv" class="mcmc-slider-val">0.68</span></div>
+              <div class="mcmc-slider-row"><label>κ acoplam.</label><input type="range" id="mcmc-kappa" class="mcmc-slider" min="0" max="0.5" step="0.01" value="0.22" oninput="mcmcSyncSlider(this,'mcmc-kappa-v')"><span id="mcmc-kappa-v" class="mcmc-slider-val">0.22</span></div>
+              <div class="mcmc-slider-row"><label>λ_C penal.</label><input type="range" id="mcmc-lambda" class="mcmc-slider" min="0" max="1.5" step="0.05" value="0.9" oninput="mcmcSyncSlider(this,'mcmc-lambda-v')"><span id="mcmc-lambda-v" class="mcmc-slider-val">0.90</span></div>
+              <div class="mcmc-slider-row"><label>Motivos</label><input type="range" id="mcmc-motifs" class="mcmc-slider" min="1" max="8" step="1" value="3" oninput="mcmcSyncSlider(this,'mcmc-motifs-v')"><span id="mcmc-motifs-v" class="mcmc-slider-val">3</span></div>
+              <div style="margin-top:10px">
+                <div class="cell-lbl" style="margin-bottom:6px">SECCIÓN ACTIVA</div>
+                <div class="mcmc-section-btns">
+                  <button class="mcmc-section-btn active" onclick="mcmcSetSection('intro',this)">INTRO</button>
+                  <button class="mcmc-section-btn" onclick="mcmcSetSection('verso',this)">VERSO</button>
+                  <button class="mcmc-section-btn" onclick="mcmcSetSection('estribillo',this)">ESTRIBILLO</button>
+                  <button class="mcmc-section-btn" onclick="mcmcSetSection('outro',this)">OUTRO</button>
+                </div>
+              </div>
             </div>
+          </div>
+
+          <div class="pnl">
+            <div class="pnl-hd">MÉTRICAS · ESTADO LATENTE</div>
+            <div class="pnl-body">
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+                <div class="mcmc-metric"><div class="cell-lbl">IHG</div><div id="mcmc-ihg-v" class="mcmc-metric-val" style="color:var(--azul)">—</div></div>
+                <div class="mcmc-metric"><div class="cell-lbl">IF</div><div id="mcmc-if-v2" class="mcmc-metric-val" style="color:var(--verde)">—</div></div>
+                <div class="mcmc-metric"><div class="cell-lbl">ICC</div><div id="mcmc-icc-v2" class="mcmc-metric-val" style="color:var(--oro)">—</div></div>
+                <div class="mcmc-metric"><div class="cell-lbl">IRC</div><div id="mcmc-irc-v" class="mcmc-metric-val" style="color:#a060d0">—</div></div>
+              </div>
+              <div style="margin-bottom:6px"><span class="cell-lbl">Sección</span><span id="mcmc-sec-lbl" style="font-family:var(--mono);font-size:11px;color:var(--oro);margin-left:8px">—</span></div>
+              <div style="margin-bottom:6px"><span class="cell-lbl">Modo / Raíz</span><span id="mcmc-mode-root" style="font-family:var(--mono);font-size:11px;color:var(--t1);margin-left:8px">—</span></div>
+              <div style="margin-bottom:6px"><span class="cell-lbl">Motivos mem.</span><span id="mcmc-mem-cnt" style="font-family:var(--mono);font-size:11px;color:var(--t1);margin-left:8px">0</span></div>
+              <div style="margin-bottom:6px"><span class="cell-lbl">Estado</span><span id="mcmc-phase-lbl" style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-left:8px">NO INICIALIZADO</span></div>
+              <div style="margin-top:6px"><div class="cell-lbl" style="margin-bottom:4px">MEMORIA MEMÉTICA</div><div class="meme-heat" id="mcmc-heat"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pnl" style="margin-bottom:12px">
+          <div class="pnl-hd">PIANO ROLL · TRAYECTORIA LATENTE</div>
+          <div class="pnl-body" style="padding:8px">
+            <canvas id="mcmc-roll" height="90" style="width:100%;display:block;background:#141410"></canvas>
+            <div id="mcmc-roll-info" style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:4px">—</div>
+          </div>
+        </div>
+
+        <div class="pnl" style="margin-bottom:12px">
+          <div class="pnl-hd">CURVAS DE EVOLUCIÓN · IHG / IF / ICC / IRC</div>
+          <div class="pnl-body" style="padding:8px">
+            <canvas id="mcmc-timeline" height="120" style="width:100%;display:block;background:#141410"></canvas>
+            <div style="display:flex;gap:16px;margin-top:5px">
+              <span style="font-size:9px;font-family:var(--mono);color:var(--azul)">── IHG</span>
+              <span style="font-size:9px;font-family:var(--mono);color:var(--verde)">── IF</span>
+              <span style="font-size:9px;font-family:var(--mono);color:var(--oro)">── ICC</span>
+              <span style="font-size:9px;font-family:var(--mono);color:#a060d0">── IRC</span>
+              <span style="font-size:9px;font-family:var(--mono);color:var(--t4)">┆ sección · zona morada = momento meme</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mcmc-grid" style="margin-bottom:12px">
+          <div class="pnl">
+            <div class="pnl-hd">RESPUESTA DEL OYENTE · SIMULADA</div>
+            <div class="pnl-body">
+              <div class="mcmc-slider-row"><label>Intro</label><input type="range" class="mcmc-slider" id="rwd-intro" min="0" max="1" step="0.01" value="0.45" oninput="mcmcSyncSlider(this,'rwd-intro-v')"><span id="rwd-intro-v" class="mcmc-slider-val">0.45</span></div>
+              <div class="mcmc-slider-row"><label>Verso</label><input type="range" class="mcmc-slider" id="rwd-verso" min="0" max="1" step="0.01" value="0.52" oninput="mcmcSyncSlider(this,'rwd-verso-v')"><span id="rwd-verso-v" class="mcmc-slider-val">0.52</span></div>
+              <div class="mcmc-slider-row"><label>Estribillo</label><input type="range" class="mcmc-slider" id="rwd-estrib" min="0" max="1" step="0.01" value="0.82" oninput="mcmcSyncSlider(this,'rwd-estrib-v')"><span id="rwd-estrib-v" class="mcmc-slider-val">0.82</span></div>
+              <div class="mcmc-slider-row"><label>Outro</label><input type="range" class="mcmc-slider" id="rwd-outro" min="0" max="1" step="0.01" value="0.35" oninput="mcmcSyncSlider(this,'rwd-outro-v')"><span id="rwd-outro-v" class="mcmc-slider-val">0.35</span></div>
+              <button class="btn" onclick="mcmcSimFeedback()" style="margin-top:8px;width:100%">SIMULAR FEEDBACK</button>
+            </div>
+          </div>
+          <div class="pnl">
+            <div class="pnl-hd">CONSOLA CULTURAL</div>
+            <div class="pnl-body" style="padding:8px">
+              <div class="mcmc-console" id="mcmc-console"></div>
+              <div style="margin-top:6px"><span class="cell-lbl">Último reward</span><span id="mcmc-last-rwd" style="font-family:var(--mono);font-size:13px;color:var(--oro);margin-left:8px">—</span></div>
+              <div style="margin-top:4px"><span class="cell-lbl">ICC evolución</span><span id="mcmc-icc-evo" style="font-family:var(--mono);font-size:10px;color:var(--t1);margin-left:8px">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pnl">
+          <div class="pnl-hd">ACCIONES</div>
+          <div class="pnl-body">
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn" id="btn-gen-base" onclick="mcmcGenerateBase()">GENERAR BASE</button>
+              <button class="btn btn-g" id="btn-coevolve" onclick="mcmcCoevolve()" disabled>COEVOLUCIONAR</button>
+              <button class="btn" id="btn-freeze" onclick="mcmcFreezeMotif()" disabled>CONGELAR MOTIVO</button>
+              <button class="btn btn-g" id="btn-export-midi" onclick="mcmcExportMIDI()" disabled>EXPORTAR MIDI</button>
+              <button class="btn" onclick="mcmcReset()">REINICIAR</button>
+            </div>
+            <div id="mcmc-status" style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:8px">Sistema listo · Presiona GENERAR BASE para inicializar</div>
           </div>
         </div>
       </div>
     </div>
- 
+
     <!-- TAB III: ANÁLISIS (simplificado) -->
     <div id="tab-analytics" class="tab-panel">
       <div class="sec">
@@ -1280,90 +1368,383 @@ async function electScenarioAPI(key, btn) {
   }
 }
 
-// ========== MIDI (simplificado) ==========
-const SCALES = { Locrian: [0, 1, 3, 5, 6, 8, 10], Phrygian: [0, 1, 3, 5, 7, 8, 10], Dorian: [0, 2, 3, 5, 7, 9, 10], Ionian: [0, 2, 4, 5, 7, 9, 11] };
-const ROOTS_N = ['Do', 'Re♭', 'Re', 'Mi♭', 'Mi', 'Fa', 'Sol♭', 'Sol', 'La♭', 'La', 'Si♭', 'Si'];
-const ROOTS_M = [60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71];
+// ========== MCM-C STUDIO · Sistema Coevolutivo Cultural ==========
+const SCALES = { Locrian:[0,1,3,5,6,8,10], Phrygian:[0,1,3,5,7,8,10], Dorian:[0,2,3,5,7,9,10], Ionian:[0,2,4,5,7,9,11] };
+const ROOTS_N = ['Do','Re♭','Re','Mi♭','Mi','Fa','Sol♭','Sol','La♭','La','Si♭','Si'];
+const ROOTS_M = [60,61,62,63,64,65,66,67,68,69,70,71];
+const SECTIONS = ['intro','verso','estribillo','outro'];
 
+const MCMC = {
+  init:false, ihg:null, ifv:null, icc:null, irc:null,
+  z:null, section:'intro', frozenMotif:null, frozenIdx:null,
+  memory:[], c:0, rField:0, kappa:0.22, lambdaC:0.9,
+  ifTarget:0.75, iccTarget:0.68, maxMotifs:3,
+  tl:{ ihg:[], ifv:[], icc:[], irc:[], sec:[] },
+  step:0, genre:'synthwave', mode:'Dorian', ridx:0,
+  vel:80, notes:8, ndur:'negra', baseOk:false, running:false, _timer:null, _pIhg:null
+};
+
+function mcmcSyncSlider(el, valId) {
+  const v = parseFloat(el.value);
+  const d = v < 10 ? 2 : 0;
+  safeText(valId, v.toFixed(d));
+  const id = el.id;
+  if      (id==='mcmc-kappa')      MCMC.kappa    = v;
+  else if (id==='mcmc-lambda')     MCMC.lambdaC  = v;
+  else if (id==='mcmc-if-target')  MCMC.ifTarget = v;
+  else if (id==='mcmc-icc-target') MCMC.iccTarget= v;
+  else if (id==='mcmc-motifs')     MCMC.maxMotifs= Math.round(v);
+}
+
+function mcmcLog(msg) {
+  const c = safeEl('mcmc-console'); if (!c) return;
+  const t = new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  c.innerHTML = '<span style="color:var(--t4)">['+t+']</span> '+msg+'\n' + c.innerHTML;
+}
+
+function mcmcModeFrom(ihg) {
+  if (ihg < -1.2) return 'Locrian';
+  if (ihg <  -0.8) return 'Phrygian';
+  if (ihg <  -0.4) return 'Dorian';
+  return 'Ionian';
+}
+
+function mcmcSetSection(sec, btn) {
+  MCMC.section = sec;
+  document.querySelectorAll('.mcmc-section-btn').forEach((b,i)=>b.classList.toggle('active', SECTIONS[i]===sec));
+  safeText('mcmc-sec-lbl', sec.toUpperCase());
+  if (MCMC.baseOk) { mcmcDrawRoll(); }
+}
+
+function mcmcInitState() {
+  const ihgBase = SF.ihg !== null ? SF.ihg : -(0.3+Math.random()*0.3);
+  MCMC.z       = Array.from({length:8},()=>ihgBase*0.5+(Math.random()-0.5)*0.4);
+  MCMC.ihg     = ihgBase;
+  MCMC.ifv     = 0.52 + Math.random()*0.2;
+  MCMC.icc     = 0.35 + Math.random()*0.12;
+  MCMC.irc     = 0.28 + Math.random()*0.1;
+  MCMC.c       = 0.3;
+  MCMC.rField  = 0.2;
+  MCMC.step    = 0;
+  MCMC.memory  = [];
+  MCMC.frozenMotif = null;
+  MCMC.frozenIdx   = null;
+  MCMC._pIhg   = ihgBase;
+  MCMC.tl      = { ihg:[], ifv:[], icc:[], irc:[], sec:[] };
+  MCMC.genre   = (safeEl('mcmc-genre')||{value:'synthwave'}).value;
+  MCMC.ridx    = SF.nti !== null ? Math.abs(Math.round(SF.nti*11))%12 : Math.floor(Math.random()*12);
+  MCMC.mode    = mcmcModeFrom(MCMC.ihg);
+  MCMC.vel     = Math.round(40+((MCMC.ihg+2)/3)*55);
+  MCMC.notes   = Math.round(6+MCMC.ifv*16);
+  MCMC.ndur    = MCMC.icc>0.5?'negra':'corchea';
+}
+
+function mcmcTick(reward) {
+  const gamma=0.15, eta=0.12, mu=0.15;
+  MCMC.c = Math.max(0,Math.min(1,(1-gamma)*MCMC.c + eta*reward + (Math.random()-0.5)*0.02));
+  const impact = reward*0.8 + Math.random()*0.1;
+  MCMC.rField = Math.max(0,Math.min(1, 0.82*MCMC.rField + 0.18*MCMC.c + 0.05*impact));
+
+  let cult = 0;
+  if (MCMC.memory.length>0) {
+    const cen = MCMC.memory.reduce((a,m)=>a+m.reward,0)/MCMC.memory.length;
+    cult = MCMC.kappa*(cen-MCMC.icc);
+  }
+
+  const err = MCMC.ihg-(-0.4);
+  const u = -(4.2*err + 1.3*(MCMC.ihg-(MCMC._pIhg||MCMC.ihg)));
+  MCMC._pIhg = MCMC.ihg;
+  MCMC.ihg = Math.max(-2.0,Math.min(0.5, MCMC.ihg + 0.04*u + cult*0.01 + (Math.random()-0.5)*0.015));
+
+  MCMC.ifv  = Math.max(0.3,Math.min(0.98, MCMC.ifv  + 0.015*(MCMC.ifTarget-MCMC.ifv)  + 0.008*reward + (Math.random()-0.5)*0.01));
+  MCMC.icc  = Math.max(0.1,Math.min(0.99, MCMC.icc  + 0.012*(MCMC.iccTarget-MCMC.icc) + 0.02*cult + 0.015*(reward-0.5) - MCMC.lambdaC*0.005*(1-MCMC.icc)**2));
+  MCMC.irc  = Math.max(0,  Math.min(1,    0.65*MCMC.irc + 0.35*(reward*MCMC.ifv*impact)));
+
+  MCMC.mode  = mcmcModeFrom(MCMC.ihg);
+  MCMC.vel   = Math.round(40+((MCMC.ihg+2)/3)*55);
+  MCMC.notes = Math.round(6+MCMC.ifv*16);
+  MCMC.ndur  = MCMC.icc>0.5?'negra':'corchea';
+
+  MCMC.tl.ihg.push(MCMC.ihg); MCMC.tl.ifv.push(MCMC.ifv);
+  MCMC.tl.icc.push(MCMC.icc); MCMC.tl.irc.push(MCMC.irc);
+  MCMC.tl.sec.push(MCMC.section);
+
+  if (reward>0.65 && MCMC.memory.length<MCMC.maxMotifs) {
+    const dup = MCMC.memory.some(m=>Math.abs(m.reward-reward)<0.05&&m.section===MCMC.section);
+    if (!dup) {
+      MCMC.memory.push({z:[...MCMC.z],reward,icc:MCMC.icc,section:MCMC.section,step:MCMC.step});
+      mcmcLog('+motivo · '+MCMC.section+' · r='+reward.toFixed(2));
+    }
+  }
+  if (MCMC.memory.length>2) {
+    const avg = MCMC.memory.reduce((a,m)=>a+m.reward,0)/MCMC.memory.length;
+    if (avg<0.5) { MCMC.memory.shift(); mcmcLog('−motivo olvidado'); }
+  }
+  if (MCMC.irc>0.65 && reward>0.75 && MCMC.step%12===0) {
+    mcmcLog('★ MOMENTO MEME · IRC '+MCMC.irc.toFixed(2));
+    if (MCMC.memory.length>0) {
+      const best=MCMC.memory.reduce((a,b)=>a.reward>b.reward?a:b);
+      best.reward=Math.min(1,best.reward*1.2);
+    }
+  }
+  MCMC.step++;
+}
+
+function mcmcSectionReward() {
+  const m={intro:'rwd-intro',verso:'rwd-verso',estribillo:'rwd-estrib',outro:'rwd-outro'};
+  const el=safeEl(m[MCMC.section]||'rwd-estrib');
+  return el?parseFloat(el.value):0.5;
+}
+
+function mcmcRefresh() {
+  if (!MCMC.baseOk) return;
+  const ihgC = MCMC.ihg<-0.8?'var(--rojo)':MCMC.ihg<-0.4?'var(--azul)':'var(--verde)';
+  const ifC  = MCMC.ifv>=MCMC.ifTarget?'var(--verde)':'var(--oro)';
+  const iccC = MCMC.icc>=MCMC.iccTarget?'var(--verde)':'var(--oro)';
+  const ircC = MCMC.irc>0.65?'#d080ff':'#a060d0';
+  const set=(id,v,c)=>{const e=safeEl(id);if(e){e.textContent=v;if(c)e.style.color=c;}};
+  set('mcmc-ihg-v', MCMC.ihg.toFixed(2), ihgC);
+  set('mcmc-if-v2', MCMC.ifv.toFixed(2), ifC);
+  set('mcmc-icc-v2',MCMC.icc.toFixed(2), iccC);
+  set('mcmc-irc-v', MCMC.irc.toFixed(2), ircC);
+  safeText('mcmc-sec-lbl',  MCMC.section.toUpperCase());
+  safeText('mcmc-mode-root',MCMC.mode+' · '+ROOTS_N[MCMC.ridx]+'4');
+  safeText('mcmc-mem-cnt',  MCMC.memory.length+' / '+MCMC.maxMotifs);
+  safeText('mcmc-icc-evo',  MCMC.icc.toFixed(3)+(MCMC.icc>=MCMC.iccTarget?' ✓':' → '+MCMC.iccTarget.toFixed(2)));
+  // heat map
+  const heat=safeEl('mcmc-heat'); if(heat){
+    heat.innerHTML='';
+    for(let i=0;i<MCMC.maxMotifs;i++){
+      const d=document.createElement('div'); d.className='meme-cell';
+      if(i<MCMC.memory.length){
+        const m=MCMC.memory[i]; const fz=(MCMC.frozenIdx===i);
+        d.style.background=fz?'#a060d0':`rgba(200,169,81,${m.reward.toFixed(2)})`;
+        d.style.border=fz?'1px solid #d080ff':'0.5px solid var(--bdr)';
+        d.title='Motivo '+(i+1)+' · '+m.section+' · r='+m.reward.toFixed(2)+(fz?' · CONGELADO':'');
+      } else { d.style.background='var(--bg1)'; d.style.border='0.5px solid var(--bdr)'; }
+      heat.appendChild(d);
+    }
+  }
+}
+
+function mcmcDrawTimeline() {
+  const cv=safeEl('mcmc-timeline'); if(!cv) return;
+  const dpr=window.devicePixelRatio||1; cv.width=cv.offsetWidth*dpr; cv.height=120*dpr;
+  const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  const w=cv.offsetWidth, h=120;
+  ctx.fillStyle='#141410'; ctx.fillRect(0,0,w,h);
+  const tl=MCMC.tl, n=tl.ihg.length; if(n<2) return;
+  // section boundaries
+  let prev=tl.sec[0];
+  for(let i=1;i<n;i++){
+    if(tl.sec[i]!==prev){
+      const x=(i/(n-1))*w;
+      ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=1;
+      ctx.setLineDash([2,4]); ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
+      ctx.setLineDash([]); ctx.fillStyle='rgba(255,255,255,0.18)'; ctx.font='7px Courier New';
+      ctx.fillText(tl.sec[i].slice(0,3).toUpperCase(),x+2,9); ctx.restore();
+      prev=tl.sec[i];
+    }
+  }
+  // meme zones
+  for(let i=0;i<n;i++){ if(tl.irc[i]>0.65){ const x=(i/(n-1))*w; ctx.fillStyle='rgba(160,96,208,0.07)'; ctx.fillRect(x,0,w/n+1,h); } }
+  // target lines
+  const itY=5+(1-(MCMC.ifTarget-0.3)/0.7)*(h-10);
+  ctx.save(); ctx.strokeStyle='rgba(23,122,94,0.35)'; ctx.lineWidth=0.8; ctx.setLineDash([3,5]);
+  ctx.beginPath(); ctx.moveTo(0,itY); ctx.lineTo(w,itY); ctx.stroke();
+  const icY=5+(1-MCMC.iccTarget)*(h-10);
+  ctx.strokeStyle='rgba(200,169,81,0.35)'; ctx.beginPath(); ctx.moveTo(0,icY); ctx.lineTo(w,icY); ctx.stroke();
+  ctx.setLineDash([]); ctx.restore();
+  // curves
+  const curve=(data,col,mn,mx)=>{
+    ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.beginPath();
+    for(let i=0;i<n;i++){
+      const x=(i/(n-1))*w, yn=1-(data[i]-mn)/(mx-mn), y=5+yn*(h-10);
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    } ctx.stroke(); ctx.restore();
+  };
+  curve(tl.ihg,'#2c6e9e',-2.0,0.5);
+  curve(tl.ifv,'#177a5e',0.3,1.0);
+  curve(tl.icc,'#c8a951',0.0,1.0);
+  curve(tl.irc,'#a060d0',0.0,1.0);
+}
+
+function mcmcDrawRoll() {
+  const cv=safeEl('mcmc-roll'); if(!cv||!MCMC.baseOk) return;
+  const dpr=window.devicePixelRatio||1; cv.width=cv.offsetWidth*dpr; cv.height=90*dpr;
+  const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
+  const w=cv.offsetWidth, h=90;
+  ctx.fillStyle='#141410'; ctx.fillRect(0,0,w,h);
+  const scale=SCALES[MCMC.mode]||SCALES.Dorian, root=ROOTS_M[MCMC.ridx], n=MCMC.notes;
+  const pitches=[];
+  for(let i=0;i<n;i++){
+    const s=i%scale.length, oct=Math.floor(i/scale.length);
+    pitches.push(root+scale[s]+oct*12+(oct>Math.floor(MCMC.ifv*2)?12:0));
+  }
+  const minP=Math.min(...pitches), rng=Math.max(Math.max(...pitches)-minP,1), nw=(w-8)/n;
+  for(let i=0;i<n;i++){
+    const x=4+i*nw, yn=1-(pitches[i]-minP)/rng, y=yn*(h-10)+5;
+    ctx.fillStyle=`rgba(200,169,81,${(0.3+MCMC.icc*0.6).toFixed(2)})`;
+    ctx.fillRect(x, y, nw*0.84, 4+MCMC.icc*3);
+  }
+  if(MCMC.frozenMotif){ ctx.fillStyle='rgba(160,96,208,0.12)'; ctx.fillRect(0,0,w,h); }
+  // octave grid
+  [48,60,72].forEach(o=>{
+    if(o>=minP&&o<=minP+rng){ const y=(1-(o-minP)/rng)*(h-10)+5;
+      ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=0.5;
+      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
+  });
+  ctx.fillStyle='rgba(200,169,81,0.55)'; ctx.font='8px Courier New';
+  ctx.fillText(MCMC.mode+' · '+ROOTS_N[MCMC.ridx]+'4 · '+n+' notas · vel '+MCMC.vel+' · '+MCMC.section,6,h-5);
+  safeText('mcmc-roll-info','IHG '+MCMC.ihg.toFixed(2)+' · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2)+' · IRC '+MCMC.irc.toFixed(2)+' · paso '+MCMC.step);
+}
+
+function mcmcGenerateBase() {
+  mcmcInitState();
+  MCMC.baseOk=true;
+  MCMC.tl.ihg.push(MCMC.ihg); MCMC.tl.ifv.push(MCMC.ifv);
+  MCMC.tl.icc.push(MCMC.icc); MCMC.tl.irc.push(MCMC.irc); MCMC.tl.sec.push(MCMC.section);
+  safeText('mcmc-phase-lbl','BASE GENERADA · listo para feedback');
+  safeText('mcmc-status','Base generada · '+MCMC.genre+' · '+MCMC.mode+' · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2));
+  ['btn-coevolve','btn-freeze','btn-export-midi'].forEach(id=>{const e=safeEl(id);if(e)e.disabled=false;});
+  mcmcLog('Generación base · '+MCMC.genre+' · IHG '+MCMC.ihg.toFixed(2)+' · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2));
+  mcmcRefresh(); mcmcDrawRoll(); mcmcDrawTimeline();
+}
+
+function mcmcSimFeedback() {
+  if(!MCMC.baseOk){mcmcLog('ERROR: Generar base primero');return;}
+  const r=mcmcSectionReward();
+  safeText('mcmc-last-rwd','+'+r.toFixed(2)+' engagement');
+  for(let i=0;i<5;i++) mcmcTick(Math.max(0,Math.min(1,r+(Math.random()-0.5)*0.05)));
+  mcmcLog('Feedback · '+MCMC.section+' · r='+r.toFixed(2));
+  mcmcRefresh(); mcmcDrawRoll(); mcmcDrawTimeline();
+  safeText('mcmc-status','Feedback simulado · ICC '+MCMC.icc.toFixed(2)+' → objetivo '+MCMC.iccTarget.toFixed(2));
+}
+
+function mcmcCoevolve() {
+  if(!MCMC.baseOk) return;
+  if(MCMC.running){
+    clearInterval(MCMC._timer); MCMC._timer=null; MCMC.running=false;
+    safeText('btn-coevolve','COEVOLUCIONAR');
+    safeText('mcmc-phase-lbl','DETENIDO · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2));
+    safeText('mcmc-status','Coevolución detenida · '+MCMC.step+' pasos');
+    return;
+  }
+  MCMC.running=true;
+  safeText('btn-coevolve','■ DETENER');
+  safeText('mcmc-phase-lbl','COEVOLUCIONANDO…');
+  mcmcLog('Inicio coevolución · κ='+MCMC.kappa.toFixed(2)+' · λ_C='+MCMC.lambdaC.toFixed(2));
+  let s=0, MAX=256;
+  MCMC._timer=setInterval(()=>{
+    const sec=SECTIONS[Math.floor(s/32)%SECTIONS.length];
+    if(sec!==MCMC.section) mcmcSetSection(sec,null);
+    const r=Math.max(0,Math.min(1,mcmcSectionReward()+(Math.random()-0.5)*0.08));
+    mcmcTick(r);
+    if(s%8===0){
+      mcmcRefresh(); mcmcDrawRoll(); mcmcDrawTimeline();
+      safeText('mcmc-last-rwd','+'+r.toFixed(2)+' engagement');
+      safeText('mcmc-status','Paso '+s+'/'+MAX+' · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2)+' · IRC '+MCMC.irc.toFixed(2));
+    }
+    s++;
+    if(s>=MAX){
+      clearInterval(MCMC._timer); MCMC._timer=null; MCMC.running=false;
+      safeText('btn-coevolve','COEVOLUCIONAR');
+      const lbl='COMPLETO · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2)+' · IRC '+MCMC.irc.toFixed(2);
+      safeText('mcmc-phase-lbl',lbl);
+      mcmcLog('Coevolución completa · '+s+' pasos · IRC '+MCMC.irc.toFixed(2));
+      if(MCMC.irc>0.65) mcmcLog('★ IRC > 0.65 · Gramática colectiva transformada');
+      mcmcRefresh(); mcmcDrawRoll(); mcmcDrawTimeline();
+    }
+  },40);
+}
+
+function mcmcFreezeMotif() {
+  if(!MCMC.baseOk) return;
+  if(MCMC.memory.length===0){mcmcLog('Sin motivos en memoria · ejecuta feedback primero');return;}
+  const bi=MCMC.memory.reduce((bi,m,i,a)=>m.reward>a[bi].reward?i:bi,0);
+  MCMC.frozenMotif={...MCMC.memory[bi]}; MCMC.frozenIdx=bi;
+  mcmcLog('Motivo '+(bi+1)+' congelado · '+MCMC.frozenMotif.section+' · r='+MCMC.frozenMotif.reward.toFixed(2));
+  safeText('mcmc-status','Motivo congelado · sección '+MCMC.frozenMotif.section);
+  mcmcRefresh(); mcmcDrawRoll();
+}
+
+function mcmcExportMIDI() {
+  if(!MCMC.baseOk) return;
+  const TPB=480, bpm=Math.round(70+MCMC.icc*60+MCMC.irc*20), tempo=Math.round(60000000/bpm);
+  const sc=SCALES[MCMC.mode]||SCALES.Dorian, root=ROOTS_M[MCMC.ridx];
+  const gm={synthwave:80,pop:0,techno:81,'lo-fi':25,jazz:32};
+  const instr=gm[MCMC.genre]||0, ch=0;
+  // build melody (2 phrases) + bass if ICC > 0.6
+  const evts=[];
+  const vLen=v=>{if(v<128)return[v];const b=[];let x=v;while(x>0){b.unshift(x&0x7F);x>>=7;}for(let i=0;i<b.length-1;i++)b[i]|=0x80;return b;};
+  const push=(dt,b)=>evts.push(...vLen(dt),...b);
+  // tempo
+  push(0,[0xFF,0x51,0x03,(tempo>>16)&0xFF,(tempo>>8)&0xFF,tempo&0xFF]);
+  // program
+  push(0,[0xC0|ch, instr]);
+  const dur=MCMC.icc>0.5?1.0:0.5;
+  const N=MCMC.notes;
+  for(let p=0;p<2;p++){
+    for(let i=0;i<N;i++){
+      const s=i%sc.length, oct=Math.floor(i/sc.length);
+      const pitch=Math.max(0,Math.min(127,root+sc[s]+oct*12));
+      const vel=Math.max(1,Math.min(127,MCMC.vel+Math.round((Math.random()-0.5)*8)));
+      const ticks=Math.round(dur*TPB);
+      push(0,[0x90|ch,pitch,vel]);
+      push(ticks,[0x80|ch,pitch,0x40]);
+    }
+  }
+  // chord hits if ICC high
+  if(MCMC.icc>0.6){
+    const chords=[root,root+sc[2],root+sc[4]];
+    for(const cr of chords){
+      const pitch=Math.max(0,Math.min(127,cr-12));
+      const vel=Math.max(1,Math.min(127,Math.round(MCMC.vel*0.7)));
+      push(0,[0x90|ch,pitch,vel]);
+      push(Math.round(2*TPB),[0x80|ch,pitch,0x40]);
+    }
+  }
+  push(0,[0xFF,0x2F,0x00]);
+  const tLen=evts.length;
+  const bytes=new Uint8Array([
+    0x4D,0x54,0x68,0x64,0,0,0,6,0,0,0,1,(TPB>>8)&0xFF,TPB&0xFF,
+    0x4D,0x54,0x72,0x6B,(tLen>>24)&0xFF,(tLen>>16)&0xFF,(tLen>>8)&0xFF,tLen&0xFF,
+    ...evts
+  ]);
+  const blob=new Blob([bytes],{type:'audio/midi'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url;
+  a.download='scorefriction_'+MCMC.genre+'_'+MCMC.mode+'_'+ROOTS_N[MCMC.ridx]+'4_IF'+MCMC.ifv.toFixed(2)+'_ICC'+MCMC.icc.toFixed(2)+'.mid';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+  mcmcLog('MIDI exportado · '+bpm+' BPM · '+MCMC.mode+' · '+ROOTS_N[MCMC.ridx]+'4');
+  safeText('mcmc-status','MIDI exportado · '+bpm+' BPM · '+MCMC.mode);
+}
+
+function mcmcReset() {
+  if(MCMC._timer){clearInterval(MCMC._timer);MCMC._timer=null;}
+  MCMC.baseOk=false; MCMC.running=false; MCMC.step=0;
+  MCMC.ihg=null; MCMC.ifv=null; MCMC.icc=null; MCMC.irc=null;
+  MCMC.memory=[]; MCMC.frozenMotif=null; MCMC.frozenIdx=null;
+  MCMC.tl={ihg:[],ifv:[],icc:[],irc:[],sec:[]};
+  ['mcmc-ihg-v','mcmc-if-v2','mcmc-icc-v2','mcmc-irc-v','mcmc-sec-lbl','mcmc-mode-root','mcmc-last-rwd','mcmc-icc-evo','mcmc-roll-info'].forEach(id=>safeText(id,'—'));
+  safeText('mcmc-mem-cnt','0'); safeText('mcmc-phase-lbl','NO INICIALIZADO'); safeText('btn-coevolve','COEVOLUCIONAR');
+  ['btn-coevolve','btn-freeze','btn-export-midi'].forEach(id=>{const e=safeEl(id);if(e)e.disabled=true;});
+  const heat=safeEl('mcmc-heat');if(heat)heat.innerHTML='';
+  const con=safeEl('mcmc-console');if(con)con.innerHTML='';
+  ['mcmc-roll','mcmc-timeline'].forEach(id=>{const cv=safeEl(id);if(cv){const ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);}});
+  safeText('mcmc-status','Sistema reiniciado · Presiona GENERAR BASE para inicializar');
+  mcmcLog('Sistema reiniciado');
+}
+
+// Called by main update loop — sync SF state to MCM-C display
 function getMIDIParamsFromState() {
-  if (SF.ihg === null) return null;
-  const { ihg, nti, r } = SF;
-  let mode, dir;
-  if (ihg < -1.2) { mode = 'Locrian'; dir = 'reducir densidad + calderón'; }
-  else if (ihg < -0.8) { mode = 'Phrygian'; dir = 'reforzar leitmotiv + puente narrativo'; }
-  else if (ihg < -0.4) { mode = 'Dorian'; dir = 'mantener flujo, variación sutil'; }
-  else { mode = 'Ionian'; dir = 'expansión armónica'; }
-  const ridx = Math.abs(Math.round(nti * 11)) % 12;
-  const notes = Math.round(4 + r * 20);
-  const ndur = nti > 0.5 ? 'negra (1 beat)' : 'corchea (0.5 beat)';
-  const vel = Math.round(35 + ((ihg + 2) / 3) * 65);
-  const err = ihg - (-0.4);
-  const ut = -(4.2 * err + 0.35 * err + 1.3 * (ihg - (SF._prev || ihg)));
-  SF._prev = ihg;
-  return { mode, dir, ridx, rootName: ROOTS_N[ridx], midiRoot: ROOTS_M[ridx], notes, ndur, vel, ut };
+  if(!MCMC.baseOk||SF.ihg===null) return null;
+  return {mode:MCMC.mode,ridx:MCMC.ridx,rootName:ROOTS_N[MCMC.ridx],midiRoot:ROOTS_M[MCMC.ridx],notes:MCMC.notes,ndur:MCMC.ndur,vel:MCMC.vel,ut:0,dir:''};
 }
-
 function updateMIDIParamsFromState() {
-  const p = getMIDIParamsFromState();
-  if (!p) return;
-  safeText('mp-mode', p.mode);
-  safeText('mp-root', p.rootName + '4');
-  safeText('mp-density', p.notes + ' notas');
-  safeText('mp-dur', p.ndur);
-  safeText('mp-vel', p.vel + '/127');
-  safeText('mp-ut', p.ut.toFixed(4));
-  safeText('mp-dir', p.dir);
-  safeText('midi-st', 'LISTO · ' + p.mode);
-  safeText('midi-fn', `${p.mode} · ${p.rootName}4 · ${p.notes}n`);
-  const melBtn = safeEl('btn-mel');
-  const chdBtn = safeEl('btn-chd');
-  const bothBtn = safeEl('btn-both');
-  if (melBtn) melBtn.disabled = false;
-  if (chdBtn) chdBtn.disabled = false;
-  if (bothBtn) bothBtn.disabled = false;
-  drawRollPreviewFromParams(p);
+  if(MCMC.baseOk){ mcmcRefresh(); mcmcDrawTimeline(); mcmcDrawRoll(); }
 }
 
-function drawRollPreviewFromParams(p) {
-  const cv = safeEl('roll-c');
-  if (!cv) return;
-  const ctx = cv.getContext('2d');
-  const dpr = window.devicePixelRatio || 1;
-  cv.width = cv.offsetWidth * dpr;
-  cv.height = 110 * dpr;
-  ctx.scale(dpr, dpr);
-  const w = cv.offsetWidth, h = 110;
-  ctx.fillStyle = '#1b1b1b';
-  ctx.fillRect(0, 0, w, h);
-  const scale = SCALES[p.mode];
-  const root = p.midiRoot;
-  const nw = (w - 8) / p.notes;
-  const pitches = [];
-  for (let i = 0; i < p.notes; i++) {
-    const s = i % scale.length, oct = Math.floor(i / scale.length);
-    pitches.push(root + scale[s] + (oct > 0 ? 12 : 0));
-  }
-  const minP = Math.min(...pitches), maxP = Math.max(...pitches), rng = Math.max(maxP - minP, 1);
-  for (let i = 0; i < p.notes; i++) {
-    const x = 4 + i * nw;
-    const yn = 1 - (pitches[i] - minP) / rng;
-    const y = yn * (h - 10) + 5;
-    ctx.fillStyle = `rgba(200,169,81,${0.3 + (p.vel / 127) * 0.7})`;
-    ctx.fillRect(x, y, nw * 0.88, 4);
-  }
-  ctx.fillStyle = 'rgba(42,40,37,.8)';
-  ctx.font = '8px Courier New';
-  ctx.fillText(`${p.mode} · raíz ${p.rootName}4`, 6, h - 5);
-  const rollNote = safeEl('roll-note');
-  if (rollNote) rollNote.textContent = `${p.mode} · ${p.notes} notas · vel ${p.vel}`;
-}
-
-function genMIDI(chords) { 
-  sysLog('MIDI generado (simulación)');
-  const status = safeEl('midi-status');
-  if (status) status.textContent = 'Archivo MIDI generado (simulación)';
-}
-function genBoth() { genMIDI(false); setTimeout(() => genMIDI(true), 400); }
 
 // ========== ECG ==========
 function resizeECG() {
