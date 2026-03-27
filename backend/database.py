@@ -1,10 +1,10 @@
 import sqlite3
-from datetime import datetime
-import json
+import os
 
 class Database:
-    def __init__(self, db_path):
+    def __init__(self, db_path='instance/friction.db'):
         self.db_path = db_path
+        os.makedirs(os.path.dirname(db_path), exist_ok=True)
         self.init_db()
 
     def get_connection(self):
@@ -15,68 +15,58 @@ class Database:
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS predictions (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    prediction_id TEXT UNIQUE,
-                    timestamp TEXT,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
                     user TEXT,
                     text TEXT,
                     ihg REAL,
                     nti REAL,
                     r REAL,
                     error REAL,
-                    error_smoothed REAL,
-                    params_kp REAL,
-                    params_ki REAL,
-                    params_kd REAL
+                    prediction_id TEXT UNIQUE
                 )
             ''')
             conn.execute('''
-                CREATE TABLE IF NOT EXISTS parameters (
-                    key TEXT PRIMARY KEY,
-                    value TEXT
-                )
-            ''')
-            conn.execute('''
-                CREATE TABLE IF NOT EXISTS scenarios (
+                CREATE TABLE IF NOT EXISTS learning (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    timestamp TEXT,
-                    scenario TEXT
+                    prediction_id TEXT,
+                    outcome REAL,
+                    error REAL,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+                )
+            ''')
+            conn.execute('''
+                CREATE TABLE IF NOT EXISTS params (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    kp REAL,
+                    ki REAL,
+                    kd REAL,
+                    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
             ''')
 
-    def save_prediction(self, pred_id, user, text, state, error=None, error_smoothed=None, params=None):
+    def save_prediction(self, user, text, ihg, nti, r, prediction_id):
         with self.get_connection() as conn:
-            conn.execute('''
-                INSERT INTO predictions (prediction_id, timestamp, user, text, ihg, nti, r, error, error_smoothed, params_kp, params_ki, params_kd)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (pred_id, datetime.utcnow().isoformat(), user, text,
-                  state.get('ihg'), state.get('nti'), state.get('r'),
-                  error, error_smoothed,
-                  params.get('kp') if params else None,
-                  params.get('ki') if params else None,
-                  params.get('kd') if params else None))
+            conn.execute(
+                'INSERT INTO predictions (user, text, ihg, nti, r, prediction_id) VALUES (?,?,?,?,?,?)',
+                (user, text, ihg, nti, r, prediction_id)
+            )
+
+    def save_learning(self, prediction_id, outcome, error):
+        with self.get_connection() as conn:
+            conn.execute(
+                'INSERT INTO learning (prediction_id, outcome, error) VALUES (?,?,?)',
+                (prediction_id, outcome, error)
+            )
 
     def get_history(self, limit=100):
         with self.get_connection() as conn:
             cur = conn.execute('''
-                SELECT timestamp, error, error_smoothed FROM predictions
+                SELECT timestamp, error FROM predictions
                 WHERE error IS NOT NULL
                 ORDER BY timestamp DESC LIMIT ?
             ''', (limit,))
-            rows = cur.fetchall()
-            return [{'timestamp': r[0], 'error': r[1], 'error_smoothed': r[2]} for r in rows]
+            return [{'timestamp': row[0], 'error': row[1]} for row in cur.fetchall()]
 
-    def save_parameters(self, key, value):
+    def save_params(self, kp, ki, kd):
         with self.get_connection() as conn:
-            conn.execute('REPLACE INTO parameters (key, value) VALUES (?, ?)', (key, json.dumps(value)))
-
-    def get_parameters(self, key):
-        with self.get_connection() as conn:
-            cur = conn.execute('SELECT value FROM parameters WHERE key = ?', (key,))
-            row = cur.fetchone()
-            if row:
-                return json.loads(row[0])
-            return None
-
-    def save_scenario(self, scenario):
-        with self.get_connection() as conn:
-            conn.execute('INSERT INTO scenarios (timestamp, scenario) VALUES (?, ?)', (datetime.utcnow().isoformat(), scenario))
+            conn.execute('INSERT INTO params (kp, ki, kd) VALUES (?,?,?)', (kp, ki, kd))

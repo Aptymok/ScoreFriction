@@ -3,404 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>S[SYSTEM](SCORE).FRICTION · MUSICSCORE v2.1</title>
+<title>S[SYSTEM](SCORE).FRICTION · MUSICSCORE v3.0</title>
 <style>
-/* ========== CSS COMPLETO (igual al entregado anteriormente) ========== */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-:root {
-  --bg: #0f0e0c;
-  --bg1: #1b1a17;
-  --bg2: #242320;
-  --t1: #e6e2d3;
-  --t2: #b6b2a3;
-  --t3: #8a887e;
-  --t4: #5c5a52;
-  --bdr: #2f2d28;
-  --oro: #c8a951;
-  --verde: #177a5e;
-  --rojo: #be3a3a;
-  --azul: #2c6e9e;
-  --mono: 'Courier New', monospace;
-}
-body {
-  background: var(--bg);
-  color: var(--t1);
-  font-family: 'Inter', system-ui, -apple-system, 'Helvetica Neue', sans-serif;
-  font-size: 13px;
-  line-height: 1.45;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg: #0f0e0c; --bg1: #1b1a17; --bg2: #242320; --t1: #e6e2d3; --t2: #b6b2a3; --t3: #8a887e; --t4: #5c5a52; --bdr: #2f2d28; --oro: #c8a951; --verde: #177a5e; --rojo: #be3a3a; --azul: #2c6e9e; --mono: 'Courier New', monospace; }
+body { background: var(--bg); color: var(--t1); font-family: 'Inter', system-ui, -apple-system, 'Helvetica Neue', sans-serif; font-size: 13px; line-height: 1.45; font-weight: 400; letter-spacing: 0.01em; }
 .phase { display: none; }
 .phase.active { display: block; }
-
-/* ========== KICKOFF ========== */
-#ph-kickoff {
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at 30% 40%, #161513, #030302);
-}
-.kf-inner {
-  max-width: 620px;
-  text-align: center;
-  padding: 2rem;
-}
-.kf-eyebrow {
-  font-size: 9px;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-  color: var(--t3);
-  margin-bottom: 1.5rem;
-}
-.kf-name {
-  font-size: 10px;
-  letter-spacing: 0.22em;
-  color: var(--t4);
-  margin-bottom: 1rem;
-}
-.kf-ttl {
-  font-size: 52px;
-  font-weight: 500;
-  line-height: 1.1;
-  margin-bottom: 1rem;
-}
+#ph-kickoff { height: 100vh; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at 30% 40%, #161513, #030302); }
+.kf-inner { max-width: 620px; text-align: center; padding: 2rem; }
+.kf-eyebrow { font-size: 9px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--t3); margin-bottom: 1.5rem; }
+.kf-name { font-size: 10px; letter-spacing: 0.22em; color: var(--t4); margin-bottom: 1rem; }
+.kf-ttl { font-size: 52px; font-weight: 500; line-height: 1.1; margin-bottom: 1rem; }
 .kf-ttl span { color: var(--oro); }
-.kf-sub {
-  font-size: 13px;
-  color: var(--t2);
-  max-width: 480px;
-  margin: 1rem auto;
-}
-.kf-btn {
-  background: transparent;
-  border: 1px solid var(--oro);
-  color: var(--oro);
-  padding: 12px 28px;
-  font-size: 12px;
-  letter-spacing: 0.2em;
-  cursor: pointer;
-  transition: 0.2s;
-  margin: 1.5rem 0 1rem;
-}
+.kf-sub { font-size: 13px; color: var(--t2); max-width: 480px; margin: 1rem auto; }
+.kf-btn { background: transparent; border: 1px solid var(--oro); color: var(--oro); padding: 12px 28px; font-size: 12px; letter-spacing: 0.2em; cursor: pointer; transition: 0.2s; margin: 1.5rem 0 1rem; }
 .kf-btn:hover { background: rgba(200,169,81,0.08); }
-.kf-version {
-  font-size: 8px;
-  font-family: var(--mono);
-  color: var(--t4);
-}
-
-/* ========== HEADER ========== */
-.hdr {
-  background: var(--bg1);
-  border-bottom: 0.5px solid var(--bdr);
-  padding: 10px 24px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-.hdr-brand {
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  color: var(--t1);
-}
-.hdr-div {
-  width: 1px;
-  height: 18px;
-  background: var(--bdr);
-  margin: 0 4px;
-}
-.hdr-mod {
-  font-size: 9px;
-  font-family: var(--mono);
-  color: var(--t3);
-  text-transform: uppercase;
-}
-.hdr-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-}
-.hdr-kpi {
-  display: flex;
-  gap: 12px;
-  background: var(--bg2);
-  padding: 4px 12px;
-  border-radius: 24px;
-}
-.hdr-kv {
-  display: flex;
-  gap: 6px;
-  font-size: 10px;
-}
-.hdr-kl {
-  color: var(--t3);
-}
-.hdr-kn {
-  font-family: var(--mono);
-  font-weight: 500;
-}
+.kf-version { font-size: 8px; font-family: var(--mono); color: var(--t4); }
+.hdr { background: var(--bg1); border-bottom: 0.5px solid var(--bdr); padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+.hdr-brand { font-size: 13px; font-weight: 500; letter-spacing: 0.1em; color: var(--t1); }
+.hdr-div { width: 1px; height: 18px; background: var(--bdr); margin: 0 4px; }
+.hdr-mod { font-size: 9px; font-family: var(--mono); color: var(--t3); text-transform: uppercase; }
+.hdr-right { display: flex; align-items: center; gap: 20px; }
+.hdr-kpi { display: flex; gap: 12px; background: var(--bg2); padding: 4px 12px; border-radius: 24px; }
+.hdr-kv { display: flex; gap: 6px; font-size: 10px; }
+.hdr-kl { color: var(--t3); }
+.hdr-kn { font-family: var(--mono); font-weight: 500; }
 .hdr-kn.ok { color: var(--verde); }
 .hdr-kn.wa { color: var(--oro); }
 .hdr-kn.al { color: var(--rojo); }
-.hdr-live {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.hdr-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: var(--t4);
-}
+.hdr-live { display: flex; align-items: center; gap: 6px; }
+.hdr-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--t4); }
 .hdr-dot.warn { background: var(--oro); animation: pulse 1.2s infinite; }
 @keyframes pulse { 0% { opacity: 0.4; } 100% { opacity: 1; } }
-.hdr-live-txt {
-  font-size: 8px;
-  font-family: var(--mono);
-  color: var(--t3);
-}
-
-/* ========== TABS ========== */
-.tabs-bar {
-  display: flex;
-  border-bottom: 0.5px solid var(--bdr);
-  padding: 0 24px;
-  gap: 2px;
-  background: var(--bg);
-}
-.tab-btn {
-  background: transparent;
-  border: none;
-  padding: 10px 18px;
-  font-size: 11px;
-  font-family: var(--mono);
-  color: var(--t3);
-  cursor: pointer;
-  transition: 0.1s;
-  border-bottom: 1.5px solid transparent;
-  margin-bottom: -0.5px;
-}
-.tab-btn.active {
-  color: var(--oro);
-  border-bottom-color: var(--oro);
-}
-.tab-badge {
-  background: var(--rojo);
-  font-size: 8px;
-  padding: 1px 5px;
-  border-radius: 20px;
-  margin-left: 6px;
-}
-.wrap {
-  padding: 20px 24px;
-  max-width: 1400px;
-  margin: 0 auto;
-}
+.hdr-live-txt { font-size: 8px; font-family: var(--mono); color: var(--t3); }
+.tabs-bar { display: flex; border-bottom: 0.5px solid var(--bdr); padding: 0 24px; gap: 2px; background: var(--bg); }
+.tab-btn { background: transparent; border: none; padding: 10px 18px; font-size: 11px; font-family: var(--mono); color: var(--t3); cursor: pointer; transition: 0.1s; border-bottom: 1.5px solid transparent; margin-bottom: -0.5px; }
+.tab-btn.active { color: var(--oro); border-bottom-color: var(--oro); }
+.tab-badge { background: var(--rojo); font-size: 8px; padding: 1px 5px; border-radius: 20px; margin-left: 6px; }
+.wrap { padding: 20px 24px; max-width: 1400px; margin: 0 auto; }
 .tab-panel { display: none; }
 .tab-panel.active { display: block; }
-
-/* ========== SECCIONES GENERALES ========== */
-.sec {
-  margin-bottom: 2rem;
-}
-.sec-hd {
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-  margin-bottom: 1rem;
-  border-left: 2px solid var(--oro);
-  padding-left: 10px;
-}
-.sec-n {
-  font-size: 18px;
-  color: var(--t3);
-  font-weight: 400;
-}
-.sec-t {
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--t2);
-}
-.row3 {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 0.5px;
-  background: var(--bdr);
-  border: 0.5px solid var(--bdr);
-}
-.cell {
-  background: var(--bg2);
-  padding: 18px 12px;
-  text-align: center;
-}
-.cell-lbl {
-  font-size: 8px;
-  text-transform: uppercase;
-  letter-spacing: 0.14em;
-  color: var(--t3);
-  margin-bottom: 8px;
-}
-.cell-v {
-  font-size: 28px;
-  font-family: var(--mono);
-  font-weight: 500;
-  line-height: 1;
-  margin-bottom: 6px;
-}
-.cell-sub {
-  font-size: 8px;
-  color: var(--t4);
-}
-.tag {
-  display: inline-block;
-  font-size: 8px;
-  padding: 2px 8px;
-  border-radius: 12px;
-  margin-top: 6px;
-}
+.sec { margin-bottom: 2rem; }
+.sec-hd { display: flex; align-items: baseline; gap: 6px; margin-bottom: 1rem; border-left: 2px solid var(--oro); padding-left: 10px; }
+.sec-n { font-size: 18px; color: var(--t3); font-weight: 400; }
+.sec-t { font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--t2); }
+.row3 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5px; background: var(--bdr); border: 0.5px solid var(--bdr); }
+.cell { background: var(--bg2); padding: 18px 12px; text-align: center; }
+.cell-lbl { font-size: 8px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--t3); margin-bottom: 8px; }
+.cell-v { font-size: 28px; font-family: var(--mono); font-weight: 500; line-height: 1; margin-bottom: 6px; }
+.cell-sub { font-size: 8px; color: var(--t4); }
+.tag { display: inline-block; font-size: 8px; padding: 2px 8px; border-radius: 12px; margin-top: 6px; }
 .tag.al { background: rgba(190,58,58,0.15); color: var(--rojo); }
 .tag.wa { background: rgba(200,169,81,0.12); color: var(--oro); }
 .tag.ok { background: rgba(23,122,94,0.12); color: var(--verde); }
 .tag.na { background: var(--bg1); color: var(--t4); }
-
-/* ECG */
-.ecg-box {
-  background: var(--bg2);
-  border: 0.5px solid var(--bdr);
-  padding: 12px;
-  margin-top: 0.5rem;
-}
-.ecg-meta {
-  display: flex;
-  justify-content: space-between;
-  font-size: 8px;
-  font-family: var(--mono);
-  margin-bottom: 8px;
-}
-.ecg-cur {
-  font-family: var(--mono);
-  color: var(--oro);
-}
+.ecg-box { background: var(--bg2); border: 0.5px solid var(--bdr); padding: 12px; margin-top: 0.5rem; }
+.ecg-meta { display: flex; justify-content: space-between; font-size: 8px; font-family: var(--mono); margin-bottom: 8px; }
+.ecg-cur { font-family: var(--mono); color: var(--oro); }
 canvas#ecg-c { width: 100%; height: 80px; display: block; }
-
-/* Armadura */
-.arm-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.5px;
-  background: var(--bdr);
-}
-.arm-col {
-  background: var(--bg2);
-  padding: 14px;
-}
-.arm-col-lbl {
-  font-size: 9px;
-  letter-spacing: 0.12em;
-  margin-bottom: 12px;
-}
+.arm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5px; background: var(--bdr); }
+.arm-col { background: var(--bg2); padding: 14px; }
+.arm-col-lbl { font-size: 9px; letter-spacing: 0.12em; margin-bottom: 12px; }
 .arm-col-lbl.fl { color: var(--oro); }
 .arm-col-lbl.sh { color: var(--t1); }
-.arm-item {
-  display: flex;
-  gap: 8px;
-  align-items: baseline;
-  margin-bottom: 12px;
-  font-size: 11px;
-}
-.arm-s {
-  font-size: 20px;
-  line-height: 1;
-}
+.arm-item { display: flex; gap: 8px; align-items: baseline; margin-bottom: 12px; font-size: 11px; }
+.arm-s { font-size: 20px; line-height: 1; }
 .arm-ttl { font-size: 10px; }
-
-/* Partitura viva */
-.part-hdr-row {
-  display: grid;
-  grid-template-columns: 3fr 0.7fr 0.7fr 0.5fr;
-  background: var(--bg1);
-  padding: 8px 12px;
-  font-size: 8px;
-  font-family: var(--mono);
-  color: var(--t4);
-  border-bottom: 0.5px solid var(--bdr);
-}
-.part-body {
-  background: var(--bg2);
-  border: 0.5px solid var(--bdr);
-}
-.part-row {
-  display: grid;
-  grid-template-columns: 3fr 0.7fr 0.7fr 0.5fr;
-  padding: 12px;
-  border-bottom: 0.5px solid var(--bdr);
-  align-items: center;
-}
+.part-hdr-row { display: grid; grid-template-columns: 3fr 0.7fr 0.7fr 0.5fr; background: var(--bg1); padding: 8px 12px; font-size: 8px; font-family: var(--mono); color: var(--t4); border-bottom: 0.5px solid var(--bdr); }
+.part-body { background: var(--bg2); border: 0.5px solid var(--bdr); }
+.part-row { display: grid; grid-template-columns: 3fr 0.7fr 0.7fr 0.5fr; padding: 12px; border-bottom: 0.5px solid var(--bdr); align-items: center; }
 .pr-n { font-size: 12px; font-weight: 500; }
 .pr-s { font-size: 8px; color: var(--t3); margin-top: 3px; }
 .fig-d { font-size: 28px; line-height: 1; }
 .fig-dn { font-size: 7px; color: var(--t4); }
 .vtag { background: var(--bg1); padding: 2px 6px; font-size: 8px; border-radius: 12px; }
-
-/* Tabla glosario */
 .glos-tbl { width: 100%; font-size: 9px; border-collapse: collapse; }
 .glos-tbl td, .glos-tbl th { padding: 6px 4px; border-bottom: 0.5px solid var(--bdr); text-align: left; vertical-align: top; }
 .gs { font-size: 16px; font-family: serif; color: var(--oro); width: 32px; }
 .gm { font-family: var(--mono); color: var(--t2); }
 .gsf { color: var(--t1); }
 .gpr { color: var(--t3); }
-
-/* Notificaciones / tareas */
 .notif-list { background: var(--bg2); border: 0.5px solid var(--bdr); }
-.notif-row {
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  border-bottom: 0.5px solid var(--bdr);
-}
+.notif-row { display: flex; gap: 12px; padding: 12px; border-bottom: 0.5px solid var(--bdr); }
 .notif-sym { font-size: 18px; color: var(--t4); }
 .notif-ttl { font-size: 11px; font-weight: 500; }
 .notif-dsc { font-size: 9px; color: var(--t3); margin-top: 4px; }
-.notif-done {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 8px;
-  cursor: pointer;
-  width: fit-content;
-}
-.notif-cb {
-  width: 12px;
-  height: 12px;
-  border: 1px solid var(--t3);
-  background: transparent;
-}
+.notif-done { display: flex; align-items: center; gap: 6px; margin-top: 8px; cursor: pointer; width: fit-content; }
+.notif-cb { width: 12px; height: 12px; border: 1px solid var(--t3); background: transparent; }
 .notif-cb.checked { background: var(--verde); border-color: var(--verde); }
 .notif-cb-lbl { font-size: 8px; color: var(--t3); text-transform: uppercase; }
-
-/* Escenarios */
-.sc-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 12px;
-  margin-top: 12px;
-}
-.sc-card {
-  background: var(--bg2);
-  border: 0.5px solid var(--bdr);
-  padding: 16px;
-}
+.sc-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 12px; }
+.sc-card { background: var(--bg2); border: 0.5px solid var(--bdr); padding: 16px; }
 .sc-id { font-size: 8px; letter-spacing: 0.1em; margin-bottom: 8px; }
 .sc-id.a { color: var(--verde); }
 .sc-id.b { color: var(--oro); }
@@ -413,59 +107,20 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
 .sc-desc { font-size: 10px; color: var(--t3); margin-bottom: 12px; }
 .sc-actions { margin: 8px 0; }
 .sc-action { font-size: 9px; padding: 2px 0; }
-.sc-elect-btn {
-  background: transparent;
-  border: 0.5px solid var(--oro);
-  color: var(--oro);
-  padding: 6px 0;
-  width: 100%;
-  font-size: 9px;
-  cursor: pointer;
-  transition: 0.1s;
-}
+.sc-elect-btn { background: transparent; border: 0.5px solid var(--oro); color: var(--oro); padding: 6px 0; width: 100%; font-size: 9px; cursor: pointer; transition: 0.1s; }
 .sc-elect-btn.elected { background: var(--oro); color: var(--bg); border-color: var(--oro); }
-
-/* Tension bars */
-.bar-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  font-size: 9px;
-}
+.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 9px; }
 .bar-lbl { width: 100px; }
-.bar-track {
-  flex: 1;
-  height: 4px;
-  background: var(--bg1);
-}
+.bar-track { flex: 1; height: 4px; background: var(--bg1); }
 .bar-fill { height: 4px; width: 0; }
 .bar-val { width: 40px; font-size: 8px; }
-
-/* Overlay API */
-#api-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0,0,0,0.92);
-  backdrop-filter: blur(8px);
-  z-index: 2000;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  color: var(--t1);
-}
+#api-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(8px); z-index: 2000; display: none; align-items: center; justify-content: center; flex-direction: column; color: var(--t1); }
 #api-overlay.show { display: flex; }
 .ov-sym { font-size: 56px; margin-bottom: 1rem; }
 .ov-msg { font-size: 11px; letter-spacing: 0.12em; margin-bottom: 1rem; }
 .ov-bar { width: 180px; height: 1px; background: var(--t4); margin-top: 12px; }
 .ov-fill { width: 0%; height: 100%; background: var(--oro); animation: loading 1.4s infinite; }
 @keyframes loading { 0% { width: 0%; } 100% { width: 100%; } }
-
-/* Audit */
 .aud-wrap { max-width: 800px; margin: 0 auto; padding: 2rem 1rem; }
 .aud-progress { margin-bottom: 1.5rem; }
 .aud-prog-bar { background: var(--bg2); height: 3px; width: 100%; }
@@ -473,64 +128,22 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
 .aud-prog-txt { font-size: 8px; font-family: var(--mono); margin-top: 6px; display: block; }
 .aud-mod { display: none; }
 .aud-mod.active { display: block; }
-.aud-mod-hd {
-  border-left: 2px solid var(--oro);
-  padding-left: 10px;
-  margin-bottom: 1.5rem;
-}
+.aud-mod-hd { border-left: 2px solid var(--oro); padding-left: 10px; margin-bottom: 1.5rem; }
 .aud-mod-n { font-size: 10px; color: var(--t3); display: block; }
 .aud-mod-t { font-size: 18px; font-weight: 500; }
 .aud-q-list { display: flex; flex-direction: column; gap: 1.5rem; }
-.aud-q {
-  background: var(--bg2);
-  padding: 1rem;
-  border: 0.5px solid var(--bdr);
-}
+.aud-q { background: var(--bg2); padding: 1rem; border: 0.5px solid var(--bdr); }
 .aud-q-sf { border-left: 2px solid var(--oro); }
 .aud-q-tag { font-size: 8px; color: var(--oro); margin-bottom: 6px; letter-spacing: 0.1em; }
 .aud-q-txt { font-size: 13px; margin-bottom: 12px; }
-.txa {
-  width: 100%;
-  background: var(--bg1);
-  border: 0.5px solid var(--bdr);
-  padding: 8px;
-  color: var(--t1);
-  font-family: var(--mono);
-  font-size: 10px;
-  resize: vertical;
-}
-.rec-row {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 8px;
-}
-.rec-btn {
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  width: 24px;
-  height: 24px;
-}
+.txa { width: 100%; background: var(--bg1); border: 0.5px solid var(--bdr); padding: 8px; color: var(--t1); font-family: var(--mono); font-size: 10px; resize: vertical; }
+.rec-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.rec-btn { background: transparent; border: none; cursor: pointer; width: 24px; height: 24px; }
 .rec-status { font-size: 8px; color: var(--t4); }
-.aud-nav {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 2rem;
-}
-.btn {
-  background: transparent;
-  border: 0.5px solid var(--t3);
-  padding: 8px 20px;
-  color: var(--t1);
-  font-size: 9px;
-  cursor: pointer;
-}
+.aud-nav { display: flex; justify-content: space-between; align-items: center; margin-top: 2rem; }
+.btn { background: transparent; border: 0.5px solid var(--t3); padding: 8px 20px; color: var(--t1); font-size: 9px; cursor: pointer; }
 .btn:disabled { opacity: 0.3; cursor: default; }
 .btn-g { border-color: var(--oro); color: var(--oro); }
-
-/* MCM-C Studio */
 .mcmc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
 .mcmc-metric { background: var(--bg2); border: 0.5px solid var(--bdr); padding: 10px; text-align: center; border-radius: 2px; }
 .mcmc-metric-val { font-size: 20px; font-family: var(--mono); font-weight: 500; margin-top: 2px; }
@@ -544,471 +157,90 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
 .mcmc-slider-val { width: 34px; font-size: 10px; font-family: var(--mono); color: var(--oro); text-align: right; flex-shrink: 0; }
 .meme-heat { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 4px; }
 .meme-cell { width: 22px; height: 22px; border-radius: 2px; cursor: default; transition: 0.2s; }
-
-/* Responsive */
-@media (max-width: 800px) {
-  .row3 { grid-template-columns: 1fr 1fr; }
-  .hdr { flex-direction: column; align-items: stretch; }
-  .tabs-bar { overflow-x: auto; }
-  .sc-grid { grid-template-columns: 1fr; }
-}
+@media (max-width: 800px) { .row3 { grid-template-columns: 1fr 1fr; } .hdr { flex-direction: column; align-items: stretch; } .tabs-bar { overflow-x: auto; } .sc-grid { grid-template-columns: 1fr; } }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
 </head>
 <body>
+<div id="api-overlay"><div class="ov-sym">𝄞</div><div class="ov-lbl">S[SYSTEM](SCORE).FRICTION</div><div class="ov-msg" id="ov-msg">procesando...</div><div class="ov-bar"><div class="ov-fill"></div></div></div>
 
-<!-- API Overlay -->
-<div id="api-overlay">
-  <div class="ov-sym">𝄞</div>
-  <div class="ov-lbl">S[SYSTEM](SCORE).FRICTION</div>
-  <div class="ov-msg" id="ov-msg">procesando auditoría con groq llm...</div>
-  <div class="ov-bar"><div class="ov-fill"></div></div>
-</div>
-
-<!-- ══════════════ PHASE 0: KICKOFF ══════════════ -->
 <div id="ph-kickoff" class="phase active">
   <div class="kf-inner">
-    <div class="kf-eyebrow">ATLAS · MUSICSCORE · v2.1</div>
+    <div class="kf-eyebrow">ATLAS · MUSICSCORE · v3.0</div>
     <div class="kf-name">S[SYSTEM](SCORE).FRICTION</div>
     <div class="kf-ttl">La Partitura<br>del <span>Sistema</span></div>
-    <p class="kf-sub">Motor cognitivo de diagnóstico para productoras musicales. La auditoría es el becuadro. El sistema no habla hasta haber leído la clave.</p>
+    <p class="kf-sub">Motor cognitivo de diagnóstico para productoras musicales. La auditoría es el becuadro.</p>
     <button class="kf-btn btn-lg" onclick="startAudit()">INICIAR S.F.SCORE.KICKOFF</button>
-    <div class="kf-version">GROQ · llama-3.3-70b-versatile · MIHM v3.2 · PID adaptativo</div>
+    <div class="kf-version">GROQ · MIHM v3.2 · PID adaptativo · Audio Analyzer</div>
   </div>
 </div>
 
-<!-- ══════════════ PHASE 1: AUDIT ══════════════ -->
 <div id="ph-audit" class="phase">
-  <header class="hdr">
-    <span class="hdr-brand">S[SYSTEM](SCORE).FRICTION</span>
-    <div class="hdr-div"></div>
-    <span class="hdr-mod">S.F.SCORE.KICKOFF · AUDITORÍA VERBAL</span>
-    <div class="hdr-right">
-      <div class="hdr-live"><div class="hdr-dot warn" id="audit-dot"></div><span class="hdr-live-txt" id="audit-status">MÓDULO 1 / 10</span></div>
-    </div>
-  </header>
-  <div class="aud-wrap">
-    <div class="aud-progress">
-      <div class="aud-prog-bar"><div class="aud-prog-fill" id="aud-pfill" style="width:10%"></div></div>
-      <span class="aud-prog-txt" id="aud-ptxt">10%</span>
-    </div>
-    <div id="aud-modules"></div>
-    <div class="aud-nav">
-      <button class="btn btn-g" id="aud-prev" onclick="auditPrev()" disabled>← ANTERIOR</button>
-      <span style="font-size:9px;font-family:var(--mono);color:var(--t3)" id="aud-nav-info">Módulo 1 de 10</span>
-      <button class="btn" id="aud-next" onclick="auditNext()">SIGUIENTE →</button>
-    </div>
-  </div>
+  <header class="hdr"><span class="hdr-brand">S[SYSTEM](SCORE).FRICTION</span><div class="hdr-div"></div><span class="hdr-mod">S.F.SCORE.KICKOFF · AUDITORÍA VERBAL</span><div class="hdr-right"><div class="hdr-live"><div class="hdr-dot warn" id="audit-dot"></div><span class="hdr-live-txt" id="audit-status">MÓDULO 1 / 10</span></div></div></header>
+  <div class="aud-wrap"><div class="aud-progress"><div class="aud-prog-bar"><div class="aud-prog-fill" id="aud-pfill" style="width:10%"></div></div><span class="aud-prog-txt" id="aud-ptxt">10%</span></div><div id="aud-modules"></div><div class="aud-nav"><button class="btn btn-g" id="aud-prev" onclick="auditPrev()" disabled>← ANTERIOR</button><span style="font-size:9px;font-family:var(--mono);color:var(--t3)" id="aud-nav-info">Módulo 1 de 10</span><button class="btn" id="aud-next" onclick="auditNext()">SIGUIENTE →</button></div></div>
 </div>
 
-<!-- ══════════════ PHASE 3: DASHBOARD ══════════════ -->
 <div id="ph-dashboard" class="phase">
-  <header class="hdr">
-    <span class="hdr-brand">S[SYSTEM](SCORE).FRICTION</span>
-    <div class="hdr-div"></div>
-    <span class="hdr-mod">ATLAS · MUSICSCORE · v2.1</span>
-    <div class="hdr-right">
-      <div class="hdr-kpi">
-        <div class="hdr-kv"><span class="hdr-kl">IHG</span><span class="hdr-kn na" id="hkv-ihg">—</span></div>
-        <div class="hdr-kv"><span class="hdr-kl">NTI</span><span class="hdr-kn na" id="hkv-nti">—</span></div>
-        <div class="hdr-kv"><span class="hdr-kl">R</span><span class="hdr-kn na" id="hkv-r">—</span></div>
-      </div>
-      <div class="hdr-live"><div class="hdr-dot" id="live-dot"></div><span class="hdr-live-txt" id="live-txt">BECUADRO ACTIVO</span></div>
-    </div>
-  </header>
- 
+  <header class="hdr"><span class="hdr-brand">S[SYSTEM](SCORE).FRICTION</span><div class="hdr-div"></div><span class="hdr-mod">ATLAS · MUSICSCORE · v3.0</span><div class="hdr-right"><div class="hdr-kpi"><div class="hdr-kv"><span class="hdr-kl">IHG</span><span class="hdr-kn na" id="hkv-ihg">—</span></div><div class="hdr-kv"><span class="hdr-kl">NTI</span><span class="hdr-kn na" id="hkv-nti">—</span></div><div class="hdr-kv"><span class="hdr-kl">R</span><span class="hdr-kn na" id="hkv-r">—</span></div></div><div class="hdr-live"><div class="hdr-dot" id="live-dot"></div><span class="hdr-live-txt" id="live-txt">BECUADRO ACTIVO</span></div></div></header>
   <nav class="tabs-bar">
     <button class="tab-btn active" onclick="openTab('partitura',this)">I · PARTITURA</button>
     <button class="tab-btn" onclick="openTab('midi',this)">II · MIDI STUDIO</button>
     <button class="tab-btn" onclick="openTab('analytics',this)">III · ANÁLISIS</button>
     <button class="tab-btn" onclick="openTab('calendar',this)">IV · CALENDARIO</button>
     <button class="tab-btn" onclick="openTab('scenarios',this)">V · ESCENARIOS</button>
-    <button class="tab-btn" onclick="openTab('notif',this)">VI · SISTEMA<span class="tab-badge" id="notif-badge" style="display:none">0</span></button>
+    <button class="tab-btn" onclick="openTab('notif',this)">VI · SISTEMA</button>
+    <button class="tab-btn" onclick="openTab('audio',this)">VII · ANÁLISIS DE CANCIONES</button>
   </nav>
- 
   <div class="wrap">
- 
-    <!-- TAB I: PARTITURA -->
     <div id="tab-partitura" class="tab-panel active">
-      <!-- Resumen Ejecutivo y Acciones Clave -->
-      <div class="sec" id="executive-summary" style="display:none">
-        <div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">Resumen Ejecutivo</span></div>
-        <div class="pnl">
-          <div class="pnl-body">
-            <div id="resumen-ejecutivo" style="font-size:12px;color:var(--t2);margin-bottom:1rem"></div>
-            <div id="acciones-clave-container"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Narrative -->
-      <div class="narr-box sec" id="narr-box" style="display:none">
-        <div class="narr-lbl">NARRATIVA OPERATIVA · S[SYSTEM](SCORE).FRICTION · MIHM v3.2</div>
-        <div class="narr-txt" id="narr-txt"></div>
-      </div>
- 
-      <!-- Clave Grid (ESTADO DINÁMICO) -->
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">I</span><span class="sec-t">La Clave · Índices Fundantes (ESTADO DINÁMICO MIHM)</span></div>
-        <div class="row3">
-          <div class="cell" title="IHG: Índice de Hegemonía Grupal. Mide concentración de poder. Valores más negativos = mayor hegemonía.">
-            <div style="font-size:48px;color:var(--t4);line-height:1;margin-bottom:.6rem">𝄞</div>
-            <div class="cell-lbl">CLAVE DE SOL · IHG</div>
-            <div class="cell-v" id="v-ihg">—</div>
-            <div class="cell-sub">Concentración de poder</div>
-            <span class="tag na" id="tag-ihg">PENDIENTE</span>
-          </div>
-          <div class="cell" title="NTI: Nivel de Trascendencia Institucional. Mide coherencia entre lo que se dice y lo que se hace.">
-            <div style="font-size:48px;color:var(--t4);line-height:1;margin-bottom:.6rem">𝄢</div>
-            <div class="cell-lbl">CLAVE DE FA · NTI</div>
-            <div class="cell-v" id="v-nti">—</div>
-            <div class="cell-sub">Claridad colectiva</div>
-            <span class="tag na" id="tag-nti">PENDIENTE</span>
-          </div>
-          <div class="cell" title="R: Resistencia Residual. Capacidad de adaptación ante imprevistos.">
-            <div style="font-size:48px;color:var(--t4);line-height:1;margin-bottom:.6rem">𝄡</div>
-            <div class="cell-lbl">CLAVE DE DO · R</div>
-            <div class="cell-v" id="v-r">—</div>
-            <div class="cell-sub">Capacidad de adaptación</div>
-            <span class="tag na" id="tag-r">PENDIENTE</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- NUEVO BLOQUE: CONTROL · ESTABILIDAD · PROYECCIÓN (integración backend V3.3) -->
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">CONTROL · ESTABILIDAD · PROYECCIÓN</span></div>
-        <div class="row3" style="margin-top:0">
-          <div class="cell"><div class="cell-lbl">u (control)</div><div class="cell-v" id="kpi-u">—</div><div class="cell-sub">señal de corrección</div></div>
-          <div class="cell"><div class="cell-lbl">Kp</div><div class="cell-v" id="kpi-kp">—</div><div class="cell-sub">proporcional</div></div>
-          <div class="cell"><div class="cell-lbl">Kd</div><div class="cell-v" id="kpi-kd">—</div><div class="cell-sub">derivativo</div></div>
-          <div class="cell"><div class="cell-lbl">Ki</div><div class="cell-v" id="kpi-ki">—</div><div class="cell-sub">integral</div></div>
-        </div>
-        <div class="row3">
-          <div class="cell"><div class="cell-lbl">ESTABILIDAD</div><div class="cell-v" id="stab-status">—</div><div class="cell-sub">IAD: <span id="stab-iad">—</span></div></div>
-          <div class="cell"><div class="cell-lbl">IHG esperado</div><div class="cell-v" id="mc-ihg">—</div><div class="cell-sub">Monte Carlo 90d</div></div>
-          <div class="cell"><div class="cell-lbl">Colapso</div><div class="cell-v" id="mc-collapse">—</div><div class="cell-sub">% probabilidad</div></div>
-          <div class="cell"><div class="cell-lbl">Sigma MC</div><div class="cell-v" id="mc-sigma">—</div><div class="cell-sub">incertidumbre</div></div>
-        </div>
-        <div class="row3">
-          <div class="cell" style="grid-column: span 2;">
-            <div class="cell-lbl">ID Predicción</div>
-            <div class="cell-v" style="font-size:9px; word-break:break-all" id="pred-id">—</div>
-          </div>
-          <div class="cell" style="grid-column: span 2;">
-            <div class="cell-lbl">Feedback (aprendizaje)</div>
-            <div style="display:flex; gap:5px; margin-top:5px;">
-              <input id="input-outcome" type="number" step="0.01" placeholder="IHG real" style="flex:1; background:var(--bg1); border:.5px solid var(--bdr); padding:5px; color:var(--t1); font-size:10px;">
-              <button class="btn" style="padding:5px 10px;" onclick="sendLearn()">Enviar</button>
-            </div>
-          </div>
-        </div>
-      </div>
- 
-      <!-- ECG -->
-      <div class="ecg-box sec" style="margin-top:-.5rem">
-        <div class="ecg-meta">
-          <span class="ecg-id">ECG · IHG REAL-TIME · TARGET –0.40</span>
-          <span class="ecg-cur" id="ecg-cur">—</span>
-        </div>
-        <canvas id="ecg-c" height="80"></canvas>
-      </div>
- 
-      <!-- Armadura (INTERPRETACIÓN IA) -->
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">II</span><span class="sec-t">Armadura · Condiciones Latentes Detectadas (INTERPRETACIÓN IA)</span></div>
-        <div class="arm-grid" id="arm-grid">
-          <div class="arm-col">
-            <div class="arm-col-lbl fl">♭ &nbsp;BEMOLES · DETECTADOS</div>
-            <div id="arm-bemoles"><div style="font-size:10px;color:var(--t3);padding:.5rem 0">pendiente análisis</div></div>
-          </div>
-          <div class="arm-col">
-            <div class="arm-col-lbl sh">♯ &nbsp;SOSTENIDOS · DETECTADOS</div>
-            <div id="arm-sostenidos"><div style="font-size:10px;color:var(--t3);padding:.5rem 0">pendiente análisis</div></div>
-          </div>
-        </div>
-      </div>
- 
-      <!-- Pentagrama -->
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">III</span><span class="sec-t">Pentagrama · Cinco Vectores Operativos</span></div>
-        <div class="penta-wrap">
-          <svg width="100%" viewBox="0 0 1000 290">
-            <line x1="90" y1="55" x2="820" y2="55" stroke="rgba(200,169,81,.1)" stroke-width=".75"/>
-            <line x1="90" y1="100" x2="820" y2="100" stroke="rgba(200,169,81,.1)" stroke-width=".75"/>
-            <line x1="90" y1="145" x2="820" y2="145" stroke="rgba(200,169,81,.1)" stroke-width=".75"/>
-            <line x1="90" y1="190" x2="820" y2="190" stroke="rgba(200,169,81,.1)" stroke-width=".75"/>
-            <line x1="90" y1="235" x2="820" y2="235" stroke="rgba(200,169,81,.1)" stroke-width=".75"/>
-            <line x1="90" y1="48" x2="90" y2="242" stroke="rgba(200,169,81,.18)" stroke-width=".75"/>
-            <line x1="820" y1="48" x2="820" y2="242" stroke="rgba(200,169,81,.08)" stroke-width=".75"/>
-            <text font-size="110" fill="rgba(200,169,81,.07)" x="-6" y="252" font-family="serif">𝄞</text>
-            <text font-size="9" fill="#2A2825" font-family="Courier New" x="84" y="59" text-anchor="end">V1</text>
-            <text font-size="9" fill="#2A2825" font-family="Courier New" x="84" y="104" text-anchor="end">V2</text>
-            <text font-size="9" fill="#2A2825" font-family="Courier New" x="84" y="149" text-anchor="end">V3</text>
-            <text font-size="9" fill="#2A2825" font-family="Courier New" x="84" y="194" text-anchor="end">V4</text>
-            <text font-size="9" fill="#2A2825" font-family="Courier New" x="84" y="239" text-anchor="end">V5</text>
-            <text font-size="11" fill="#4A4844" font-family="Helvetica" x="828" y="59">Producción</text>
-            <text font-size="11" fill="#4A4844" font-family="Helvetica" x="828" y="104">Lanzamiento</text>
-            <text font-size="11" fill="#4A4844" font-family="Helvetica" x="828" y="149">Promoción</text>
-            <text font-size="11" fill="#4A4844" font-family="Helvetica" x="828" y="194">Administración</text>
-            <text font-size="11" fill="#4A4844" font-family="Helvetica" x="828" y="239">Talento</text>
-            <text font-size="8" fill="rgba(42,40,37,.9)" font-family="Courier New" x="455" y="47" text-anchor="middle">IHG · R</text>
-            <text font-size="8" fill="rgba(42,40,37,.9)" font-family="Courier New" x="455" y="92" text-anchor="middle">NTI · LDI</text>
-            <text font-size="8" fill="rgba(42,40,37,.9)" font-family="Courier New" x="455" y="137" text-anchor="middle">IAD · ETE</text>
-            <text font-size="8" fill="rgba(42,40,37,.9)" font-family="Courier New" x="455" y="182" text-anchor="middle">LDI</text>
-            <text font-size="8" fill="rgba(42,40,37,.9)" font-family="Courier New" x="455" y="227" text-anchor="middle">ETE</text>
-            <g id="penta-notes"></g>
-          </svg>
-          <div style="padding-top:1.25rem;border-top:.5px solid var(--bdr);margin-top:.25rem">
-            <div style="font-size:7px;letter-spacing:.14em;color:var(--t3);font-family:var(--mono);margin-bottom:9px">TENSIÓN SISTÉMICA POR VECTOR</div>
-            <div id="tension-bars"></div>
-          </div>
-        </div>
-      </div>
- 
-      <!-- Partitura Viva -->
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">IV</span><span class="sec-t">Partitura Viva · Proyectos Detectados</span></div>
-        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:.5px;background:var(--bdr);border:.5px solid var(--bdr);margin-bottom:.5px">
-          <div style="background:var(--bg2);padding:8px;text-align:center"><div style="font-size:20px;color:var(--t3)">𝅝</div><div style="font-size:7px;font-family:var(--mono);color:var(--t4);margin-top:2px">REDONDA</div><div style="font-size:8px;color:var(--t3);margin-top:1px">pausa total</div></div>
-          <div style="background:var(--bg2);padding:8px;text-align:center"><div style="font-size:20px;color:var(--t2)">𝅗𝅥</div><div style="font-size:7px;font-family:var(--mono);color:var(--t4);margin-top:2px">BLANCA</div><div style="font-size:8px;color:var(--t3);margin-top:1px">latencia media</div></div>
-          <div style="background:var(--bg2);padding:8px;text-align:center"><div style="font-size:20px;color:var(--t1)">♩</div><div style="font-size:7px;font-family:var(--mono);color:var(--t4);margin-top:2px">NEGRA</div><div style="font-size:8px;color:var(--t3);margin-top:1px">flujo normal</div></div>
-          <div style="background:var(--bg2);padding:8px;text-align:center"><div style="font-size:20px;color:var(--oro)">♪</div><div style="font-size:7px;font-family:var(--mono);color:var(--oro);margin-top:2px">CORCHEA</div><div style="font-size:8px;color:var(--t3);margin-top:1px">urgencia alta</div></div>
-          <div style="background:var(--bg2);padding:8px;text-align:center"><div style="font-size:20px;color:var(--rojo)">𝅘𝅥𝅯</div><div style="font-size:7px;font-family:var(--mono);color:var(--rojo);margin-top:2px">SEMICORCHEA</div><div style="font-size:8px;color:var(--t3);margin-top:1px">crisis</div></div>
-          <div style="background:var(--bg2);padding:8px;text-align:center"><div style="font-size:20px;color:var(--t4)">𝄽</div><div style="font-size:7px;font-family:var(--mono);color:var(--t4);margin-top:2px">SILENCIO</div><div style="font-size:8px;color:var(--t3);margin-top:1px">sin dueño</div></div>
-        </div>
-        <div class="part-hdr-row"><span class="phc">PROYECTO</span><span class="phc c">FIGURA</span><span class="phc c">ETAPA</span><span class="phc c">V</span></div>
-        <div class="part-body" id="partitura-body">
-          <div style="padding:1.5rem;text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono)">pendiente análisis de auditoría</div>
-        </div>
-      </div>
- 
-      <!-- Glosario -->
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">VII</span><span class="sec-t">Glosario · Leyenda del Sistema</span></div>
-        <div class="pnl"><div class="pnl-body" style="padding:0 1.5rem">
-          <table class="glos-tbl"><thead>…
-<th style="width:32px">SÍM</th><th>MUSICAL</th><th>EQUIV. SF</th><th>EN PRODUCCIÓN</th>…
-</thead>
-          <tbody>
-            <tr><td class="gs">𝄞</td><td class="gm">Clave de Sol</td><td class="gsf">IHG</td><td class="gpr">¿Quién controla las decisiones?</td></tr>
-            <tr><td class="gs">𝄢</td><td class="gm">Clave de Fa</td><td class="gsf">NTI</td><td class="gpr">¿Lo interno refleja la realidad operativa?</td></tr>
-            <tr><td class="gs">𝄡</td><td class="gm">Clave de Do</td><td class="gsf">R</td><td class="gpr">¿Qué tan frágil es el sistema ante un imprevisto?</td></tr>
-            <tr><td class="gs">♭</td><td class="gm">Bemol</td><td class="gsf">SF·LATENTE</td><td class="gpr">Baja el tono del sistema sin nombrarse</td></tr>
-            <tr><td class="gs">♯</td><td class="gm">Sostenido</td><td class="gsf">Factor estabilidad</td><td class="gpr">Sube capacidad sin costo adicional</td></tr>
-            <tr><td class="gs">♮</td><td class="gm">Becuadro</td><td class="gsf">Auditoría activa</td><td class="gpr">Anula los bemoles. Opera desde estado observado.</td></tr>
-            <tr><td class="gs">𝅗𝅥</td><td class="gm">Blanca</td><td class="gsf">SF·LATENCIA</td><td class="gpr">Bloqueado por decisión pendiente</td></tr>
-            <tr><td class="gs">♩</td><td class="gm">Negra</td><td class="gsf">Operación normal</td><td class="gpr">Activo sin fricción mayor</td></tr>
-            <tr><td class="gs">♪</td><td class="gm">Corchea</td><td class="gsf">SF·FRICCIÓN</td><td class="gpr">Intervención antes del siguiente compás</td></tr>
-            <tr><td class="gs">𝅘𝅥𝅯</td><td class="gm">Semicorchea</td><td class="gsf">SF·UMBRAL</td><td class="gpr">LDI superada. Acción inmediata.</td></tr>
-            <tr><td class="gs">𝄽</td><td class="gm">Silencio</td><td class="gsf">SF·VACÍO</td><td class="gpr">El silencio tiene costo estructural</td></tr>
-            <tr><td><span style="font-size:11px;font-style:italic;color:var(--t3)">D.C.</span></td><td class="gm">Da Capo</td><td class="gsf">SF·ENTROPÍA</td><td class="gpr">El error se repite sin modificar la causa</td></tr>
-            <tr><td><span style="font-size:9px;font-family:var(--mono);color:var(--t3)">AMT</span></td><td class="gm">Auto-Mutilación Táctica</td><td class="gsf">Homeostasis emergencia</td><td class="gpr">Cancelar periférico para proteger el núcleo</td></tr>
-            <tr><td><span style="font-size:9px;font-family:var(--mono);color:var(--t3)">LDI</span></td><td class="gm">Metrónomo SF</td><td class="gsf">Latencia Institucional</td><td class="gpr">Días entre alerta y acción</td></tr>
-          </tbody>
-          </table>
-        </div></div>
-      </div>
+      <div class="sec"><div class="sec-hd"><span class="sec-n">I</span><span class="sec-t">La Clave · Índices Fundantes</span></div><div class="row3"><div class="cell"><div style="font-size:48px;color:var(--t4);line-height:1;margin-bottom:.6rem">𝄞</div><div class="cell-lbl">CLAVE DE SOL · IHG</div><div class="cell-v" id="v-ihg">—</div><div class="cell-sub">Concentración de poder</div><span class="tag na" id="tag-ihg">PENDIENTE</span></div><div class="cell"><div style="font-size:48px;color:var(--t4);line-height:1;margin-bottom:.6rem">𝄢</div><div class="cell-lbl">CLAVE DE FA · NTI</div><div class="cell-v" id="v-nti">—</div><div class="cell-sub">Claridad colectiva</div><span class="tag na" id="tag-nti">PENDIENTE</span></div><div class="cell"><div style="font-size:48px;color:var(--t4);line-height:1;margin-bottom:.6rem">𝄡</div><div class="cell-lbl">CLAVE DE DO · R</div><div class="cell-v" id="v-r">—</div><div class="cell-sub">Capacidad de adaptación</div><span class="tag na" id="tag-r">PENDIENTE</span></div></div></div>
+      <div class="sec"><div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">CONTROL · ESTABILIDAD · PROYECCIÓN</span></div><div class="row3"><div class="cell"><div class="cell-lbl">u (control)</div><div class="cell-v" id="kpi-u">—</div><div class="cell-sub">señal de corrección</div></div><div class="cell"><div class="cell-lbl">Kp</div><div class="cell-v" id="kpi-kp">—</div><div class="cell-sub">proporcional</div></div><div class="cell"><div class="cell-lbl">Kd</div><div class="cell-v" id="kpi-kd">—</div><div class="cell-sub">derivativo</div></div><div class="cell"><div class="cell-lbl">Ki</div><div class="cell-v" id="kpi-ki">—</div><div class="cell-sub">integral</div></div></div><div class="row3"><div class="cell"><div class="cell-lbl">ESTABILIDAD</div><div class="cell-v" id="stab-status">—</div><div class="cell-sub">IAD: <span id="stab-iad">—</span></div></div><div class="cell"><div class="cell-lbl">IHG esperado</div><div class="cell-v" id="mc-ihg">—</div><div class="cell-sub">Monte Carlo 90d</div></div><div class="cell"><div class="cell-lbl">Colapso</div><div class="cell-v" id="mc-collapse">—</div><div class="cell-sub">% probabilidad</div></div><div class="cell"><div class="cell-lbl">Sigma MC</div><div class="cell-v" id="mc-sigma">—</div><div class="cell-sub">incertidumbre</div></div></div><div class="row3"><div class="cell" style="grid-column: span 2;"><div class="cell-lbl">ID Predicción</div><div class="cell-v" style="font-size:9px; word-break:break-all" id="pred-id">—</div></div><div class="cell" style="grid-column: span 2;"><div class="cell-lbl">Feedback (aprendizaje)</div><div style="display:flex; gap:5px; margin-top:5px;"><input id="input-outcome" type="number" step="0.01" placeholder="IHG real" style="flex:1; background:var(--bg1); border:.5px solid var(--bdr); padding:5px; color:var(--t1); font-size:10px;"><button class="btn" style="padding:5px 10px;" onclick="sendLearn()">Enviar</button></div></div></div></div>
+      <div class="ecg-box sec"><div class="ecg-meta"><span class="ecg-id">ECG · IHG REAL-TIME · TARGET –0.40</span><span class="ecg-cur" id="ecg-cur">—</span></div><canvas id="ecg-c" height="80"></canvas></div>
+      <div class="sec"><div class="sec-hd"><span class="sec-n">II</span><span class="sec-t">Armadura · Condiciones Latentes Detectadas</span></div><div class="arm-grid" id="arm-grid"><div class="arm-col"><div class="arm-col-lbl fl">♭ &nbsp;BEMOLES · DETECTADOS</div><div id="arm-bemoles"><div style="font-size:10px;color:var(--t3);padding:.5rem 0">pendiente análisis</div></div></div><div class="arm-col"><div class="arm-col-lbl sh">♯ &nbsp;SOSTENIDOS · DETECTADOS</div><div id="arm-sostenidos"><div style="font-size:10px;color:var(--t3);padding:.5rem 0">pendiente análisis</div></div></div></div></div>
+      <div class="sec"><div class="sec-hd"><span class="sec-n">III</span><span class="sec-t">Pentagrama · Cinco Vectores Operativos</span></div><div class="penta-wrap"><svg width="100%" viewBox="0 0 1000 290"><line x1="90" y1="55" x2="820" y2="55" stroke="rgba(200,169,81,.1)" stroke-width=".75"/><line x1="90" y1="100" x2="820" y2="100" stroke="rgba(200,169,81,.1)" stroke-width=".75"/><line x1="90" y1="145" x2="820" y2="145" stroke="rgba(200,169,81,.1)" stroke-width=".75"/><line x1="90" y1="190" x2="820" y2="190" stroke="rgba(200,169,81,.1)" stroke-width=".75"/><line x1="90" y1="235" x2="820" y2="235" stroke="rgba(200,169,81,.1)" stroke-width=".75"/><line x1="90" y1="48" x2="90" y2="242" stroke="rgba(200,169,81,.18)" stroke-width=".75"/><line x1="820" y1="48" x2="820" y2="242" stroke="rgba(200,169,81,.08)" stroke-width=".75"/><text font-size="110" fill="rgba(200,169,81,.07)" x="-6" y="252" font-family="serif">𝄞</text><text font-size="9" fill="#2A2825" font-family="Courier New" x="84" y="59" text-anchor="end">V1</text><text font-size="9" fill="#2A2825" font-family="Courier New" x="84" y="104" text-anchor="end">V2</text><text font-size="9" fill="#2A2825" font-family="Courier New" x="84" y="149" text-anchor="end">V3</text><text font-size="9" fill="#2A2825" font-family="Courier New" x="84" y="194" text-anchor="end">V4</text><text font-size="9" fill="#2A2825" font-family="Courier New" x="84" y="239" text-anchor="end">V5</text><text font-size="11" fill="#4A4844" font-family="Helvetica" x="828" y="59">Producción</text><text font-size="11" fill="#4A4844" font-family="Helvetica" x="828" y="104">Lanzamiento</text><text font-size="11" fill="#4A4844" font-family="Helvetica" x="828" y="149">Promoción</text><text font-size="11" fill="#4A4844" font-family="Helvetica" x="828" y="194">Administración</text><text font-size="11" fill="#4A4844" font-family="Helvetica" x="828" y="239">Talento</text><text font-size="8" fill="rgba(42,40,37,.9)" font-family="Courier New" x="455" y="47" text-anchor="middle">IHG · R</text><text font-size="8" fill="rgba(42,40,37,.9)" font-family="Courier New" x="455" y="92" text-anchor="middle">NTI · LDI</text><text font-size="8" fill="rgba(42,40,37,.9)" font-family="Courier New" x="455" y="137" text-anchor="middle">IAD · ETE</text><text font-size="8" fill="rgba(42,40,37,.9)" font-family="Courier New" x="455" y="182" text-anchor="middle">LDI</text><text font-size="8" fill="rgba(42,40,37,.9)" font-family="Courier New" x="455" y="227" text-anchor="middle">ETE</text><g id="penta-notes"></g></svg><div style="padding-top:1.25rem;border-top:.5px solid var(--bdr);margin-top:.25rem"><div style="font-size:7px;letter-spacing:.14em;color:var(--t3);font-family:var(--mono);margin-bottom:9px">TENSIÓN SISTÉMICA POR VECTOR</div><div id="tension-bars"></div></div></div></div>
+      <div class="sec"><div class="sec-hd"><span class="sec-n">IV</span><span class="sec-t">Partitura Viva · Proyectos Detectados</span></div><div style="display:grid;grid-template-columns:repeat(6,1fr);gap:.5px;background:var(--bdr);border:.5px solid var(--bdr);margin-bottom:.5px"><div style="background:var(--bg2);padding:8px;text-align:center"><div style="font-size:20px;color:var(--t3)">𝅝</div><div style="font-size:7px;font-family:var(--mono);color:var(--t4);margin-top:2px">REDONDA</div><div style="font-size:8px;color:var(--t3);margin-top:1px">pausa total</div></div><div style="background:var(--bg2);padding:8px;text-align:center"><div style="font-size:20px;color:var(--t2)">𝅗𝅥</div><div style="font-size:7px;font-family:var(--mono);color:var(--t4);margin-top:2px">BLANCA</div><div style="font-size:8px;color:var(--t3);margin-top:1px">latencia media</div></div><div style="background:var(--bg2);padding:8px;text-align:center"><div style="font-size:20px;color:var(--t1)">♩</div><div style="font-size:7px;font-family:var(--mono);color:var(--t4);margin-top:2px">NEGRA</div><div style="font-size:8px;color:var(--t3);margin-top:1px">flujo normal</div></div><div style="background:var(--bg2);padding:8px;text-align:center"><div style="font-size:20px;color:var(--oro)">♪</div><div style="font-size:7px;font-family:var(--mono);color:var(--oro);margin-top:2px">CORCHEA</div><div style="font-size:8px;color:var(--t3);margin-top:1px">urgencia alta</div></div><div style="background:var(--bg2);padding:8px;text-align:center"><div style="font-size:20px;color:var(--rojo)">𝅘𝅥𝅯</div><div style="font-size:7px;font-family:var(--mono);color:var(--rojo);margin-top:2px">SEMICORCHEA</div><div style="font-size:8px;color:var(--t3);margin-top:1px">crisis</div></div><div style="background:var(--bg2);padding:8px;text-align:center"><div style="font-size:20px;color:var(--t4)">𝄽</div><div style="font-size:7px;font-family:var(--mono);color:var(--t4);margin-top:2px">SILENCIO</div><div style="font-size:8px;color:var(--t3);margin-top:1px">sin dueño</div></div></div><div class="part-hdr-row"><span class="phc">PROYECTO</span><span class="phc c">FIGURA</span><span class="phc c">ETAPA</span><span class="phc c">V</span></div><div class="part-body" id="partitura-body"><div style="padding:1.5rem;text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono)">pendiente análisis de auditoría</div></div></div>
+      <div class="sec"><div class="sec-hd"><span class="sec-n">VII</span><span class="sec-t">Glosario · Leyenda del Sistema</span></div><div class="pnl"><div class="pnl-body" style="padding:0 1.5rem"><table class="glos-tbl"><thead><tr><th style="width:32px">SÍM</th><th>MUSICAL</th><th>EQUIV. SF</th><th>EN PRODUCCIÓN</th></tr></thead><tbody><tr><td class="gs">𝄞</td><td class="gm">Clave de Sol</td><td class="gsf">IHG</td><td class="gpr">¿Quién controla las decisiones?</td></tr><tr><td class="gs">𝄢</td><td class="gm">Clave de Fa</td><td class="gsf">NTI</td><td class="gpr">¿Lo interno refleja la realidad operativa?</td></tr><tr><td class="gs">𝄡</td><td class="gm">Clave de Do</td><td class="gsf">R</td><td class="gpr">¿Qué tan frágil es el sistema ante un imprevisto?</td></tr><tr><td class="gs">♭</td><td class="gm">Bemol</td><td class="gsf">SF·LATENTE</td><td class="gpr">Baja el tono del sistema sin nombrarse</td></tr><tr><td class="gs">♯</td><td class="gm">Sostenido</td><td class="gsf">Factor estabilidad</td><td class="gpr">Sube capacidad sin costo adicional</td></tr><tr><td class="gs">♮</td><td class="gm">Becuadro</td><td class="gsf">Auditoría activa</td><td class="gpr">Anula los bemoles. Opera desde estado observado.</td></tr><tr><td class="gs">𝅗𝅥</td><td class="gm">Blanca</td><td class="gsf">SF·LATENCIA</td><td class="gpr">Bloqueado por decisión pendiente</td></tr><tr><td class="gs">♩</td><td class="gm">Negra</td><td class="gsf">Operación normal</td><td class="gpr">Activo sin fricción mayor</td></tr><tr><td class="gs">♪</td><td class="gm">Corchea</td><td class="gsf">SF·FRICCIÓN</td><td class="gpr">Intervención antes del siguiente compás</td></tr><tr><td class="gs">𝅘𝅥𝅯</td><td class="gm">Semicorchea</td><td class="gsf">SF·UMBRAL</td><td class="gpr">LDI superada. Acción inmediata.</td></tr><tr><td class="gs">𝄽</td><td class="gm">Silencio</td><td class="gsf">SF·VACÍO</td><td class="gpr">El silencio tiene costo estructural</td></tr><tr><td><span style="font-size:11px;font-style:italic;color:var(--t3)">D.C.</span></td><td class="gm">Da Capo</td><td class="gsf">SF·ENTROPÍA</td><td class="gpr">El error se repite sin modificar la causa</td></tr><tr><td><span style="font-size:9px;font-family:var(--mono);color:var(--t3)">AMT</span></td><td class="gm">Auto-Mutilación Táctica</td><td class="gsf">Homeostasis emergencia</td><td class="gpr">Cancelar periférico para proteger el núcleo</td></tr><tr><td><span style="font-size:9px;font-family:var(--mono);color:var(--t3)">LDI</span></td><td class="gm">Metrónomo SF</td><td class="gsf">Latencia Institucional</td><td class="gpr">Días entre alerta y acción</td></tr></tbody></table></div></div></div>
     </div>
- 
-    <!-- TAB II: MCM-C STUDIO -->
+
     <div id="tab-midi" class="tab-panel">
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">II</span><span class="sec-t">MCM-C Studio · Sistema Coevolutivo Cultural</span></div>
-
-        <div class="mcmc-grid">
-          <div class="pnl">
-            <div class="pnl-hd">PARÁMETROS · MCM-C</div>
-            <div class="pnl-body">
-              <div class="mcmc-slider-row">
-                <label>Género</label>
-                <select id="mcmc-genre" style="flex:1;background:var(--bg2);border:0.5px solid var(--bdr);color:var(--t1);padding:4px 6px;font-size:10px;font-family:var(--mono);">
-                  <option>synthwave</option><option>pop</option><option>techno</option><option>lo-fi</option><option>jazz</option>
-                </select>
-              </div>
-              <div class="mcmc-slider-row"><label>IF objetivo</label><input type="range" id="mcmc-if-target" class="mcmc-slider" min="0.5" max="0.9" step="0.01" value="0.75" oninput="mcmcSyncSlider(this,'mcmc-if-tv')"><span id="mcmc-if-tv" class="mcmc-slider-val">0.75</span></div>
-              <div class="mcmc-slider-row"><label>ICC objetivo</label><input type="range" id="mcmc-icc-target" class="mcmc-slider" min="0.4" max="0.9" step="0.01" value="0.68" oninput="mcmcSyncSlider(this,'mcmc-icc-tv')"><span id="mcmc-icc-tv" class="mcmc-slider-val">0.68</span></div>
-              <div class="mcmc-slider-row"><label>κ acoplam.</label><input type="range" id="mcmc-kappa" class="mcmc-slider" min="0" max="0.5" step="0.01" value="0.22" oninput="mcmcSyncSlider(this,'mcmc-kappa-v')"><span id="mcmc-kappa-v" class="mcmc-slider-val">0.22</span></div>
-              <div class="mcmc-slider-row"><label>λ_C penal.</label><input type="range" id="mcmc-lambda" class="mcmc-slider" min="0" max="1.5" step="0.05" value="0.9" oninput="mcmcSyncSlider(this,'mcmc-lambda-v')"><span id="mcmc-lambda-v" class="mcmc-slider-val">0.90</span></div>
-              <div class="mcmc-slider-row"><label>Motivos</label><input type="range" id="mcmc-motifs" class="mcmc-slider" min="1" max="8" step="1" value="3" oninput="mcmcSyncSlider(this,'mcmc-motifs-v')"><span id="mcmc-motifs-v" class="mcmc-slider-val">3</span></div>
-              <div style="margin-top:10px">
-                <div class="cell-lbl" style="margin-bottom:6px">SECCIÓN ACTIVA</div>
-                <div class="mcmc-section-btns">
-                  <button class="mcmc-section-btn active" onclick="mcmcSetSection('intro',this)">INTRO</button>
-                  <button class="mcmc-section-btn" onclick="mcmcSetSection('verso',this)">VERSO</button>
-                  <button class="mcmc-section-btn" onclick="mcmcSetSection('estribillo',this)">ESTRIBILLO</button>
-                  <button class="mcmc-section-btn" onclick="mcmcSetSection('outro',this)">OUTRO</button>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="pnl">
-            <div class="pnl-hd">MÉTRICAS · ESTADO LATENTE</div>
-            <div class="pnl-body">
-              <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-                <div class="mcmc-metric"><div class="cell-lbl">IHG</div><div id="mcmc-ihg-v" class="mcmc-metric-val" style="color:var(--azul)">—</div></div>
-                <div class="mcmc-metric"><div class="cell-lbl">IF</div><div id="mcmc-if-v2" class="mcmc-metric-val" style="color:var(--verde)">—</div></div>
-                <div class="mcmc-metric"><div class="cell-lbl">ICC</div><div id="mcmc-icc-v2" class="mcmc-metric-val" style="color:var(--oro)">—</div></div>
-                <div class="mcmc-metric"><div class="cell-lbl">IRC</div><div id="mcmc-irc-v" class="mcmc-metric-val" style="color:#a060d0">—</div></div>
-              </div>
-              <div style="margin-bottom:6px"><span class="cell-lbl">Sección</span><span id="mcmc-sec-lbl" style="font-family:var(--mono);font-size:11px;color:var(--oro);margin-left:8px">—</span></div>
-              <div style="margin-bottom:6px"><span class="cell-lbl">Modo / Raíz</span><span id="mcmc-mode-root" style="font-family:var(--mono);font-size:11px;color:var(--t1);margin-left:8px">—</span></div>
-              <div style="margin-bottom:6px"><span class="cell-lbl">Motivos mem.</span><span id="mcmc-mem-cnt" style="font-family:var(--mono);font-size:11px;color:var(--t1);margin-left:8px">0</span></div>
-              <div style="margin-bottom:6px"><span class="cell-lbl">Estado</span><span id="mcmc-phase-lbl" style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-left:8px">NO INICIALIZADO</span></div>
-              <div style="margin-top:6px"><div class="cell-lbl" style="margin-bottom:4px">MEMORIA MEMÉTICA</div><div class="meme-heat" id="mcmc-heat"></div></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="pnl" style="margin-bottom:12px">
-          <div class="pnl-hd">PIANO ROLL · TRAYECTORIA LATENTE</div>
-          <div class="pnl-body" style="padding:8px">
-            <canvas id="mcmc-roll" height="90" style="width:100%;display:block;background:#141410"></canvas>
-            <div id="mcmc-roll-info" style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:4px">—</div>
-          </div>
-        </div>
-
-        <div class="pnl" style="margin-bottom:12px">
-          <div class="pnl-hd">CURVAS DE EVOLUCIÓN · IHG / IF / ICC / IRC</div>
-          <div class="pnl-body" style="padding:8px">
-            <canvas id="mcmc-timeline" height="120" style="width:100%;display:block;background:#141410"></canvas>
-            <div style="display:flex;gap:16px;margin-top:5px">
-              <span style="font-size:9px;font-family:var(--mono);color:var(--azul)">── IHG</span>
-              <span style="font-size:9px;font-family:var(--mono);color:var(--verde)">── IF</span>
-              <span style="font-size:9px;font-family:var(--mono);color:var(--oro)">── ICC</span>
-              <span style="font-size:9px;font-family:var(--mono);color:#a060d0">── IRC</span>
-              <span style="font-size:9px;font-family:var(--mono);color:var(--t4)">┆ sección · zona morada = momento meme</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="mcmc-grid" style="margin-bottom:12px">
-          <div class="pnl">
-            <div class="pnl-hd">RESPUESTA DEL OYENTE · SIMULADA</div>
-            <div class="pnl-body">
-              <div class="mcmc-slider-row"><label>Intro</label><input type="range" class="mcmc-slider" id="rwd-intro" min="0" max="1" step="0.01" value="0.45" oninput="mcmcSyncSlider(this,'rwd-intro-v')"><span id="rwd-intro-v" class="mcmc-slider-val">0.45</span></div>
-              <div class="mcmc-slider-row"><label>Verso</label><input type="range" class="mcmc-slider" id="rwd-verso" min="0" max="1" step="0.01" value="0.52" oninput="mcmcSyncSlider(this,'rwd-verso-v')"><span id="rwd-verso-v" class="mcmc-slider-val">0.52</span></div>
-              <div class="mcmc-slider-row"><label>Estribillo</label><input type="range" class="mcmc-slider" id="rwd-estrib" min="0" max="1" step="0.01" value="0.82" oninput="mcmcSyncSlider(this,'rwd-estrib-v')"><span id="rwd-estrib-v" class="mcmc-slider-val">0.82</span></div>
-              <div class="mcmc-slider-row"><label>Outro</label><input type="range" class="mcmc-slider" id="rwd-outro" min="0" max="1" step="0.01" value="0.35" oninput="mcmcSyncSlider(this,'rwd-outro-v')"><span id="rwd-outro-v" class="mcmc-slider-val">0.35</span></div>
-              <button class="btn" onclick="mcmcSimFeedback()" style="margin-top:8px;width:100%">SIMULAR FEEDBACK</button>
-            </div>
-          </div>
-          <div class="pnl">
-            <div class="pnl-hd">CONSOLA CULTURAL</div>
-            <div class="pnl-body" style="padding:8px">
-              <div class="mcmc-console" id="mcmc-console"></div>
-              <div style="margin-top:6px"><span class="cell-lbl">Último reward</span><span id="mcmc-last-rwd" style="font-family:var(--mono);font-size:13px;color:var(--oro);margin-left:8px">—</span></div>
-              <div style="margin-top:4px"><span class="cell-lbl">ICC evolución</span><span id="mcmc-icc-evo" style="font-family:var(--mono);font-size:10px;color:var(--t1);margin-left:8px">—</span></div>
-            </div>
-          </div>
-        </div>
-
-        <div class="pnl">
-          <div class="pnl-hd">ACCIONES</div>
-          <div class="pnl-body">
-            <div style="display:flex;gap:8px;flex-wrap:wrap">
-              <button class="btn" id="btn-gen-base" onclick="mcmcGenerateBase()">GENERAR BASE</button>
-              <button class="btn btn-g" id="btn-coevolve" onclick="mcmcCoevolve()" disabled>COEVOLUCIONAR</button>
-              <button class="btn" id="btn-freeze" onclick="mcmcFreezeMotif()" disabled>CONGELAR MOTIVO</button>
-              <button class="btn btn-g" id="btn-export-midi" onclick="mcmcExportMIDI()" disabled>EXPORTAR MIDI</button>
-              <button class="btn" onclick="mcmcReset()">REINICIAR</button>
-            </div>
-            <div id="mcmc-status" style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:8px">Sistema listo · Presiona GENERAR BASE para inicializar</div>
-          </div>
-        </div>
-      </div>
+      <div class="sec"><div class="sec-hd"><span class="sec-n">II</span><span class="sec-t">MCM-C Studio · Sistema Coevolutivo Cultural</span></div>
+      <div class="mcmc-grid"><div class="pnl"><div class="pnl-hd">PARÁMETROS · MCM-C</div><div class="pnl-body"><div class="mcmc-slider-row"><label>Género</label><select id="mcmc-genre" style="flex:1;background:var(--bg2);border:0.5px solid var(--bdr);color:var(--t1);padding:4px 6px;font-size:10px;font-family:var(--mono);"><option>synthwave</option><option>pop</option><option>techno</option><option>lo-fi</option><option>jazz</option></select></div><div class="mcmc-slider-row"><label>IF objetivo</label><input type="range" id="mcmc-if-target" class="mcmc-slider" min="0.5" max="0.9" step="0.01" value="0.75" oninput="mcmcSyncSlider(this,'mcmc-if-tv')"><span id="mcmc-if-tv" class="mcmc-slider-val">0.75</span></div><div class="mcmc-slider-row"><label>ICC objetivo</label><input type="range" id="mcmc-icc-target" class="mcmc-slider" min="0.4" max="0.9" step="0.01" value="0.68" oninput="mcmcSyncSlider(this,'mcmc-icc-tv')"><span id="mcmc-icc-tv" class="mcmc-slider-val">0.68</span></div><div class="mcmc-slider-row"><label>κ acoplam.</label><input type="range" id="mcmc-kappa" class="mcmc-slider" min="0" max="0.5" step="0.01" value="0.22" oninput="mcmcSyncSlider(this,'mcmc-kappa-v')"><span id="mcmc-kappa-v" class="mcmc-slider-val">0.22</span></div><div class="mcmc-slider-row"><label>λ_C penal.</label><input type="range" id="mcmc-lambda" class="mcmc-slider" min="0" max="1.5" step="0.05" value="0.9" oninput="mcmcSyncSlider(this,'mcmc-lambda-v')"><span id="mcmc-lambda-v" class="mcmc-slider-val">0.90</span></div><div class="mcmc-slider-row"><label>Motivos</label><input type="range" id="mcmc-motifs" class="mcmc-slider" min="1" max="8" step="1" value="3" oninput="mcmcSyncSlider(this,'mcmc-motifs-v')"><span id="mcmc-motifs-v" class="mcmc-slider-val">3</span></div><div style="margin-top:10px"><div class="cell-lbl" style="margin-bottom:6px">SECCIÓN ACTIVA</div><div class="mcmc-section-btns"><button class="mcmc-section-btn active" onclick="mcmcSetSection('intro',this)">INTRO</button><button class="mcmc-section-btn" onclick="mcmcSetSection('verso',this)">VERSO</button><button class="mcmc-section-btn" onclick="mcmcSetSection('estribillo',this)">ESTRIBILLO</button><button class="mcmc-section-btn" onclick="mcmcSetSection('outro',this)">OUTRO</button></div></div></div></div><div class="pnl"><div class="pnl-hd">MÉTRICAS · ESTADO LATENTE</div><div class="pnl-body"><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px"><div class="mcmc-metric"><div class="cell-lbl">IHG</div><div id="mcmc-ihg-v" class="mcmc-metric-val" style="color:var(--azul)">—</div></div><div class="mcmc-metric"><div class="cell-lbl">IF</div><div id="mcmc-if-v2" class="mcmc-metric-val" style="color:var(--verde)">—</div></div><div class="mcmc-metric"><div class="cell-lbl">ICC</div><div id="mcmc-icc-v2" class="mcmc-metric-val" style="color:var(--oro)">—</div></div><div class="mcmc-metric"><div class="cell-lbl">IRC</div><div id="mcmc-irc-v" class="mcmc-metric-val" style="color:#a060d0">—</div></div></div><div style="margin-bottom:6px"><span class="cell-lbl">Sección</span><span id="mcmc-sec-lbl" style="font-family:var(--mono);font-size:11px;color:var(--oro);margin-left:8px">—</span></div><div style="margin-bottom:6px"><span class="cell-lbl">Modo / Raíz</span><span id="mcmc-mode-root" style="font-family:var(--mono);font-size:11px;color:var(--t1);margin-left:8px">—</span></div><div style="margin-bottom:6px"><span class="cell-lbl">Motivos mem.</span><span id="mcmc-mem-cnt" style="font-family:var(--mono);font-size:11px;color:var(--t1);margin-left:8px">0</span></div><div style="margin-bottom:6px"><span class="cell-lbl">Estado</span><span id="mcmc-phase-lbl" style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-left:8px">NO INICIALIZADO</span></div><div style="margin-top:6px"><div class="cell-lbl" style="margin-bottom:4px">MEMORIA MEMÉTICA</div><div class="meme-heat" id="mcmc-heat"></div></div></div></div></div>
+      <div class="pnl" style="margin-bottom:12px"><div class="pnl-hd">PIANO ROLL · TRAYECTORIA LATENTE</div><div class="pnl-body" style="padding:8px"><canvas id="mcmc-roll" height="90" style="width:100%;display:block;background:#141410"></canvas><div id="mcmc-roll-info" style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:4px">—</div></div></div>
+      <div class="pnl" style="margin-bottom:12px"><div class="pnl-hd">CURVAS DE EVOLUCIÓN · IHG / IF / ICC / IRC</div><div class="pnl-body" style="padding:8px"><canvas id="mcmc-timeline" height="120" style="width:100%;display:block;background:#141410"></canvas><div style="display:flex;gap:16px;margin-top:5px"><span style="font-size:9px;font-family:var(--mono);color:var(--azul)">── IHG</span><span style="font-size:9px;font-family:var(--mono);color:var(--verde)">── IF</span><span style="font-size:9px;font-family:var(--mono);color:var(--oro)">── ICC</span><span style="font-size:9px;font-family:var(--mono);color:#a060d0">── IRC</span><span style="font-size:9px;font-family:var(--mono);color:var(--t4)">┆ sección · zona morada = momento meme</span></div></div></div>
+      <div class="mcmc-grid" style="margin-bottom:12px"><div class="pnl"><div class="pnl-hd">RESPUESTA DEL OYENTE · SIMULADA</div><div class="pnl-body"><div class="mcmc-slider-row"><label>Intro</label><input type="range" class="mcmc-slider" id="rwd-intro" min="0" max="1" step="0.01" value="0.45" oninput="mcmcSyncSlider(this,'rwd-intro-v')"><span id="rwd-intro-v" class="mcmc-slider-val">0.45</span></div><div class="mcmc-slider-row"><label>Verso</label><input type="range" class="mcmc-slider" id="rwd-verso" min="0" max="1" step="0.01" value="0.52" oninput="mcmcSyncSlider(this,'rwd-verso-v')"><span id="rwd-verso-v" class="mcmc-slider-val">0.52</span></div><div class="mcmc-slider-row"><label>Estribillo</label><input type="range" class="mcmc-slider" id="rwd-estrib" min="0" max="1" step="0.01" value="0.82" oninput="mcmcSyncSlider(this,'rwd-estrib-v')"><span id="rwd-estrib-v" class="mcmc-slider-val">0.82</span></div><div class="mcmc-slider-row"><label>Outro</label><input type="range" class="mcmc-slider" id="rwd-outro" min="0" max="1" step="0.01" value="0.35" oninput="mcmcSyncSlider(this,'rwd-outro-v')"><span id="rwd-outro-v" class="mcmc-slider-val">0.35</span></div><button class="btn" onclick="mcmcSimFeedback()" style="margin-top:8px;width:100%">SIMULAR FEEDBACK</button></div></div><div class="pnl"><div class="pnl-hd">CONSOLA CULTURAL</div><div class="pnl-body" style="padding:8px"><div class="mcmc-console" id="mcmc-console"></div><div style="margin-top:6px"><span class="cell-lbl">Último reward</span><span id="mcmc-last-rwd" style="font-family:var(--mono);font-size:13px;color:var(--oro);margin-left:8px">—</span></div><div style="margin-top:4px"><span class="cell-lbl">ICC evolución</span><span id="mcmc-icc-evo" style="font-family:var(--mono);font-size:10px;color:var(--t1);margin-left:8px">—</span></div></div></div></div>
+      <div class="pnl"><div class="pnl-hd">ACCIONES</div><div class="pnl-body"><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="btn-gen-base" onclick="mcmcGenerateBase()">GENERAR BASE</button><button class="btn btn-g" id="btn-coevolve" onclick="mcmcCoevolve()" disabled>COEVOLUCIONAR</button><button class="btn" id="btn-freeze" onclick="mcmcFreezeMotif()" disabled>CONGELAR MOTIVO</button><button class="btn btn-g" id="btn-export-midi" onclick="mcmcExportMIDI()" disabled>EXPORTAR MIDI</button><button class="btn" onclick="mcmcReset()">REINICIAR</button></div><div id="mcmc-status" style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:8px">Sistema listo · Presiona GENERAR BASE para inicializar</div></div></div>
     </div>
 
-    <!-- TAB III: ANÁLISIS (simplificado) -->
-    <div id="tab-analytics" class="tab-panel">
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">III</span><span class="sec-t">Análisis · Tendencias de Mercado</span></div>
-        <div class="pnl"><div class="pnl-body"><div id="trends-grid" class="trends-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px;"></div></div></div>
-      </div>
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">Duetos · Sinergias Recomendadas</span></div>
-        <div id="duetos-panel" class="pnl"></div>
-      </div>
+    <div id="tab-analytics" class="tab-panel"><div class="sec"><div class="sec-hd"><span class="sec-n">III</span><span class="sec-t">Análisis · Tendencias de Mercado</span></div><div class="pnl"><div class="pnl-body"><div id="trends-grid" class="trends-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px;"></div></div></div></div><div class="sec"><div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">Duetos · Sinergias Recomendadas</span></div><div id="duetos-panel" class="pnl"></div></div></div>
+    <div id="tab-calendar" class="tab-panel"><div class="sec"><div class="sec-hd"><span class="sec-n">IV</span><span class="sec-t">Calendario · Latencia Institucional</span></div><div class="pnl"><div class="task-header" style="display:grid; grid-template-columns:3fr 1fr 1.5fr 1.2fr 1fr 1fr; background:var(--bg1); padding:8px 12px; font-size:8px;"><span>PROYECTO</span><span>ETAPA</span><span>RESPONSABLE</span><span>LDI (días)</span><span>CRITICIDAD</span><span>ACCION</span></div><div id="task-rows" class="task-rows"></div><div style="margin-top:12px;"><button class="btn btn-g" onclick="loadProjectTemplate()">Cargar plantilla ejemplo</button></div></div></div></div>
+    <div id="tab-scenarios" class="tab-panel"><div class="sec"><div class="sec-hd"><span class="sec-n">V</span><span class="sec-t">Escenarios de Intervención · SF</span></div><div id="sc-grid" class="sc-grid"></div></div></div>
+    <div id="tab-notif" class="tab-panel"><div class="sec"><div class="sec-hd"><span class="sec-n">VI</span><span class="sec-t">Sistema · Errores recientes · Tareas Diarias · Alertas</span></div><div class="pnl" style="margin-bottom: 1rem;"><div class="pnl-hd"><span class="pnl-lbl">ERROR DE PREDICCIÓN · EVOLUCIÓN</span><span class="pnl-st" id="err-st">últimos 50 registros</span></div><div style="padding: 1rem;"><canvas id="errorChart" height="200"></canvas></div></div><div class="notif-list" id="notif-list"><div style="padding:1.5rem;text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono);background:var(--bg1)">pendiente análisis de auditoría</div></div><div style="margin-top:1rem;padding:.75rem 1.25rem;background:var(--bg1);border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:space-between"><span style="font-size:9px;font-family:var(--mono);color:var(--t3)">CUMPLIMIENTO HOY:</span><span style="font-size:14px;font-family:var(--mono);color:var(--t1)" id="cumpl-pct">—</span></div></div><div class="sec"><div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">Log del Sistema</span></div><div id="sys-log" style="background:var(--bg2);border:.5px solid var(--bdr);padding:1rem;font-family:var(--mono);font-size:9px;color:var(--t3);height:200px;overflow-y:auto;line-height:1.8"></div></div></div>
+
+    <div id="tab-audio" class="tab-panel">
+      <div class="sec"><div class="sec-hd"><span class="sec-n">VII</span><span class="sec-t">Análisis de Canciones · Identificación de Instrumentos</span></div>
+      <div class="pnl"><div class="pnl-body"><div style="margin-bottom: 1rem;"><input type="file" id="audioFile" accept="audio/*" style="background:var(--bg2); border:0.5px solid var(--bdr); color:var(--t1); padding:8px; width:100%;"><button class="btn btn-g" onclick="analyzeSong()" style="margin-top: 8px;">ANALIZAR CANCIÓN</button></div><div id="audioResult" style="background:var(--bg1); padding:1rem; border-radius:4px; margin-top:1rem; display:none;"><h3 style="font-size:12px; margin-bottom:8px;">Instrumentos detectados</h3><div id="instruments-list"></div><h3 style="font-size:12px; margin-top:12px;">Géneros estimados</h3><div id="genres-list"></div><h3 style="font-size:12px; margin-top:12px;">Características espectrales</h3><div id="features-list"></div><button class="btn" onclick="applyToMidi()" style="margin-top:12px;">APLICAR A MIDI STUDIO</button></div></div></div></div>
     </div>
- 
-    <!-- TAB IV: CALENDARIO -->
-    <div id="tab-calendar" class="tab-panel">
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">IV</span><span class="sec-t">Calendario · Latencia Institucional</span></div>
-        <div class="pnl">
-          <div class="task-header" style="display:grid; grid-template-columns:3fr 1fr 1.5fr 1.2fr 1fr 1fr; background:var(--bg1); padding:8px 12px; font-size:8px;">
-            <span>PROYECTO</span><span>ETAPA</span><span>RESPONSABLE</span><span>LDI (días)</span><span>CRITICIDAD</span><span>ACCION</span>
-          </div>
-          <div id="task-rows" class="task-rows"></div>
-          <div style="margin-top:12px;"><button class="btn btn-g" onclick="loadProjectTemplate()">Cargar plantilla ejemplo</button></div>
-        </div>
-      </div>
-    </div>
- 
-    <!-- TAB V: ESCENARIOS -->
-    <div id="tab-scenarios" class="tab-panel">
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">V</span><span class="sec-t">Escenarios de Intervención · SF</span></div>
-        <div id="sc-grid" class="sc-grid"></div>
-      </div>
-    </div>
- 
-    <!-- TAB VI: SISTEMA -->
-    <div id="tab-notif" class="tab-panel">
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">VI</span><span class="sec-t">Sistema · Errores recientes · Tareas Diarias · Alertas</span></div>
-        <div class="pnl" style="margin-bottom: 1rem;">
-          <div class="pnl-hd"><span class="pnl-lbl">ERROR DE PREDICCIÓN · EVOLUCIÓN</span><span class="pnl-st" id="err-st">últimos 50 registros</span></div>
-          <div style="padding: 1rem;">
-            <canvas id="errorChart" height="200"></canvas>
-          </div>
-        </div>
-        <div class="notif-list" id="notif-list">
-          <div style="padding:1.5rem;text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono);background:var(--bg1)">pendiente análisis de auditoría</div>
-        </div>
-        <div style="margin-top:1rem;padding:.75rem 1.25rem;background:var(--bg1);border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:space-between">
-          <span style="font-size:9px;font-family:var(--mono);color:var(--t3)">CUMPLIMIENTO HOY:</span>
-          <span style="font-size:14px;font-family:var(--mono);color:var(--t1)" id="cumpl-pct">—</span>
-        </div>
-      </div>
-      <div class="sec">
-        <div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">Log del Sistema</span></div>
-        <div id="sys-log" style="background:var(--bg2);border:.5px solid var(--bdr);padding:1rem;font-family:var(--mono);font-size:9px;color:var(--t3);height:200px;overflow-y:auto;line-height:1.8"></div>
-      </div>
-    </div>
- 
-  </div><!-- /wrap -->
-</div><!-- /ph-dashboard -->
- 
+  </div>
+</div>
+
 <script>
-// ===================== CONFIGURACIÓN =====================
+// ========== CONFIGURACIÓN ==========
 const API_URL = (() => {
-  if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return 'http://127.0.0.1:5000';
+  if (window.location.protocol === 'file:' ||
+      window.location.hostname === 'localhost' ||
+      window.location.hostname === '127.0.0.1') {
+    return 'http://localhost:5000';
   }
   return 'https://system-friction.up.railway.app';
 })();
 
-const MODE = { API_FULL: 'api_full', GROQ_ONLY: 'groq_only', FALLBACK: 'fallback' };
-let currentMode = MODE.FALLBACK;
-
-// State
-const SF = {
-  ihg: null, nti: null, r: null, ldi: null,
-  dinamica: null, figura: null, intervencion: null,
-  narrativa: null, bemoles: [], sostenidos: [],
-  proyectos: [], escenarios: null,
-  tareas_dia: [], tendencias: [], duetos: [],
-  auditData: {}, selectedScenario: null,
-  stability: { jacobian: null, eigenvalues: null, stability: null, iad: null },
-  lastPredictionId: null
-};
-
+let SF = { ihg: null, nti: null, r: null, ldi: null, dinamica: null, figura: null, intervencion: null, narrativa: null, bemoles: [], sostenidos: [], proyectos: [], escenarios: null, tareas_dia: [], tendencias: [], duetos: [], auditData: {}, selectedScenario: null, stability: { jacobian: null, eigenvalues: null, stability: null, iad: null }, lastPredictionId: null };
 let ecgHist = [];
 let errorChart = null;
 let notifChecked = {};
-let recorders = {}, recognitions = {}, streamRef = null;
+let currentMode = 'fallback';
+let recognitions = {};
 
 // ========== FUNCIONES AUXILIARES ==========
 function safeEl(id) { return document.getElementById(id); }
@@ -1021,1281 +253,177 @@ async function apiCall(endpoint, method = 'GET', body = null) {
     const res = await fetch(`${API_URL}${endpoint}`, options);
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return await res.json();
-  } catch (err) {
-    console.warn(`API Error ${endpoint}:`, err.message);
-    sysLog(`⚠️ API error: ${err.message}`);
-    return null;
-  }
+  } catch (err) { console.warn(`API Error ${endpoint}:`, err.message); sysLog(`⚠️ API error: ${err.message}`); return null; }
 }
 
-async function healthCheck() {
-  const res = await apiCall('/health');
-  if (res) {
-    currentMode = MODE.API_FULL;
-    sysLog(`✅ API conectada · MIHM v${res.version}`);
-    return true;
-  }
-  currentMode = MODE.GROQ_ONLY;
-  sysLog(`⚠️ API no disponible (${API_URL}) · modo solo análisis Groq`);
-  return false;
-}
+async function healthCheck() { const res = await apiCall('/health'); if (res) { currentMode = 'api_full'; sysLog(`✅ API conectada · MIHM v${res.version}`); return true; } else { currentMode = 'groq_only'; sysLog(`⚠️ API no disponible · modo solo análisis Groq`); return false; } }
 
-// ========== GRÁFICA DE ERRORES ==========
-function initErrorChart() {
-  const ctx = safeEl('errorChart');
-  if (!ctx) return;
-  errorChart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      datasets: [
-        {
-          label: 'Error absoluto',
-          borderColor: '#ff6b6b',
-          backgroundColor: 'rgba(255,107,107,0.2)',
-          tension: 0.3,
-          fill: true,
-          data: []
-        },
-        {
-          label: 'Error suavizado',
-          borderColor: '#ff9f43',
-          backgroundColor: 'rgba(255,159,67,0.15)',
-          tension: 0.4,
-          fill: false,
-          borderDash: [5, 5],
-          data: []
-        }
-      ]
-    },
-    options: {
-      scales: {
-        x: { type: 'time', time: { unit: 'minute' }, title: { display: true, text: 'Fecha' } },
-        y: { min: 0, title: { display: true, text: 'Error (abs)' } }
-      },
-      plugins: {
-        tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw.y.toFixed(3)}` } }
-      }
-    }
-  });
-}
+function sysLog(msg) { const log = safeEl('sys-log'); if (!log) return; const ts = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); log.innerHTML += `<span style="color:var(--t4)">${ts}</span> · ${msg}\n`; log.scrollTop = log.scrollHeight; }
 
-async function loadRecentErrors() {
-  if (!errorChart) return;
-  const res = await apiCall('/history?limit=100');
-  if (!res || !res.history) return;
-  const errors = res.history
-    .filter(h => h.error !== undefined && h.error !== null)
-    .map(h => ({ x: new Date(h.timestamp), y: h.error, smoothed: h.error_smoothed || h.error }));
-  if (errors.length === 0) return;
-  errorChart.data.datasets[0].data = errors.map(e => ({ x: e.x, y: e.y }));
-  let smooth = errors[0].y;
-  errorChart.data.datasets[1].data = errors.map(e => {
-    smooth = 0.7 * e.y + 0.3 * smooth;
-    return { x: e.x, y: smooth };
-  });
-  errorChart.update();
-  safeText('err-st', `${errors.length} registros · último error ${errors[errors.length-1].y.toFixed(3)}`);
-}
-
-// ========== ENVÍO DE PREDICCIÓN Y APRENDIZAJE ==========
-async function sendPrediction(user, text) {
-  if (currentMode !== MODE.API_FULL) {
-    sysLog(`⚠️ Modo ${currentMode} · predicción simulada`);
-    return simulatePrediction(user, text);
-  }
-  const result = await apiCall('/predict', 'POST', { user, text });
-  if (result) {
-    SF.lastPredictionId = result.prediction_id;
-    SF.ihg = result.state.ihg;
-    SF.nti = result.state.nti;
-    SF.r = result.state.r;
-    SF.intervencion = result.intervencion;
-    SF.stability = result.stability;
-    updateDashboardFromAPI(result);
-    loadRecentErrors();
-    return result;
-  }
-  if (currentMode === MODE.API_FULL) {
-    currentMode = MODE.GROQ_ONLY;
-    sysLog('⚠️ API no responde · cambiando a modo solo análisis');
-  }
-  return simulatePrediction(user, text);
-}
-
-async function sendLearning(predictionId, outcome) {
-  if (currentMode !== MODE.API_FULL) {
-    sysLog(`⚠️ Modo ${currentMode} · aprendizaje no disponible`);
-    return null;
-  }
-  const result = await apiCall('/learn', 'POST', { prediction_id: predictionId, outcome: parseFloat(outcome) });
-  if (result?.new_params) {
-    sysLog(`🎓 Aprendizaje registrado · error: ${result.error?.toFixed(4)} · nuevos PID: Kp=${result.new_params.kp?.toFixed(2)}`);
-    await loadRecentErrors();
-  }
-  return result;
-}
-
-function simulatePrediction(user, text) {
-  const fakeIhg = -0.62 + (Math.random() - 0.5) * 0.3;
-  const fakeNti = 0.35 + (Math.random() - 0.5) * 0.2;
-  const fakeR = 0.55 + (Math.random() - 0.5) * 0.2;
-  return {
-    prediction_id: `sim_${Date.now()}`,
-    state: { ihg: fakeIhg, nti: fakeNti, r: fakeR },
-    intervencion: fakeIhg < -1.0 ? "🔴 Simulación: reducir dominancia" : "🟡 Simulación: monitoreo estable",
-    scorecard: { narrativa: "Modo simulación activo. Los valores son referenciales." }
-  };
-}
-
-// ========== ACTUALIZACIÓN DE DASHBOARD (con nuevas capas) ==========
-function updateDashboardFromAPI(apiData) {
-  const { state, scorecard, proyeccion, intervencion, metrics, stability, control, prediction_id } = apiData;
-  if (!state) return;
-
-  // KPIs header
-  updateHeaderKPI('hkv-ihg', state.ihg, [-1.2, -0.8, -0.4]);
-  updateHeaderKPI('hkv-nti', state.nti, [0.35, 0.5, 0.6], true);
-  updateHeaderKPI('hkv-r', state.r, [0.45, 0.55, 0.65], true);
-
-  safeText('v-ihg', state.ihg.toFixed(3));
-  safeText('v-nti', state.nti.toFixed(3));
-  safeText('v-r', state.r.toFixed(3));
-  updateTag('tag-ihg', state.ihg, [[-1.2,'al','HEGEMONÍA CRÍTICA'],[-0.8,'wa','TENSIÓN ALTA'],[-0.4,'wa','TENSIÓN MEDIA'],[2,'ok','EQUILIBRIO']]);
-  updateTag('tag-nti', state.nti, [[0.35,'al','COHERENCIA BAJA'],[0.5,'wa','COHERENCIA MEDIA'],[0.65,'wa','COHERENCIA MED-ALTA'],[2,'ok','COHERENCIA ALTA']]);
-  updateTag('tag-r', state.r, [[0.45,'al','RESISTENCIA CRÍTICA'],[0.55,'wa','RESISTENCIA BAJA'],[0.65,'wa','RESISTENCIA MEDIA'],[2,'ok','RESISTENCIA ALTA']]);
-
-  safeText('v-ldi', proyeccion?.ldi_days || scorecard?.ldi_days || '—');
-  safeText('v-din', scorecard?.dinamica || metrics?.dinamica || '—');
-  safeText('v-fig', scorecard?.figura_sistema || '♩');
-  safeText('v-int', intervencion || scorecard?.intervencion_inmediata || '—');
-
-  const narrBox = safeEl('narr-box');
-  const narrTxt = safeEl('narr-txt');
-  if (scorecard?.narrativa && narrTxt) {
-    narrTxt.textContent = scorecard.narrativa;
-    if (narrBox) narrBox.style.display = 'block';
-  }
-
-  if (scorecard && typeof scorecard === 'object') {
-    const execDiv = safeEl('executive-summary');
-    if (execDiv) {
-      if (scorecard.resumen_ejecutivo) {
-        execDiv.style.display = 'block';
-        safeText('resumen-ejecutivo', scorecard.resumen_ejecutivo);
-      } else {
-        execDiv.style.display = 'none';
-      }
-    }
-    const container = safeEl('acciones-clave-container');
-    if (container) {
-      if (Array.isArray(scorecard.acciones_clave) && scorecard.acciones_clave.length) {
-        container.innerHTML = '<div style="margin-top:8px;"><strong>Acciones clave:</strong></div>' + 
-          scorecard.acciones_clave.map(a => `<div style="padding:4px 0; font-size:11px;">• ${a}</div>`).join('');
-      } else {
-        container.innerHTML = '';
-      }
-    }
-  }
-
-  if (scorecard?.bemoles || scorecard?.sostenidos) {
-    renderArmadura(scorecard.bemoles || [], scorecard.sostenidos || []);
-  }
-
-  renderTensionBarsFromAPI(state.ihg, state.nti);
-
-  ecgHist.push(state.ihg);
-  if (ecgHist.length > 600) ecgHist.shift();
-  drawECG();
-
-  updateMIDIParamsFromState();
-
-  if (proyeccion) {
-    safeText('mc-fecha', proyeccion.fecha_optima || '—');
-    safeText('mc-prob', `${proyeccion.probabilidad_exito || 0}%`);
-    safeText('mc-riesgo', `${proyeccion.probabilidad_colapso || 0}%`);
-    const probEl = safeEl('mc-prob');
-    if (probEl) {
-      const prob = proyeccion.probabilidad_exito || 0;
-      probEl.className = 'cell-v' + (prob > 60 ? ' ok' : prob > 40 ? ' wa' : ' al');
-    }
-  }
-
-  if (scorecard?.escenarios) {
-    renderScenariosFromAPI(scorecard.escenarios);
-  }
-
-  if (scorecard?.tareas_dia) {
-    renderNotificationsFromAPI(scorecard.tareas_dia);
-  }
-
-  // NUEVO: Control PID
-  if (control) {
-    safeText('kpi-u', control.u.toFixed(3));
-    safeText('kpi-kp', control.kp.toFixed(2));
-    safeText('kpi-kd', control.kd.toFixed(2));
-    safeText('kpi-ki', control.ki.toFixed(2));
-  }
-
-  // Estabilidad (con color)
-  if (stability) {
-    safeText('stab-status', stability.stability?.toUpperCase() || '—');
-    safeText('stab-iad', stability.iad_approx?.toFixed(4) || '—');
-    const stabEl = safeEl('stab-status');
-    if (stabEl) {
-      stabEl.style.color =
-        stability.stability === 'estable' ? 'var(--verde)' :
-        stability.stability === 'inestable' ? 'var(--rojo)' :
-        'var(--oro)';
-    }
-  }
-
-  // Proyección Monte Carlo
-  if (proyeccion) {
-    safeText('mc-ihg', proyeccion.ihg_esperado?.toFixed(3));
-    safeText('mc-collapse', proyeccion.probabilidad_colapso?.toFixed(1));
-    safeText('mc-sigma', proyeccion.sigma_usado?.toFixed(4));
-  }
-
-  // ID de predicción
-  if (prediction_id) {
-    safeText('pred-id', prediction_id);
-    SF.lastPredictionId = prediction_id;
-  }
-}
-
-function updateHeaderKPI(id, val, thresholds, invert = false) {
-  const el = safeEl(id);
-  if (!el) return;
-  el.textContent = val.toFixed(3);
-  const crit = invert ? (val < thresholds[0]) : (val < thresholds[0]);
-  const warn = invert ? (val < thresholds[1]) : (val < thresholds[1]);
-  el.className = 'hdr-kn' + (crit ? ' al' : warn ? ' wa' : ' ok');
-}
-
-function updateTag(id, val, thresholds) {
-  const el = safeEl(id);
-  if (!el) return;
-  for (const [thresh, cls, lbl] of thresholds) {
-    if (val < thresh) {
-      el.className = 'tag ' + cls;
-      el.textContent = lbl;
-      return;
-    }
-  }
-}
-
-function renderTensionBarsFromAPI(ihg, nti) {
-  const container = safeEl('tension-bars');
-  if (!container) return;
-  const vectors = [
-    { label: 'V1 · Producción', tension: Math.min(100, Math.max(0, Math.round((Math.abs(ihg) + 0.5) * 50))) },
-    { label: 'V2 · Lanzamiento', tension: Math.min(100, Math.max(0, Math.round((1 - nti) * 90))) },
-    { label: 'V3 · Promoción', tension: Math.min(100, Math.max(0, Math.round((1 - (SF.r || 0.5)) * 70))) },
-    { label: 'V4 · Administración', tension: Math.min(100, Math.max(0, Math.round((SF.ldi || 30) / 60 * 80))) },
-    { label: 'V5 · Talento', tension: Math.min(100, Math.max(0, Math.round(((Math.abs(ihg) + (SF.r || 0.5)) * 0.5) * 60))) }
-  ];
-  const colors = { high: '#BE3A3A', med: '#C8A951', low: '#177A5E' };
-  container.innerHTML = vectors.map(v => {
-    const color = v.tension > 65 ? colors.high : v.tension > 40 ? colors.med : colors.low;
-    const lbl = v.tension > 65 ? 'alta' : v.tension > 40 ? 'media' : 'baja';
-    return `<div class="bar-row"><span class="bar-lbl">${v.label}</span><div class="bar-track"><div class="bar-fill" style="width:${v.tension}%;background:${color}"></div></div><span class="bar-val" style="color:${color}">${lbl}</span></div>`;
-  }).join('');
-}
-
-function renderArmadura(bemoles, sostenidos) {
-  const bEl = safeEl('arm-bemoles');
-  const sEl = safeEl('arm-sostenidos');
-  if (bEl) bEl.innerHTML = bemoles.map(b => `<div class="arm-item fl"><span class="arm-s">♭</span><div><div class="arm-ttl">${b}</div></div></div>`).join('');
-  if (sEl) sEl.innerHTML = sostenidos.map(s => `<div class="arm-item sh"><span class="arm-s">♯</span><div><div class="arm-ttl">${s}</div></div></div>`).join('');
-}
-
-function renderNotificationsFromAPI(tareas) {
-  const container = safeEl('notif-list');
-  if (!container) return;
-  if (!tareas || tareas.length === 0) {
-    container.innerHTML = '<div style="padding:1.5rem;text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono);background:var(--bg1)">sin tareas generadas</div>';
-    return;
-  }
-  notifChecked = {};
-  container.innerHTML = tareas.map((t, i) => `
-    <div class="notif-row">
-      <div class="notif-sym">○</div>
-      <div>
-        <div class="notif-ttl">Tarea ${i + 1}</div>
-        <div class="notif-dsc">${t}</div>
-        <div class="notif-done" onclick="checkTask(${i}, this)">
-          <div class="notif-cb" id="ncb-${i}"></div>
-          <span class="notif-cb-lbl">MARCAR COMPLETADA</span>
-        </div>
-      </div>
-    </div>
-  `).join('');
-  const cumplEl = safeEl('cumpl-pct');
-  if (cumplEl) cumplEl.textContent = `0 / ${tareas.length} (0%)`;
-}
-
-function renderScenariosFromAPI(escenarios) {
-  const container = safeEl('sc-grid');
-  if (!container || !escenarios) return;
-  const keys = ['a', 'b', 'c'];
-  container.innerHTML = keys.map(key => {
-    const s = escenarios[key];
-    if (!s) return '';
-    const cls = key === 'a' ? 'a' : key === 'b' ? 'b' : 'c';
-    const actions = (s.acciones || []).map(a => `<div class="sc-action">${a}</div>`).join('');
-    return `<div class="sc-card">
-      <div class="sc-id ${cls}">ESCENARIO ${key.toUpperCase()} · SF</div>
-      <div class="sc-ttl">${s.nombre}</div>
-      <div class="sc-prob ${cls}">${Math.round(s.prob_exito || 0)}%</div>
-      <div class="sc-desc">${s.descripcion}</div>
-      <div class="sc-actions">${actions}</div>
-      <div style="font-size:8px;font-family:var(--mono);color:var(--t3);margin-bottom:8px">
-        IHG→${(s.ihg_proy || 0).toFixed(2)} · NTI→${(s.nti_proy || 0).toFixed(2)} · R→${(s.r_proy || 0).toFixed(2)}
-      </div>
-      <button class="sc-elect-btn" id="sc-btn-${key}" onclick="electScenarioAPI('${key}', this)">ELEGIR ESTE ESCENARIO</button>
-    </div>`;
-  }).join('');
-}
-
-async function electScenarioAPI(key, btn) {
-  SF.selectedScenario = key;
-  document.querySelectorAll('.sc-elect-btn').forEach(b => b.classList.remove('elected'));
-  btn.classList.add('elected');
-  btn.textContent = '✓ ESCENARIO ELEGIDO · NODO REGISTRADO';
-  sysLog(`NODO REGISTRADO · Escenario ${key.toUpperCase()}`);
-  if (currentMode === MODE.API_FULL) {
-    await apiCall('/scenario/select', 'POST', { scenario: key, timestamp: Date.now() });
-  }
-}
-
-// ========== MCM-C STUDIO · Sistema Coevolutivo Cultural ==========
-const SCALES = { Locrian:[0,1,3,5,6,8,10], Phrygian:[0,1,3,5,7,8,10], Dorian:[0,2,3,5,7,9,10], Ionian:[0,2,4,5,7,9,11] };
-const ROOTS_N = ['Do','Re♭','Re','Mi♭','Mi','Fa','Sol♭','Sol','La♭','La','Si♭','Si'];
-const ROOTS_M = [60,61,62,63,64,65,66,67,68,69,70,71];
-const SECTIONS = ['intro','verso','estribillo','outro'];
-
-const MCMC = {
-  init:false, ihg:null, ifv:null, icc:null, irc:null,
-  z:null, section:'intro', frozenMotif:null, frozenIdx:null,
-  memory:[], c:0, rField:0, kappa:0.22, lambdaC:0.9,
-  ifTarget:0.75, iccTarget:0.68, maxMotifs:3,
-  tl:{ ihg:[], ifv:[], icc:[], irc:[], sec:[] },
-  step:0, genre:'synthwave', mode:'Dorian', ridx:0,
-  vel:80, notes:8, ndur:'negra', baseOk:false, running:false, _timer:null, _pIhg:null
-};
-
-function mcmcSyncSlider(el, valId) {
-  const v = parseFloat(el.value);
-  const d = v < 10 ? 2 : 0;
-  safeText(valId, v.toFixed(d));
-  const id = el.id;
-  if      (id==='mcmc-kappa')      MCMC.kappa    = v;
-  else if (id==='mcmc-lambda')     MCMC.lambdaC  = v;
-  else if (id==='mcmc-if-target')  MCMC.ifTarget = v;
-  else if (id==='mcmc-icc-target') MCMC.iccTarget= v;
-  else if (id==='mcmc-motifs')     MCMC.maxMotifs= Math.round(v);
-}
-
-function mcmcLog(msg) {
-  const c = safeEl('mcmc-console'); if (!c) return;
-  const t = new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  c.innerHTML = '<span style="color:var(--t4)">['+t+']</span> '+msg+'\n' + c.innerHTML;
-}
-
-function mcmcModeFrom(ihg) {
-  if (ihg < -1.2) return 'Locrian';
-  if (ihg <  -0.8) return 'Phrygian';
-  if (ihg <  -0.4) return 'Dorian';
-  return 'Ionian';
-}
-
-function mcmcSetSection(sec, btn) {
-  MCMC.section = sec;
-  document.querySelectorAll('.mcmc-section-btn').forEach((b,i)=>b.classList.toggle('active', SECTIONS[i]===sec));
-  safeText('mcmc-sec-lbl', sec.toUpperCase());
-  if (MCMC.baseOk) { mcmcDrawRoll(); }
-}
-
-function mcmcInitState() {
-  const ihgBase = SF.ihg !== null ? SF.ihg : -(0.3+Math.random()*0.3);
-  MCMC.z       = Array.from({length:8},()=>ihgBase*0.5+(Math.random()-0.5)*0.4);
-  MCMC.ihg     = ihgBase;
-  MCMC.ifv     = 0.52 + Math.random()*0.2;
-  MCMC.icc     = 0.35 + Math.random()*0.12;
-  MCMC.irc     = 0.28 + Math.random()*0.1;
-  MCMC.c       = 0.3;
-  MCMC.rField  = 0.2;
-  MCMC.step    = 0;
-  MCMC.memory  = [];
-  MCMC.frozenMotif = null;
-  MCMC.frozenIdx   = null;
-  MCMC._pIhg   = ihgBase;
-  MCMC.tl      = { ihg:[], ifv:[], icc:[], irc:[], sec:[] };
-  MCMC.genre   = (safeEl('mcmc-genre')||{value:'synthwave'}).value;
-  MCMC.ridx    = SF.nti !== null ? Math.abs(Math.round(SF.nti*11))%12 : Math.floor(Math.random()*12);
-  MCMC.mode    = mcmcModeFrom(MCMC.ihg);
-  MCMC.vel     = Math.round(40+((MCMC.ihg+2)/3)*55);
-  MCMC.notes   = Math.round(6+MCMC.ifv*16);
-  MCMC.ndur    = MCMC.icc>0.5?'negra':'corchea';
-}
-
-function mcmcTick(reward) {
-  const gamma=0.15, eta=0.12, mu=0.15;
-  MCMC.c = Math.max(0,Math.min(1,(1-gamma)*MCMC.c + eta*reward + (Math.random()-0.5)*0.02));
-  const impact = reward*0.8 + Math.random()*0.1;
-  MCMC.rField = Math.max(0,Math.min(1, 0.82*MCMC.rField + 0.18*MCMC.c + 0.05*impact));
-
-  let cult = 0;
-  if (MCMC.memory.length>0) {
-    const cen = MCMC.memory.reduce((a,m)=>a+m.reward,0)/MCMC.memory.length;
-    cult = MCMC.kappa*(cen-MCMC.icc);
-  }
-
-  const err = MCMC.ihg-(-0.4);
-  const u = -(4.2*err + 1.3*(MCMC.ihg-(MCMC._pIhg||MCMC.ihg)));
-  MCMC._pIhg = MCMC.ihg;
-  MCMC.ihg = Math.max(-2.0,Math.min(0.5, MCMC.ihg + 0.04*u + cult*0.01 + (Math.random()-0.5)*0.015));
-
-  MCMC.ifv  = Math.max(0.3,Math.min(0.98, MCMC.ifv  + 0.015*(MCMC.ifTarget-MCMC.ifv)  + 0.008*reward + (Math.random()-0.5)*0.01));
-  MCMC.icc  = Math.max(0.1,Math.min(0.99, MCMC.icc  + 0.012*(MCMC.iccTarget-MCMC.icc) + 0.02*cult + 0.015*(reward-0.5) - MCMC.lambdaC*0.005*(1-MCMC.icc)**2));
-  MCMC.irc  = Math.max(0,  Math.min(1,    0.65*MCMC.irc + 0.35*(reward*MCMC.ifv*impact)));
-
-  MCMC.mode  = mcmcModeFrom(MCMC.ihg);
-  MCMC.vel   = Math.round(40+((MCMC.ihg+2)/3)*55);
-  MCMC.notes = Math.round(6+MCMC.ifv*16);
-  MCMC.ndur  = MCMC.icc>0.5?'negra':'corchea';
-
-  MCMC.tl.ihg.push(MCMC.ihg); MCMC.tl.ifv.push(MCMC.ifv);
-  MCMC.tl.icc.push(MCMC.icc); MCMC.tl.irc.push(MCMC.irc);
-  MCMC.tl.sec.push(MCMC.section);
-
-  if (reward>0.65 && MCMC.memory.length<MCMC.maxMotifs) {
-    const dup = MCMC.memory.some(m=>Math.abs(m.reward-reward)<0.05&&m.section===MCMC.section);
-    if (!dup) {
-      MCMC.memory.push({z:[...MCMC.z],reward,icc:MCMC.icc,section:MCMC.section,step:MCMC.step});
-      mcmcLog('+motivo · '+MCMC.section+' · r='+reward.toFixed(2));
-    }
-  }
-  if (MCMC.memory.length>2) {
-    const avg = MCMC.memory.reduce((a,m)=>a+m.reward,0)/MCMC.memory.length;
-    if (avg<0.5) { MCMC.memory.shift(); mcmcLog('−motivo olvidado'); }
-  }
-  if (MCMC.irc>0.65 && reward>0.75 && MCMC.step%12===0) {
-    mcmcLog('★ MOMENTO MEME · IRC '+MCMC.irc.toFixed(2));
-    if (MCMC.memory.length>0) {
-      const best=MCMC.memory.reduce((a,b)=>a.reward>b.reward?a:b);
-      best.reward=Math.min(1,best.reward*1.2);
-    }
-  }
-  MCMC.step++;
-}
-
-function mcmcSectionReward() {
-  const m={intro:'rwd-intro',verso:'rwd-verso',estribillo:'rwd-estrib',outro:'rwd-outro'};
-  const el=safeEl(m[MCMC.section]||'rwd-estrib');
-  return el?parseFloat(el.value):0.5;
-}
-
-function mcmcRefresh() {
-  if (!MCMC.baseOk) return;
-  const ihgC = MCMC.ihg<-0.8?'var(--rojo)':MCMC.ihg<-0.4?'var(--azul)':'var(--verde)';
-  const ifC  = MCMC.ifv>=MCMC.ifTarget?'var(--verde)':'var(--oro)';
-  const iccC = MCMC.icc>=MCMC.iccTarget?'var(--verde)':'var(--oro)';
-  const ircC = MCMC.irc>0.65?'#d080ff':'#a060d0';
-  const set=(id,v,c)=>{const e=safeEl(id);if(e){e.textContent=v;if(c)e.style.color=c;}};
-  set('mcmc-ihg-v', MCMC.ihg.toFixed(2), ihgC);
-  set('mcmc-if-v2', MCMC.ifv.toFixed(2), ifC);
-  set('mcmc-icc-v2',MCMC.icc.toFixed(2), iccC);
-  set('mcmc-irc-v', MCMC.irc.toFixed(2), ircC);
-  safeText('mcmc-sec-lbl',  MCMC.section.toUpperCase());
-  safeText('mcmc-mode-root',MCMC.mode+' · '+ROOTS_N[MCMC.ridx]+'4');
-  safeText('mcmc-mem-cnt',  MCMC.memory.length+' / '+MCMC.maxMotifs);
-  safeText('mcmc-icc-evo',  MCMC.icc.toFixed(3)+(MCMC.icc>=MCMC.iccTarget?' ✓':' → '+MCMC.iccTarget.toFixed(2)));
-  // heat map
-  const heat=safeEl('mcmc-heat'); if(heat){
-    heat.innerHTML='';
-    for(let i=0;i<MCMC.maxMotifs;i++){
-      const d=document.createElement('div'); d.className='meme-cell';
-      if(i<MCMC.memory.length){
-        const m=MCMC.memory[i]; const fz=(MCMC.frozenIdx===i);
-        d.style.background=fz?'#a060d0':`rgba(200,169,81,${m.reward.toFixed(2)})`;
-        d.style.border=fz?'1px solid #d080ff':'0.5px solid var(--bdr)';
-        d.title='Motivo '+(i+1)+' · '+m.section+' · r='+m.reward.toFixed(2)+(fz?' · CONGELADO':'');
-      } else { d.style.background='var(--bg1)'; d.style.border='0.5px solid var(--bdr)'; }
-      heat.appendChild(d);
-    }
-  }
-}
-
-function mcmcDrawTimeline() {
-  const cv=safeEl('mcmc-timeline'); if(!cv) return;
-  const dpr=window.devicePixelRatio||1; cv.width=cv.offsetWidth*dpr; cv.height=120*dpr;
-  const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
-  const w=cv.offsetWidth, h=120;
-  ctx.fillStyle='#141410'; ctx.fillRect(0,0,w,h);
-  const tl=MCMC.tl, n=tl.ihg.length; if(n<2) return;
-  // section boundaries
-  let prev=tl.sec[0];
-  for(let i=1;i<n;i++){
-    if(tl.sec[i]!==prev){
-      const x=(i/(n-1))*w;
-      ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=1;
-      ctx.setLineDash([2,4]); ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke();
-      ctx.setLineDash([]); ctx.fillStyle='rgba(255,255,255,0.18)'; ctx.font='7px Courier New';
-      ctx.fillText(tl.sec[i].slice(0,3).toUpperCase(),x+2,9); ctx.restore();
-      prev=tl.sec[i];
-    }
-  }
-  // meme zones
-  for(let i=0;i<n;i++){ if(tl.irc[i]>0.65){ const x=(i/(n-1))*w; ctx.fillStyle='rgba(160,96,208,0.07)'; ctx.fillRect(x,0,w/n+1,h); } }
-  // target lines
-  const itY=5+(1-(MCMC.ifTarget-0.3)/0.7)*(h-10);
-  ctx.save(); ctx.strokeStyle='rgba(23,122,94,0.35)'; ctx.lineWidth=0.8; ctx.setLineDash([3,5]);
-  ctx.beginPath(); ctx.moveTo(0,itY); ctx.lineTo(w,itY); ctx.stroke();
-  const icY=5+(1-MCMC.iccTarget)*(h-10);
-  ctx.strokeStyle='rgba(200,169,81,0.35)'; ctx.beginPath(); ctx.moveTo(0,icY); ctx.lineTo(w,icY); ctx.stroke();
-  ctx.setLineDash([]); ctx.restore();
-  // curves
-  const curve=(data,col,mn,mx)=>{
-    ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.beginPath();
-    for(let i=0;i<n;i++){
-      const x=(i/(n-1))*w, yn=1-(data[i]-mn)/(mx-mn), y=5+yn*(h-10);
-      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
-    } ctx.stroke(); ctx.restore();
-  };
-  curve(tl.ihg,'#2c6e9e',-2.0,0.5);
-  curve(tl.ifv,'#177a5e',0.3,1.0);
-  curve(tl.icc,'#c8a951',0.0,1.0);
-  curve(tl.irc,'#a060d0',0.0,1.0);
-}
-
-function mcmcDrawRoll() {
-  const cv=safeEl('mcmc-roll'); if(!cv||!MCMC.baseOk) return;
-  const dpr=window.devicePixelRatio||1; cv.width=cv.offsetWidth*dpr; cv.height=90*dpr;
-  const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr);
-  const w=cv.offsetWidth, h=90;
-  ctx.fillStyle='#141410'; ctx.fillRect(0,0,w,h);
-  const scale=SCALES[MCMC.mode]||SCALES.Dorian, root=ROOTS_M[MCMC.ridx], n=MCMC.notes;
-  const pitches=[];
-  for(let i=0;i<n;i++){
-    const s=i%scale.length, oct=Math.floor(i/scale.length);
-    pitches.push(root+scale[s]+oct*12+(oct>Math.floor(MCMC.ifv*2)?12:0));
-  }
-  const minP=Math.min(...pitches), rng=Math.max(Math.max(...pitches)-minP,1), nw=(w-8)/n;
-  for(let i=0;i<n;i++){
-    const x=4+i*nw, yn=1-(pitches[i]-minP)/rng, y=yn*(h-10)+5;
-    ctx.fillStyle=`rgba(200,169,81,${(0.3+MCMC.icc*0.6).toFixed(2)})`;
-    ctx.fillRect(x, y, nw*0.84, 4+MCMC.icc*3);
-  }
-  if(MCMC.frozenMotif){ ctx.fillStyle='rgba(160,96,208,0.12)'; ctx.fillRect(0,0,w,h); }
-  // octave grid
-  [48,60,72].forEach(o=>{
-    if(o>=minP&&o<=minP+rng){ const y=(1-(o-minP)/rng)*(h-10)+5;
-      ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=0.5;
-      ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); }
-  });
-  ctx.fillStyle='rgba(200,169,81,0.55)'; ctx.font='8px Courier New';
-  ctx.fillText(MCMC.mode+' · '+ROOTS_N[MCMC.ridx]+'4 · '+n+' notas · vel '+MCMC.vel+' · '+MCMC.section,6,h-5);
-  safeText('mcmc-roll-info','IHG '+MCMC.ihg.toFixed(2)+' · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2)+' · IRC '+MCMC.irc.toFixed(2)+' · paso '+MCMC.step);
-}
-
-function mcmcGenerateBase() {
-  mcmcInitState();
-  MCMC.baseOk=true;
-  MCMC.tl.ihg.push(MCMC.ihg); MCMC.tl.ifv.push(MCMC.ifv);
-  MCMC.tl.icc.push(MCMC.icc); MCMC.tl.irc.push(MCMC.irc); MCMC.tl.sec.push(MCMC.section);
-  safeText('mcmc-phase-lbl','BASE GENERADA · listo para feedback');
-  safeText('mcmc-status','Base generada · '+MCMC.genre+' · '+MCMC.mode+' · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2));
-  ['btn-coevolve','btn-freeze','btn-export-midi'].forEach(id=>{const e=safeEl(id);if(e)e.disabled=false;});
-  mcmcLog('Generación base · '+MCMC.genre+' · IHG '+MCMC.ihg.toFixed(2)+' · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2));
-  mcmcRefresh(); mcmcDrawRoll(); mcmcDrawTimeline();
-}
-
-function mcmcSimFeedback() {
-  if(!MCMC.baseOk){mcmcLog('ERROR: Generar base primero');return;}
-  const r=mcmcSectionReward();
-  safeText('mcmc-last-rwd','+'+r.toFixed(2)+' engagement');
-  for(let i=0;i<5;i++) mcmcTick(Math.max(0,Math.min(1,r+(Math.random()-0.5)*0.05)));
-  mcmcLog('Feedback · '+MCMC.section+' · r='+r.toFixed(2));
-  mcmcRefresh(); mcmcDrawRoll(); mcmcDrawTimeline();
-  safeText('mcmc-status','Feedback simulado · ICC '+MCMC.icc.toFixed(2)+' → objetivo '+MCMC.iccTarget.toFixed(2));
-}
-
-function mcmcCoevolve() {
-  if(!MCMC.baseOk) return;
-  if(MCMC.running){
-    clearInterval(MCMC._timer); MCMC._timer=null; MCMC.running=false;
-    safeText('btn-coevolve','COEVOLUCIONAR');
-    safeText('mcmc-phase-lbl','DETENIDO · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2));
-    safeText('mcmc-status','Coevolución detenida · '+MCMC.step+' pasos');
-    return;
-  }
-  MCMC.running=true;
-  safeText('btn-coevolve','■ DETENER');
-  safeText('mcmc-phase-lbl','COEVOLUCIONANDO…');
-  mcmcLog('Inicio coevolución · κ='+MCMC.kappa.toFixed(2)+' · λ_C='+MCMC.lambdaC.toFixed(2));
-  let s=0, MAX=256;
-  MCMC._timer=setInterval(()=>{
-    const sec=SECTIONS[Math.floor(s/32)%SECTIONS.length];
-    if(sec!==MCMC.section) mcmcSetSection(sec,null);
-    const r=Math.max(0,Math.min(1,mcmcSectionReward()+(Math.random()-0.5)*0.08));
-    mcmcTick(r);
-    if(s%8===0){
-      mcmcRefresh(); mcmcDrawRoll(); mcmcDrawTimeline();
-      safeText('mcmc-last-rwd','+'+r.toFixed(2)+' engagement');
-      safeText('mcmc-status','Paso '+s+'/'+MAX+' · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2)+' · IRC '+MCMC.irc.toFixed(2));
-    }
-    s++;
-    if(s>=MAX){
-      clearInterval(MCMC._timer); MCMC._timer=null; MCMC.running=false;
-      safeText('btn-coevolve','COEVOLUCIONAR');
-      const lbl='COMPLETO · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2)+' · IRC '+MCMC.irc.toFixed(2);
-      safeText('mcmc-phase-lbl',lbl);
-      mcmcLog('Coevolución completa · '+s+' pasos · IRC '+MCMC.irc.toFixed(2));
-      if(MCMC.irc>0.65) mcmcLog('★ IRC > 0.65 · Gramática colectiva transformada');
-      mcmcRefresh(); mcmcDrawRoll(); mcmcDrawTimeline();
-    }
-  },40);
-}
-
-function mcmcFreezeMotif() {
-  if(!MCMC.baseOk) return;
-  if(MCMC.memory.length===0){mcmcLog('Sin motivos en memoria · ejecuta feedback primero');return;}
-  const bi=MCMC.memory.reduce((bi,m,i,a)=>m.reward>a[bi].reward?i:bi,0);
-  MCMC.frozenMotif={...MCMC.memory[bi]}; MCMC.frozenIdx=bi;
-  mcmcLog('Motivo '+(bi+1)+' congelado · '+MCMC.frozenMotif.section+' · r='+MCMC.frozenMotif.reward.toFixed(2));
-  safeText('mcmc-status','Motivo congelado · sección '+MCMC.frozenMotif.section);
-  mcmcRefresh(); mcmcDrawRoll();
-}
-
-function mcmcExportMIDI() {
-  if(!MCMC.baseOk) return;
-  const TPB=480, bpm=Math.round(70+MCMC.icc*60+MCMC.irc*20), tempo=Math.round(60000000/bpm);
-  const sc=SCALES[MCMC.mode]||SCALES.Dorian, root=ROOTS_M[MCMC.ridx];
-  const gm={synthwave:80,pop:0,techno:81,'lo-fi':25,jazz:32};
-  const instr=gm[MCMC.genre]||0, ch=0;
-  // build melody (2 phrases) + bass if ICC > 0.6
-  const evts=[];
-  const vLen=v=>{if(v<128)return[v];const b=[];let x=v;while(x>0){b.unshift(x&0x7F);x>>=7;}for(let i=0;i<b.length-1;i++)b[i]|=0x80;return b;};
-  const push=(dt,b)=>evts.push(...vLen(dt),...b);
-  // tempo
-  push(0,[0xFF,0x51,0x03,(tempo>>16)&0xFF,(tempo>>8)&0xFF,tempo&0xFF]);
-  // program
-  push(0,[0xC0|ch, instr]);
-  const dur=MCMC.icc>0.5?1.0:0.5;
-  const N=MCMC.notes;
-  for(let p=0;p<2;p++){
-    for(let i=0;i<N;i++){
-      const s=i%sc.length, oct=Math.floor(i/sc.length);
-      const pitch=Math.max(0,Math.min(127,root+sc[s]+oct*12));
-      const vel=Math.max(1,Math.min(127,MCMC.vel+Math.round((Math.random()-0.5)*8)));
-      const ticks=Math.round(dur*TPB);
-      push(0,[0x90|ch,pitch,vel]);
-      push(ticks,[0x80|ch,pitch,0x40]);
-    }
-  }
-  // chord hits if ICC high
-  if(MCMC.icc>0.6){
-    const chords=[root,root+sc[2],root+sc[4]];
-    for(const cr of chords){
-      const pitch=Math.max(0,Math.min(127,cr-12));
-      const vel=Math.max(1,Math.min(127,Math.round(MCMC.vel*0.7)));
-      push(0,[0x90|ch,pitch,vel]);
-      push(Math.round(2*TPB),[0x80|ch,pitch,0x40]);
-    }
-  }
-  push(0,[0xFF,0x2F,0x00]);
-  const tLen=evts.length;
-  const bytes=new Uint8Array([
-    0x4D,0x54,0x68,0x64,0,0,0,6,0,0,0,1,(TPB>>8)&0xFF,TPB&0xFF,
-    0x4D,0x54,0x72,0x6B,(tLen>>24)&0xFF,(tLen>>16)&0xFF,(tLen>>8)&0xFF,tLen&0xFF,
-    ...evts
-  ]);
-  const blob=new Blob([bytes],{type:'audio/midi'});
-  const url=URL.createObjectURL(blob);
-  const a=document.createElement('a'); a.href=url;
-  a.download='scorefriction_'+MCMC.genre+'_'+MCMC.mode+'_'+ROOTS_N[MCMC.ridx]+'4_IF'+MCMC.ifv.toFixed(2)+'_ICC'+MCMC.icc.toFixed(2)+'.mid';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
-  mcmcLog('MIDI exportado · '+bpm+' BPM · '+MCMC.mode+' · '+ROOTS_N[MCMC.ridx]+'4');
-  safeText('mcmc-status','MIDI exportado · '+bpm+' BPM · '+MCMC.mode);
-}
-
-function mcmcReset() {
-  if(MCMC._timer){clearInterval(MCMC._timer);MCMC._timer=null;}
-  MCMC.baseOk=false; MCMC.running=false; MCMC.step=0;
-  MCMC.ihg=null; MCMC.ifv=null; MCMC.icc=null; MCMC.irc=null;
-  MCMC.memory=[]; MCMC.frozenMotif=null; MCMC.frozenIdx=null;
-  MCMC.tl={ihg:[],ifv:[],icc:[],irc:[],sec:[]};
-  ['mcmc-ihg-v','mcmc-if-v2','mcmc-icc-v2','mcmc-irc-v','mcmc-sec-lbl','mcmc-mode-root','mcmc-last-rwd','mcmc-icc-evo','mcmc-roll-info'].forEach(id=>safeText(id,'—'));
-  safeText('mcmc-mem-cnt','0'); safeText('mcmc-phase-lbl','NO INICIALIZADO'); safeText('btn-coevolve','COEVOLUCIONAR');
-  ['btn-coevolve','btn-freeze','btn-export-midi'].forEach(id=>{const e=safeEl(id);if(e)e.disabled=true;});
-  const heat=safeEl('mcmc-heat');if(heat)heat.innerHTML='';
-  const con=safeEl('mcmc-console');if(con)con.innerHTML='';
-  ['mcmc-roll','mcmc-timeline'].forEach(id=>{const cv=safeEl(id);if(cv){const ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);}});
-  safeText('mcmc-status','Sistema reiniciado · Presiona GENERAR BASE para inicializar');
-  mcmcLog('Sistema reiniciado');
-}
-
-// Called by main update loop — sync SF state to MCM-C display
-function getMIDIParamsFromState() {
-  if(!MCMC.baseOk||SF.ihg===null) return null;
-  return {mode:MCMC.mode,ridx:MCMC.ridx,rootName:ROOTS_N[MCMC.ridx],midiRoot:ROOTS_M[MCMC.ridx],notes:MCMC.notes,ndur:MCMC.ndur,vel:MCMC.vel,ut:0,dir:''};
-}
-function updateMIDIParamsFromState() {
-  if(MCMC.baseOk){ mcmcRefresh(); mcmcDrawTimeline(); mcmcDrawRoll(); }
-}
-
-
-// ========== ECG ==========
-function resizeECG() {
-  const c = safeEl('ecg-c');
-  if (!c) return;
-  const dpr = window.devicePixelRatio || 1;
-  c.width = c.offsetWidth * dpr;
-  c.height = 80 * dpr;
-  c.getContext('2d').scale(dpr, dpr);
-}
-function drawECG() {
-  const c = safeEl('ecg-c');
-  if (!c) return;
-  const ctx = c.getContext('2d');
-  const w = c.offsetWidth, h = 80;
-  ctx.clearRect(0, 0, w, h);
-  ctx.strokeStyle = 'rgba(200,169,81,.025)';
-  ctx.lineWidth = 0.5;
-  for (let x = 0; x < w; x += 60) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-  for (let y = 0; y < h; y += 20) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-  const ty = h - (((-0.4 + 2) / 3) * h * 0.8 + h * 0.1);
-  ctx.setLineDash([3, 6]);
-  ctx.strokeStyle = 'rgba(200,169,81,.15)';
-  ctx.lineWidth = 0.5;
-  ctx.beginPath(); ctx.moveTo(0, ty); ctx.lineTo(w, ty); ctx.stroke();
-  ctx.setLineDash([]);
-  if (ecgHist.length < 2) return;
-  const cur = ecgHist[ecgHist.length - 1];
-  const lc = cur < -1.2 ? '#BE3A3A' : cur < -0.8 ? '#E6FF00' : '#C8A951';
-  ctx.strokeStyle = lc;
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  const maxP = Math.min(ecgHist.length, Math.floor(w / 2));
-  const si = Math.max(0, ecgHist.length - maxP);
-  for (let i = si; i < ecgHist.length; i++) {
-    const x = ((i - si) / maxP) * w;
-    const y = h - (((ecgHist[i] + 2) / 3) * h * 0.8 + h * 0.1);
-    if (i === si) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-  ctx.stroke();
-  const ecgCur = safeEl('ecg-cur');
-  if (ecgCur) {
-    ecgCur.textContent = 'IHG ' + cur.toFixed(3);
-    ecgCur.style.color = lc;
-  }
-}
-function tickECG() {
-  const base = SF.ihg !== null ? SF.ihg : -0.4;
-  ecgHist.push(base + (Math.random() - 0.5) * 0.035);
-  if (ecgHist.length > 600) ecgHist.shift();
-  drawECG();
-  setTimeout(tickECG, 60);
-}
+function showOverlay(msg) { const overlay = safeEl('api-overlay'); const msgEl = safeEl('ov-msg'); if (overlay) overlay.classList.add('show'); if (msgEl) msgEl.textContent = msg || 'procesando...'; }
+function hideOverlay() { const overlay = safeEl('api-overlay'); if (overlay) overlay.classList.remove('show'); }
 
 // ========== AUDITORÍA ==========
-const AUDIT_MODS=[
-  {code:'01',label:'Datos del Sujeto',qs:[
-    {id:'01a',txt:'¿Cuál es tu nombre completo y rol en la empresa?',tag:'IDENTIDAD'},
-    {id:'01b',txt:'¿Cuántos años llevas operando en la industria musical y cuántas personas componen el equipo activo?',tag:'ESTRUCTURA'},
-    {id:'01c',txt:'¿La empresa tiene nombre registrado legalmente y bajo qué figura jurídica? ¿Cuál es el estado financiero actual?',tag:'LEGAL·FINANCIERO'},
-    {id:'01d',txt:'¿Dónde está el núcleo operativo del proyecto (ciudad, país)?',tag:'TERRITORIO'}
-  ]},
-  {code:'02',label:'Jerarquías',qs:[
-    {id:'02a',txt:'¿Existe un organigrama formal o la estructura es informal e implícita? ¿Quién toma las decisiones finales en producción, distribución y contratación?',tag:'DECISIÓN',sf:true},
-    {id:'02b',txt:'¿Hay roles claramente definidos o una misma persona cubre múltiples funciones? ¿Cómo se comunican las decisiones?',tag:'ESTRUCTURA'},
-    {id:'02c',txt:'¿Hay algún nodo de autoridad no declarado: alguien que de facto manda aunque en papel no tenga ese rol?',tag:'SF·LATENTE',sf:true}
-  ]},
-  {code:'03',label:'Proyectos Activos',qs:[
-    {id:'03a',txt:'¿Cuántos proyectos de producción están activos ahora mismo? Enuméralos con su estado actual (pre-producción, grabación, mezcla, masterización, listo para lanzar, pausado).',tag:'INVENTARIO'},
-    {id:'03b',txt:'¿Cuáles tienen fecha de lanzamiento confirmada? ¿Cuánto tiempo llevan sin fecha los que no la tienen?',tag:'SF·LATENCIA',sf:true},
-    {id:'03c',txt:'¿Hay propuestas entrantes sin evaluar formalmente? ¿Cuál es el proyecto que más atención requiere ahora y por qué?',tag:'PRIORIDAD',sf:true}
-  ]},
-  {code:'04',label:'Metodología Creativa',qs:[
-    {id:'04a',txt:'¿Cómo inicia un proyecto musical en tu empresa? ¿Hay un proceso estándar de pre-producción o cada proyecto arranca diferente?',tag:'PROCESO'},
-    {id:'04b',txt:'¿Qué define que una canción o álbum está listo para pasar a la siguiente etapa? ¿Quién aprueba ese paso?',tag:'CRITERIO'},
-    {id:'04c',txt:'¿Cuánto tiempo promedio tarda un proyecto desde idea hasta masterización? ¿Cuál fue el de mayor duración y por qué se extendió?',tag:'TIEMPO'},
-    {id:'04d',txt:'¿Existe un criterio de descarte? ¿Cuándo un proyecto se cancela oficialmente?',tag:'SF·VACÍO',sf:true}
-  ]},
-  {code:'05',label:'Grabación y Estudio',qs:[
-    {id:'05a',txt:'¿Tienen estudio propio, rentan espacio o trabajan con home studios? ¿Hay un ingeniero de grabación fijo?',tag:'INFRAESTRUCTURA'},
-    {id:'05b',txt:'¿Cómo se agenda el tiempo de estudio? ¿Qué porcentaje de proyectos termina en el tiempo planificado originalmente?',tag:'EFICIENCIA'},
-    {id:'05c',txt:'¿Dónde se almacenan los archivos maestros? ¿Existe protocolo de backup? ¿Ha habido pérdida de material?',tag:'SF·ENTROPÍA',sf:true}
-  ]},
-  {code:'06',label:'Lanzamientos',qs:[
-    {id:'06a',txt:'¿Cuántos lanzamientos han realizado en los últimos 12 meses? ¿Cuántos tuvieron campaña estructurada vs solo carga a plataformas?',tag:'HISTORIAL'},
-    {id:'06b',txt:'¿Hay un checklist de lanzamiento o cada uno se gestiona ad hoc? ¿Qué plataformas de distribución utilizan?',tag:'PROCESO'},
-    {id:'06c',txt:'¿Cuál fue el lanzamiento más exitoso? ¿Se documentó ese proceso para replicarlo?',tag:'APRENDIZAJE'}
-  ]},
-  {code:'07',label:'Promoción y Métricas',qs:[
-    {id:'07a',txt:'¿Cuentan con alguien dedicado exclusivamente a marketing? ¿Cuál es el presupuesto promedio por campaña?',tag:'EQUIPO·FINANCIERO'},
-    {id:'07b',txt:'¿Qué canales utilizan: redes sociales, prensa, radio, playlists, live, influencers? ¿Hay estrategia de contenido entre lanzamientos?',tag:'CANALES'},
-    {id:'07c',txt:'¿Qué métrica define si un lanzamiento fue exitoso? ¿Con qué frecuencia revisan las métricas de proyectos activos?',tag:'MÉTRICAS'}
-  ]},
-  {code:'08',label:'Calendarios y Tendencias',qs:[
-    {id:'08a',txt:'¿Existe un calendario maestro de la empresa? ¿Los artistas conocen el calendario completo de sus propios proyectos?',tag:'SF·LATENCIA',sf:true},
-    {id:'08b',txt:'¿Monitorean tendencias de consumo musical? ¿Hay géneros o formatos que estén considerando incorporar por tendencia de mercado?',tag:'INTELIGENCIA'},
-    {id:'08c',txt:'¿Con cuánta anticipación planifican un semestre completo de operaciones? ¿Cómo manejan los conflictos de agenda?',tag:'PLANIFICACIÓN'}
-  ]},
-  {code:'09',label:'Recursos del Sistema',qs:[
-    {id:'09a',txt:'¿Qué herramientas digitales usan para producción, colaboración y seguimiento de proyectos? ¿Hay alguna que sea crítica y no esté siendo usada al máximo?',tag:'HERRAMIENTAS'},
-    {id:'09b',txt:'Lista los artistas activos bajo tu producción. Para cada uno: nombre, género principal, estado actual, audiencia aproximada.',tag:'INVENTARIO'},
-    {id:'09c',txt:'¿Hay algún recurso urgente que el equipo necesita y que nadie está cubriendo? ¿Qué colaboradores estratégicos (externos) tienen activos ahora?',tag:'SF·VACÍO',sf:true}
-  ]},
-  {code:'10',label:'Diagnóstico SF',sf_mod:true,qs:[
-    {id:'10a',txt:'¿Cuál es el cuello de botella que más nombraste hoy sin haber resuelto todavía? ¿Qué proceso consume más tiempo del que debería?',tag:'SF·FRICCIÓN',sf:true},
-    {id:'10b',txt:'¿Hay algo que todos en el equipo saben pero nadie dice en voz alta? ¿Hay una decisión importante pendiente hace más de 30 días?',tag:'SF·OPACO',sf:true},
-    {id:'10c',txt:'Si pudieras eliminar una sola fricción del sistema hoy, ¿cuál sería? ¿Cuánto de tu tiempo como [ROL DECLARADO] se gasta en tareas que no corresponden a ese rol?',tag:'SF·PRIORIDAD',sf:true},
-    {id:'10d',txt:'¿Cuál es la narrativa oficial del estado de la empresa y cuánto se aleja de la realidad operativa que vivís día a día?',tag:'SF·UMBRAL',sf:true}
-  ]}
+const AUDIT_MODS = [
+  {code:'01',label:'Datos del Sujeto',qs:[{id:'01a',txt:'¿Cuál es tu nombre completo y rol en la empresa?',tag:'IDENTIDAD'},{id:'01b',txt:'¿Cuántos años llevas operando en la industria musical y cuántas personas componen el equipo activo?',tag:'ESTRUCTURA'},{id:'01c',txt:'¿La empresa tiene nombre registrado legalmente y bajo qué figura jurídica? ¿Cuál es el estado financiero actual?',tag:'LEGAL·FINANCIERO'},{id:'01d',txt:'¿Dónde está el núcleo operativo del proyecto (ciudad, país)?',tag:'TERRITORIO'}]},
+  {code:'02',label:'Jerarquías',qs:[{id:'02a',txt:'¿Existe un organigrama formal o la estructura es informal e implícita? ¿Quién toma las decisiones finales en producción, distribución y contratación?',tag:'DECISIÓN',sf:true},{id:'02b',txt:'¿Hay roles claramente definidos o una misma persona cubre múltiples funciones? ¿Cómo se comunican las decisiones?',tag:'ESTRUCTURA'},{id:'02c',txt:'¿Hay algún nodo de autoridad no declarado: alguien que de facto manda aunque en papel no tenga ese rol?',tag:'SF·LATENTE',sf:true}]},
+  {code:'03',label:'Proyectos Activos',qs:[{id:'03a',txt:'¿Cuántos proyectos de producción están activos ahora mismo? Enuméralos con su estado actual (pre-producción, grabación, mezcla, masterización, listo para lanzar, pausado).',tag:'INVENTARIO'},{id:'03b',txt:'¿Cuáles tienen fecha de lanzamiento confirmada? ¿Cuánto tiempo llevan sin fecha los que no la tienen?',tag:'SF·LATENCIA',sf:true},{id:'03c',txt:'¿Hay propuestas entrantes sin evaluar formalmente? ¿Cuál es el proyecto que más atención requiere ahora y por qué?',tag:'PRIORIDAD',sf:true}]},
+  {code:'04',label:'Metodología Creativa',qs:[{id:'04a',txt:'¿Cómo inicia un proyecto musical en tu empresa? ¿Hay un proceso estándar de pre-producción o cada proyecto arranca diferente?',tag:'PROCESO'},{id:'04b',txt:'¿Qué define que una canción o álbum está listo para pasar a la siguiente etapa? ¿Quién aprueba ese paso?',tag:'CRITERIO'},{id:'04c',txt:'¿Cuánto tiempo promedio tarda un proyecto desde idea hasta masterización? ¿Cuál fue el de mayor duración y por qué se extendió?',tag:'TIEMPO'},{id:'04d',txt:'¿Existe un criterio de descarte? ¿Cuándo un proyecto se cancela oficialmente?',tag:'SF·VACÍO',sf:true}]},
+  {code:'05',label:'Grabación y Estudio',qs:[{id:'05a',txt:'¿Tienen estudio propio, rentan espacio o trabajan con home studios? ¿Hay un ingeniero de grabación fijo?',tag:'INFRAESTRUCTURA'},{id:'05b',txt:'¿Cómo se agenda el tiempo de estudio? ¿Qué porcentaje de proyectos termina en el tiempo planificado originalmente?',tag:'EFICIENCIA'},{id:'05c',txt:'¿Dónde se almacenan los archivos maestros? ¿Existe protocolo de backup? ¿Ha habido pérdida de material?',tag:'SF·ENTROPÍA',sf:true}]},
+  {code:'06',label:'Lanzamientos',qs:[{id:'06a',txt:'¿Cuántos lanzamientos han realizado en los últimos 12 meses? ¿Cuántos tuvieron campaña estructurada vs solo carga a plataformas?',tag:'HISTORIAL'},{id:'06b',txt:'¿Hay un checklist de lanzamiento o cada uno se gestiona ad hoc? ¿Qué plataformas de distribución utilizan?',tag:'PROCESO'},{id:'06c',txt:'¿Cuál fue el lanzamiento más exitoso? ¿Se documentó ese proceso para replicarlo?',tag:'APRENDIZAJE'}]},
+  {code:'07',label:'Promoción y Métricas',qs:[{id:'07a',txt:'¿Cuentan con alguien dedicado exclusivamente a marketing? ¿Cuál es el presupuesto promedio por campaña?',tag:'EQUIPO·FINANCIERO'},{id:'07b',txt:'¿Qué canales utilizan: redes sociales, prensa, radio, playlists, live, influencers? ¿Hay estrategia de contenido entre lanzamientos?',tag:'CANALES'},{id:'07c',txt:'¿Qué métrica define si un lanzamiento fue exitoso? ¿Con qué frecuencia revisan las métricas de proyectos activos?',tag:'MÉTRICAS'}]},
+  {code:'08',label:'Calendarios y Tendencias',qs:[{id:'08a',txt:'¿Existe un calendario maestro de la empresa? ¿Los artistas conocen el calendario completo de sus propios proyectos?',tag:'SF·LATENCIA',sf:true},{id:'08b',txt:'¿Monitorean tendencias de consumo musical? ¿Hay géneros o formatos que estén considerando incorporar por tendencia de mercado?',tag:'INTELIGENCIA'},{id:'08c',txt:'¿Con cuánta anticipación planifican un semestre completo de operaciones? ¿Cómo manejan los conflictos de agenda?',tag:'PLANIFICACIÓN'}]},
+  {code:'09',label:'Recursos del Sistema',qs:[{id:'09a',txt:'¿Qué herramientas digitales usan para producción, colaboración y seguimiento de proyectos? ¿Hay alguna que sea crítica y no esté siendo usada al máximo?',tag:'HERRAMIENTAS'},{id:'09b',txt:'Lista los artistas activos bajo tu producción. Para cada uno: nombre, género principal, estado actual, audiencia aproximada.',tag:'INVENTARIO'},{id:'09c',txt:'¿Hay algún recurso urgente que el equipo necesita y que nadie está cubriendo? ¿Qué colaboradores estratégicos (externos) tienen activos ahora?',tag:'SF·VACÍO',sf:true}]},
+  {code:'10',label:'Diagnóstico SF',sf_mod:true,qs:[{id:'10a',txt:'¿Cuál es el cuello de botella que más nombraste hoy sin haber resuelto todavía? ¿Qué proceso consume más tiempo del que debería?',tag:'SF·FRICCIÓN',sf:true},{id:'10b',txt:'¿Hay algo que todos en el equipo saben pero nadie dice en voz alta? ¿Hay una decisión importante pendiente hace más de 30 días?',tag:'SF·OPACO',sf:true},{id:'10c',txt:'Si pudieras eliminar una sola fricción del sistema hoy, ¿cuál sería? ¿Cuánto de tu tiempo como [ROL DECLARADO] se gasta en tareas que no corresponden a ese rol?',tag:'SF·PRIORIDAD',sf:true},{id:'10d',txt:'¿Cuál es la narrativa oficial del estado de la empresa y cuánto se aleja de la realidad operativa que vivís día a día?',tag:'SF·UMBRAL',sf:true}]}
 ];
- 
-let curMod=0;
- 
-function startAudit(){
-  showPhase('audit');
-  renderAuditModules();
-}
- 
-function renderAuditModules(){
-  const c=document.getElementById('aud-modules');
-  c.innerHTML='';
-  AUDIT_MODS.forEach((m,mi)=>{
-    const div=document.createElement('div');
-    div.className='aud-mod'+(mi===0?' active':'');
-    div.id='aud-mod-'+mi;
-    let qs='';
-    m.qs.forEach(q=>{
-      const sfCls=q.sf?'aud-q aud-q-sf':'aud-q';
-      qs+=`<div class="${sfCls}">
-        <div class="aud-q-tag">${q.tag}</div>
-        <div class="aud-q-txt">${q.txt}</div>
-        <textarea class="txa" id="qa-${q.id}" placeholder="Responde aquí o usa el micrófono..." rows="2"
-          onchange="SF.auditData['${q.id}']=this.value"></textarea>
-        <div class="rec-row">
-          <button class="rec-btn" id="rec-btn-${q.id}" onclick="toggleRec('${q.id}')" title="Grabar respuesta">
-            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="8" cy="6" r="3" stroke="#8A887E" stroke-width="1"/>
-              <path d="M4 6c0 2.2 1.8 4 4 4s4-1.8 4-4M8 10v2M6 12h4" stroke="#8A887E" stroke-width="1" stroke-linecap="round"/>
-            </svg>
-          </button>
-          <span class="rec-status" id="rec-st-${q.id}">—</span>
-        </div>
-      </div>`;
+let curMod = 0;
+
+function startAudit() { showPhase('audit'); renderAuditModules(); }
+function renderAuditModules() {
+  const c = safeEl('aud-modules'); c.innerHTML = '';
+  AUDIT_MODS.forEach((m, mi) => {
+    const div = document.createElement('div'); div.className = 'aud-mod' + (mi === 0 ? ' active' : ''); div.id = 'aud-mod-' + mi;
+    let qs = '';
+    m.qs.forEach(q => {
+      const sfCls = q.sf ? 'aud-q aud-q-sf' : 'aud-q';
+      qs += `<div class="${sfCls}"><div class="aud-q-tag">${q.tag}</div><div class="aud-q-txt">${q.txt}</div><textarea class="txa" id="qa-${q.id}" placeholder="Responde aquí o usa el micrófono..." rows="2" onchange="SF.auditData['${q.id}']=this.value"></textarea><div class="rec-row"><button class="rec-btn" id="rec-btn-${q.id}" onclick="toggleRec('${q.id}')" title="Grabar respuesta"><svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="6" r="3" stroke="#8A887E" stroke-width="1"/><path d="M4 6c0 2.2 1.8 4 4 4s4-1.8 4-4M8 10v2M6 12h4" stroke="#8A887E" stroke-width="1" stroke-linecap="round"/></svg></button><span class="rec-status" id="rec-st-${q.id}">—</span></div></div>`;
     });
-    div.innerHTML=`<div class="aud-mod-hd"><span class="aud-mod-n">MÓDULO ${m.code}</span><span class="aud-mod-t">${m.label}${m.sf_mod?' · DIAGNÓSTICO SF':''}</span></div>
-    <div class="aud-q-list">${qs}</div>`;
+    div.innerHTML = `<div class="aud-mod-hd"><span class="aud-mod-n">MÓDULO ${m.code}</span><span class="aud-mod-t">${m.label}${m.sf_mod ? ' · DIAGNÓSTICO SF' : ''}</span></div><div class="aud-q-list">${qs}</div>`;
     c.appendChild(div);
   });
   updateAuditNav();
 }
- 
-function updateAuditNav(){
-  const total=AUDIT_MODS.length;
-  const pct=Math.round(((curMod+1)/total)*100);
-  document.getElementById('aud-pfill').style.width=pct+'%';
-  document.getElementById('aud-ptxt').textContent=pct+'%';
-  document.getElementById('audit-status').textContent=`MÓDULO ${curMod+1} / ${total}`;
-  document.getElementById('aud-nav-info').textContent=`Módulo ${curMod+1} de ${total}`;
-  document.getElementById('aud-prev').disabled=(curMod===0);
-  const nextBtn=document.getElementById('aud-next');
-  if(curMod===total-1){
-    nextBtn.textContent='ANALIZAR CON GROQ →';
-    nextBtn.onclick=()=>submitAudit();
-  } else {
-    nextBtn.textContent='SIGUIENTE →';
-    nextBtn.onclick=()=>auditNext();
-  }
+function updateAuditNav() {
+  const total = AUDIT_MODS.length;
+  const pct = Math.round(((curMod + 1) / total) * 100);
+  safeEl('aud-pfill').style.width = pct + '%';
+  safeText('aud-ptxt', pct + '%');
+  safeText('audit-status', `MÓDULO ${curMod + 1} / ${total}`);
+  safeText('aud-nav-info', `Módulo ${curMod + 1} de ${total}`);
+  safeEl('aud-prev').disabled = (curMod === 0);
+  const nextBtn = safeEl('aud-next');
+  if (curMod === total - 1) { nextBtn.textContent = 'ANALIZAR CON GROQ →'; nextBtn.onclick = () => submitAudit(); }
+  else { nextBtn.textContent = 'SIGUIENTE →'; nextBtn.onclick = () => auditNext(); }
 }
- 
-function auditNext(){
-  document.getElementById('aud-mod-'+curMod).classList.remove('active');
-  curMod=Math.min(curMod+1,AUDIT_MODS.length-1);
-  document.getElementById('aud-mod-'+curMod).classList.add('active');
-  document.getElementById('aud-mod-'+curMod).scrollIntoView({behavior:'smooth',block:'start'});
-  updateAuditNav();
-}
- 
-function auditPrev(){
-  document.getElementById('aud-mod-'+curMod).classList.remove('active');
-  curMod=Math.max(curMod-1,0);
-  document.getElementById('aud-mod-'+curMod).classList.add('active');
-  updateAuditNav();
-}
- 
-function toggleRec(qid){
-  const btn=document.getElementById('rec-btn-'+qid);
-  const st=document.getElementById('rec-st-'+qid);
-  const ta=document.getElementById('qa-'+qid);
-  if(btn.classList.contains('recording')){
-    stopRec(qid); return;
-  }
-  btn.classList.add('recording');
-  btn.querySelector('circle').setAttribute('stroke','#BE3A3A');
-  st.textContent='● grabando...';
-  st.style.color='var(--rojo)';
-  if('webkitSpeechRecognition' in window||'SpeechRecognition' in window){
-    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-    const r=new SR();
-    r.lang='es-ES'; r.continuous=true; r.interimResults=true;
-    r.onresult=e=>{
-      let txt='';
-      for(let i=0;i<e.results.length;i++) txt+=e.results[i][0].transcript+' ';
-      ta.value=txt.trim();
-      SF.auditData[qid]=ta.value;
-    };
-    r.onerror=()=>stopRec(qid);
-    r.start();
-    recognitions[qid]=r;
-  } else {
-    st.textContent='✎ escribe la respuesta';
-    st.style.color='var(--t3)';
-    btn.classList.remove('recording');
-    btn.querySelector('circle').setAttribute('stroke','#8A887E');
-  }
-}
- 
-function stopRec(qid){
-  const btn=document.getElementById('rec-btn-'+qid);
-  const st=document.getElementById('rec-st-'+qid);
-  btn.classList.remove('recording');
-  btn.querySelector('circle').setAttribute('stroke','#8A887E');
-  st.textContent='✓ listo';
-  st.style.color='var(--verde)';
-  if(recognitions[qid]){recognitions[qid].stop();delete recognitions[qid];}
-}
- 
+function auditNext() { safeEl('aud-mod-' + curMod).classList.remove('active'); curMod = Math.min(curMod + 1, AUDIT_MODS.length - 1); safeEl('aud-mod-' + curMod).classList.add('active'); safeEl('aud-mod-' + curMod).scrollIntoView({ behavior: 'smooth', block: 'start' }); updateAuditNav(); }
+function auditPrev() { safeEl('aud-mod-' + curMod).classList.remove('active'); curMod = Math.max(curMod - 1, 0); safeEl('aud-mod-' + curMod).classList.add('active'); updateAuditNav(); }
+function toggleRec(qid) { const btn = safeEl('rec-btn-' + qid); const st = safeEl('rec-st-' + qid); const ta = safeEl('qa-' + qid); if (btn.classList.contains('recording')) { stopRec(qid); return; } btn.classList.add('recording'); btn.querySelector('circle').setAttribute('stroke', '#BE3A3A'); st.textContent = '● grabando...'; st.style.color = 'var(--rojo)'; if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; const r = new SR(); r.lang = 'es-ES'; r.continuous = true; r.interimResults = true; r.onresult = e => { let txt = ''; for (let i = 0; i < e.results.length; i++) txt += e.results[i][0].transcript + ' '; ta.value = txt.trim(); SF.auditData[qid] = ta.value; }; r.onerror = () => stopRec(qid); r.start(); recognitions[qid] = r; } else { st.textContent = '✎ escribe la respuesta'; st.style.color = 'var(--t3)'; btn.classList.remove('recording'); btn.querySelector('circle').setAttribute('stroke', '#8A887E'); } }
+function stopRec(qid) { const btn = safeEl('rec-btn-' + qid); const st = safeEl('rec-st-' + qid); btn.classList.remove('recording'); btn.querySelector('circle').setAttribute('stroke', '#8A887E'); st.textContent = '✓ listo'; st.style.color = 'var(--verde)'; if (recognitions[qid]) { recognitions[qid].stop(); delete recognitions[qid]; } }
 async function submitAudit() {
-  AUDIT_MODS.forEach(m => m.qs.forEach(q => {
-    const el = document.getElementById('qa-' + q.id);
-    if (el && el.value.trim()) SF.auditData[q.id] = el.value.trim();
-  }));
-  
+  AUDIT_MODS.forEach(m => m.qs.forEach(q => { const el = safeEl('qa-' + q.id); if (el && el.value.trim()) SF.auditData[q.id] = el.value.trim(); }));
   showOverlay('Enviando auditoría...');
-  
-  const responses = AUDIT_MODS.map(m => {
-    const rList = m.qs.map(q => `  [${q.tag}] ${q.txt}\n  → ${SF.auditData[q.id] || '(sin respuesta)'}`).join('\n');
-    return `MÓDULO ${m.code} · ${m.label}:\n${rList}`;
-  }).join('\n\n');
-  
+  const responses = AUDIT_MODS.map(m => { const rList = m.qs.map(q => `  [${q.tag}] ${q.txt}\n  → ${SF.auditData[q.id] || '(sin respuesta)'}`).join('\n'); return `MÓDULO ${m.code} · ${m.label}:\n${rList}`; }).join('\n\n');
   try {
     let parsed = null;
-    if (currentMode === MODE.API_FULL) {
-      const res = await apiCall('/groq/analyze', 'POST', { responses });
-      if (res && !res.error) parsed = res;
-    }
+    if (currentMode === 'api_full') { const res = await apiCall('/groq/analyze', 'POST', { responses }); if (res && !res.error) parsed = res; }
     if (!parsed) parsed = fallbackMetrics();
-    
-    SF.ihg = parsed.ihg;
-    SF.nti = parsed.nti;
-    SF.r = parsed.r;
-    SF.ldi = parsed.ldi_days;
-    SF.dinamica = parsed.dinamica;
-    SF.figura = parsed.figura_sistema;
-    SF.intervencion = parsed.intervencion_inmediata;
-    SF.narrativa = parsed.narrativa;
-    SF.bemoles = parsed.bemoles || [];
-    SF.sostenidos = parsed.sostenidos || [];
-    SF.proyectos = parsed.proyectos_detectados || [];
-    SF.escenarios = { a: parsed.escenario_a, b: parsed.escenario_b, c: parsed.escenario_c };
-    SF.tareas_dia = parsed.tareas_dia1 || [];
-    SF.tendencias = parsed.tendencias || [];
-    SF.duetos = parsed.duetos || [];
-    
-    if (currentMode === MODE.API_FULL) {
-      await apiCall('/reset', 'POST');
-      const initResult = await sendPrediction('SISTEMA', 'Auditoría completada');
-      if (initResult) updateDashboardFromAPI(initResult);
-    }
-    
-    renderPartitura(SF.proyectos);
-    renderTrends(SF.tendencias);
-    renderDuetos(SF.duetos);
-    renderCalendar(SF.proyectos);
-    renderScenariosFromAPI(SF.escenarios);
-    renderNotificationsFromAPI(SF.tareas_dia);
-    
+    SF.ihg = parsed.ihg; SF.nti = parsed.nti; SF.r = parsed.r; SF.ldi = parsed.ldi_days; SF.dinamica = parsed.dinamica; SF.figura = parsed.figura_sistema; SF.intervencion = parsed.intervencion_inmediata; SF.narrativa = parsed.narrativa; SF.bemoles = parsed.bemoles || []; SF.sostenidos = parsed.sostenidos || []; SF.proyectos = parsed.proyectos_detectados || []; SF.escenarios = { a: parsed.escenario_a, b: parsed.escenario_b, c: parsed.escenario_c }; SF.tareas_dia = parsed.tareas_dia1 || []; SF.tendencias = parsed.tendencias || []; SF.duetos = parsed.duetos || [];
+    if (currentMode === 'api_full') { await apiCall('/reset', 'POST'); const initResult = await sendPrediction('SISTEMA', 'Auditoría completada'); if (initResult) updateDashboardFromAPI(initResult); }
+    renderPartitura(SF.proyectos); renderTrends(SF.tendencias); renderDuetos(SF.duetos); renderCalendar(SF.proyectos); renderScenariosFromAPI(SF.escenarios); renderNotificationsFromAPI(SF.tareas_dia);
     sysLog(`✅ AUDITORÍA COMPLETA · IHG=${SF.ihg.toFixed(3)} NTI=${SF.nti.toFixed(3)} R=${SF.r.toFixed(3)}`);
-    
-  } catch (e) {
-    sysLog('❌ Error en auditoría: ' + e.message);
-  } finally {
-    hideOverlay();
-    showPhase('dashboard');
-  }
+  } catch (e) { sysLog('❌ Error en auditoría: ' + e.message); } finally { hideOverlay(); showPhase('dashboard'); }
 }
- 
 function fallbackMetrics() {
   return {
-    ihg: -0.82, nti: 0.38, r: 0.54, ldi_days: 28,
-    dinamica: 'forte', figura_sistema: '♪',
-    narrativa: 'Análisis de contingencia. El sistema opera en modo local sin conexión a backend. Los valores corresponden al estado post-fractura histórico.',
-    bemoles: ['Roles implícitos no declarados', 'Ausencia de calendario maestro verificable'],
-    sostenidos: ['Equipo con motivación activa', 'Proyectos en desarrollo observable'],
-    intervencion_inmediata: 'Establecer calendario maestro compartido con fecha de revisión semanal obligatoria',
-    resumen_ejecutivo: 'El sistema opera con métricas dentro de rangos históricos. Se recomienda revisar periodicidad.',
-    acciones_clave: ['Revisar calendario semanal', 'Documentar roles', 'Agendar reunión de alineación'],
-    proyectos_detectados: [{ nombre: 'Proyecto principal', etapa: 'producción', vector: 'V1', figura: '𝅗𝅥', ldi: 28, responsable: 'director artístico', criticidad: 'alta' }],
-    escenario_a: { nombre: 'Escenario A', descripcion: 'Intervención estructural rápida', prob_exito: 72, acciones: ['Establecer calendario'], ihg_proy: -0.45, nti_proy: 0.62, r_proy: 0.71 },
-    escenario_b: { nombre: 'Escenario B', descripcion: 'Intervención gradual', prob_exito: 51, acciones: ['Documentar procesos'], ihg_proy: -0.68, nti_proy: 0.48, r_proy: 0.60 },
-    escenario_c: { nombre: 'Escenario C', descripcion: 'Sin intervención', prob_exito: 31, acciones: ['Proteger núcleo'], ihg_proy: -1.1, nti_proy: 0.31, r_proy: 0.42 },
-    tareas_dia1: ['Listar proyectos activos', 'Identificar nodo de decisión implícita'],
-    tendencias: [{ nombre: 'Latin urban', relevancia: 0.82, accion: 'Explorar colaboraciones' }],
-    duetos: [{ tipo: 'Artista + Productor', descripcion: 'Sinergia cross-audiencia', sinergia: 1.87, justificacion: 'Efecto multiplicador' }]
+    ihg: -0.82, nti: 0.38, r: 0.54, ldi_days: 28, dinamica: 'forte', figura_sistema: '♪', narrativa: 'Diagnóstico en modo local. Conecta Groq para análisis real.', bemoles: ['Roles implícitos no declarados', 'Ausencia de calendario maestro'], sostenidos: ['Equipo motivado', 'Proyectos en desarrollo'], intervencion_inmediata: 'Establecer calendario maestro', proyectos_detectados: [{ nombre: 'Proyecto ejemplo', etapa: 'producción', figura: '𝅗𝅥', ldi: 28, responsable: 'productor', criticidad: 'alta' }], escenario_a: { nombre: 'Escenario A', descripcion: 'Intervención estructural rápida', prob_exito: 72, acciones: ['Establecer calendario'], ihg_proy: -0.45, nti_proy: 0.62, r_proy: 0.71 }, escenario_b: { nombre: 'Escenario B', descripcion: 'Intervención gradual', prob_exito: 51, acciones: ['Documentar procesos'], ihg_proy: -0.68, nti_proy: 0.48, r_proy: 0.60 }, escenario_c: { nombre: 'Escenario C', descripcion: 'Sin intervención', prob_exito: 31, acciones: ['Proteger núcleo'], ihg_proy: -1.1, nti_proy: 0.31, r_proy: 0.42 }, tareas_dia1: ['Listar proyectos activos', 'Identificar nodo de decisión implícita'], tendencias: [{ nombre: 'Latin urban', relevancia: 0.82, accion: 'Explorar colaboraciones' }], duetos: [{ tipo: 'Artista + Productor', descripcion: 'Sinergia cross-audiencia', sinergia: 1.87, justificacion: 'Efecto multiplicador' }]
   };
 }
- 
-function renderPartitura(proyectos) {
-  const container = safeEl('partitura-body');
-  if (!container) return;
-  if (!proyectos || !proyectos.length) {
-    container.innerHTML = '<div style="padding:1.5rem;text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono)">ningún proyecto detectado</div>';
-    return;
-  }
-  container.innerHTML = proyectos.map(p => `
-    <div class="part-row">
-      <div><div class="pr-n">${p.nombre}</div><div class="pr-s">${p.etapa} · resp: ${p.responsable || '—'} · LDI ${p.ldi || '?'}d</div></div>
-      <div><div class="fig-d">${p.figura || '♩'}</div><div class="fig-dn">${getFigName(p.figura)}</div></div>
-      <div style="text-align:center"><span class="${p.criticidad === 'alta' ? 'tag al' : p.criticidad === 'media' ? 'tag wa' : 'tag ok'}">${(p.etapa || '').toUpperCase().slice(0, 10)}</span></div>
-      <div><span class="vtag">${p.vector || 'V?'}</span></div>
-    </div>
-  `).join('');
+function renderPartitura(proyectos) { const container = safeEl('partitura-body'); if (!container) return; if (!proyectos || !proyectos.length) { container.innerHTML = '<div style="padding:1.5rem;text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono)">ningún proyecto detectado</div>'; return; } container.innerHTML = proyectos.map(p => `<div class="part-row"><div><div class="pr-n">${p.nombre}</div><div class="pr-s">${p.etapa} · resp: ${p.responsable || '—'} · LDI ${p.ldi || '?'}d</div></div><div><div class="fig-d">${p.figura || '♩'}</div><div class="fig-dn">${getFigName(p.figura)}</div></div><div style="text-align:center"><span class="${p.criticidad === 'alta' ? 'tag al' : p.criticidad === 'media' ? 'tag wa' : 'tag ok'}">${(p.etapa || '').toUpperCase().slice(0, 10)}</span></div><div><span class="vtag">${p.vector || 'V?'}</span></div></div>`).join(''); }
+function getFigName(f) { const m = { '𝅝': 'redonda', '𝅗𝅥': 'blanca', '♩': 'negra', '♪': 'corchea', '𝅘𝅥𝅯': 'semicorchea', '𝄽': 'silencio' }; return m[f] || 'negra'; }
+function renderTrends(tendencias) { const container = safeEl('trends-grid'); if (!container) return; if (!tendencias || !tendencias.length) { container.innerHTML = '<div class="trend-cell"><div style="font-size:10px;color:var(--t3);padding:1rem 0">sin tendencias detectadas</div></div>'; return; } container.innerHTML = tendencias.slice(0, 6).map(t => `<div class="trend-cell"><div class="trend-ttl">${t.nombre}</div><div class="trend-bar-row"><span class="trend-lbl">Relevancia</span><div class="trend-track"><div class="trend-fill" style="width:${Math.round(t.relevancia * 100)}%"></div></div><span class="trend-pct">${Math.round(t.relevancia * 100)}%</span></div><div style="font-size:9px;color:var(--t3);margin-top:4px;">${t.accion}</div></div>`).join(''); }
+function renderDuetos(duetos) { const container = safeEl('duetos-panel'); if (!container) return; if (!duetos || !duetos.length) { container.innerHTML = '<div class="pnl-body" style="font-size:10px;color:var(--t3)">sin recomendaciones detectadas</div>'; return; } container.innerHTML = '<div class="pnl-hd"><span class="pnl-lbl">SINERGIA COMBINADA > SUMA DE PARTES · COEFICIENTE SF</span></div><div class="pnl-body" style="display:flex;flex-direction:column;gap:8px">' + duetos.map(d => `<div style="padding:10px 12px;background:var(--bg2);border-left:1.5px solid var(--oro)"><div style="display:flex;justify-content:space-between;margin-bottom:4px"><span style="font-size:11px;font-weight:400;color:var(--t1)">${d.tipo}</span><span style="font-size:11px;font-family:var(--mono);color:var(--oro)">×${(d.sinergia || 0).toFixed(2)}</span></div><div style="font-size:10px;color:var(--t2);margin-bottom:4px">${d.descripcion}</div><div style="font-size:9px;color:var(--t3)">${d.justificacion}</div></div>`).join('') + '</div>'; }
+function renderCalendar(proyectos) { const container = safeEl('task-rows'); if (!container) return; if (!proyectos || !proyectos.length) { container.innerHTML = '<div style="padding:1.5rem;text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono);background:var(--bg1)">sin proyectos detectados</div>'; return; } container.innerHTML = proyectos.map(p => { const ldiPct = Math.min(100, Math.round((p.ldi || 0) / 60 * 100)); const ldiColor = ldiPct > 70 ? 'var(--rojo)' : ldiPct > 40 ? 'var(--oro)' : 'var(--verde)'; const crit = p.criticidad === 'alta' ? '<span class="tag al">CRÍTICA</span>' : p.criticidad === 'media' ? '<span class="tag wa">MEDIA</span>' : '<span class="tag ok">BAJA</span>'; return `<div class="task-row"><div><div class="tl name">${p.nombre}</div><div class="tl sub">${p.etapa}</div></div><div style="font-size:9px;font-family:var(--mono);color:var(--t3)">${(p.etapa || '').slice(0, 8).toUpperCase()}</div><div style="font-size:9px;color:var(--t3)">${p.responsable || '—'}</div><div><div style="display:flex;align-items:center;gap:5px"><div class="ldi-bar" style="flex:1"><div class="ldi-fill" style="width:${ldiPct}%;background:${ldiColor}"></div></div><span style="font-size:8px;font-family:var(--mono);color:${ldiColor}">${p.ldi || 0}d</span></div></div><div>${crit}</div><div style="font-size:8px;font-family:var(--mono);color:var(--t3)">${p.criticidad === 'alta' ? 'BLOQUEO' : 'RETRASO'}</div></div>`; }).join(''); }
+function renderScenariosFromAPI(escenarios) { const container = safeEl('sc-grid'); if (!container || !escenarios) return; const keys = ['a', 'b', 'c']; container.innerHTML = keys.map(key => { const s = escenarios[key]; if (!s) return ''; const cls = key === 'a' ? 'a' : key === 'b' ? 'b' : 'c'; const actions = (s.acciones || []).map(a => `<div class="sc-action">${a}</div>`).join(''); return `<div class="sc-card"><div class="sc-id ${cls}">ESCENARIO ${key.toUpperCase()} · SF</div><div class="sc-ttl">${s.nombre}</div><div class="sc-prob ${cls}">${Math.round(s.prob_exito || 0)}%</div><div class="sc-desc">${s.descripcion}</div><div class="sc-actions">${actions}</div><div style="font-size:8px;font-family:var(--mono);color:var(--t3);margin-bottom:8px">IHG→${(s.ihg_proy || 0).toFixed(2)} · NTI→${(s.nti_proy || 0).toFixed(2)} · R→${(s.r_proy || 0).toFixed(2)}</div><button class="sc-elect-btn" id="sc-btn-${key}" onclick="electScenarioAPI('${key}', this)">ELEGIR ESTE ESCENARIO</button></div>`; }).join(''); }
+function electScenarioAPI(key, btn) { SF.selectedScenario = key; document.querySelectorAll('.sc-elect-btn').forEach(b => b.classList.remove('elected')); btn.classList.add('elected'); btn.textContent = '✓ ESCENARIO ELEGIDO · NODO REGISTRADO'; sysLog(`NODO REGISTRADO · Escenario ${key.toUpperCase()}`); if (currentMode === 'api_full') apiCall('/scenario/select', 'POST', { scenario: key, timestamp: Date.now() }); }
+function renderNotificationsFromAPI(tareas) { const container = safeEl('notif-list'); if (!container) return; if (!tareas || tareas.length === 0) { container.innerHTML = '<div style="padding:1.5rem;text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono);background:var(--bg1)">sin tareas generadas</div>'; return; } notifChecked = {}; container.innerHTML = tareas.map((t, i) => `<div class="notif-row"><div class="notif-sym">○</div><div><div class="notif-ttl">Tarea ${i+1}</div><div class="notif-dsc">${t}</div><div class="notif-done" onclick="checkTask(${i}, this)"><div class="notif-cb" id="ncb-${i}"></div><span class="notif-cb-lbl">MARCAR COMPLETADA</span></div></div></div>`).join(''); const cumplEl = safeEl('cumpl-pct'); if (cumplEl) cumplEl.textContent = `0 / ${tareas.length} (0%)`; }
+function checkTask(i, row) { notifChecked[i] = !notifChecked[i]; const cb = safeEl('ncb-' + i); if (cb) cb.classList.toggle('checked', notifChecked[i]); const lbl = row?.querySelector('.notif-cb-lbl'); if (lbl) lbl.textContent = notifChecked[i] ? 'COMPLETADA' : 'MARCAR COMPLETADA'; const done = Object.values(notifChecked).filter(Boolean).length; const total = SF.tareas_dia.length; const pct = Math.round(done / total * 100); const cumplEl = safeEl('cumpl-pct'); if (cumplEl) cumplEl.textContent = `${done} / ${total} (${pct}%)`; if (pct === 100) sysLog('CUMPLIMIENTO 100% · Tareas diarias completadas.'); }
+function loadProjectTemplate() { const template = [{ nombre: 'Álbum debut', etapa: 'grabación', vector: 'V1', figura: '𝅗𝅥', ldi: 35, responsable: 'productor', criticidad: 'alta' }, { nombre: 'EP single lanzamiento', etapa: 'masterización', vector: 'V2', figura: '♪', ldi: 14, responsable: 'director artístico', criticidad: 'alta' }, { nombre: 'Campaña redes Q1', etapa: 'ejecución', vector: 'V3', figura: '♩', ldi: 7, responsable: 'community manager', criticidad: 'media' }, { nombre: 'Propuestas entrantes', etapa: 'evaluación', vector: 'V1', figura: '𝄽', ldi: 45, responsable: '(sin asignar)', criticidad: 'alta' }]; SF.proyectos = template; renderCalendar(template); renderPartitura(template); sysLog('Plantilla de producción musical cargada'); }
+
+// ========== DASHBOARD Y PREDICCIÓN ==========
+async function sendPrediction(user, text) { if (currentMode !== 'api_full') return simulatePrediction(user, text); const result = await apiCall('/predict', 'POST', { user, text }); if (result) { SF.lastPredictionId = result.prediction_id; SF.ihg = result.state.ihg; SF.nti = result.state.nti; SF.r = result.state.r; SF.intervencion = result.intervencion; SF.stability = result.stability; updateDashboardFromAPI(result); loadRecentErrors(); return result; } if (currentMode === 'api_full') { currentMode = 'groq_only'; sysLog('⚠️ API no responde · cambiando a modo solo análisis'); } return simulatePrediction(user, text); }
+function simulatePrediction(user, text) { const fakeIhg = -0.62 + (Math.random() - 0.5) * 0.3; const fakeNti = 0.35 + (Math.random() - 0.5) * 0.2; const fakeR = 0.55 + (Math.random() - 0.5) * 0.2; return { prediction_id: `sim_${Date.now()}`, state: { ihg: fakeIhg, nti: fakeNti, r: fakeR }, intervencion: fakeIhg < -1.0 ? "🔴 Simulación: reducir dominancia" : "🟡 Simulación: monitoreo estable", scorecard: { narrativa: "Modo simulación activo. Los valores son referenciales." } }; }
+async function sendLearning(predictionId, outcome) { if (currentMode !== 'api_full') { sysLog(`⚠️ Modo ${currentMode} · aprendizaje no disponible`); return null; } const result = await apiCall('/learn', 'POST', { prediction_id: predictionId, outcome: parseFloat(outcome) }); if (result?.new_params) { sysLog(`🎓 Aprendizaje registrado · error: ${result.error?.toFixed(4)} · nuevos PID: Kp=${result.new_params.kp?.toFixed(2)}`); await loadRecentErrors(); } return result; }
+function updateDashboardFromAPI(apiData) { const { state, scorecard, proyeccion, intervencion, metrics, stability, control, prediction_id } = apiData; if (!state) return; updateHeaderKPI('hkv-ihg', state.ihg, [-1.2, -0.8, -0.4]); updateHeaderKPI('hkv-nti', state.nti, [0.35, 0.5, 0.6], true); updateHeaderKPI('hkv-r', state.r, [0.45, 0.55, 0.65], true); safeText('v-ihg', state.ihg.toFixed(3)); safeText('v-nti', state.nti.toFixed(3)); safeText('v-r', state.r.toFixed(3)); updateTag('tag-ihg', state.ihg, [[-1.2,'al','HEGEMONÍA CRÍTICA'],[-0.8,'wa','TENSIÓN ALTA'],[-0.4,'wa','TENSIÓN MEDIA'],[2,'ok','EQUILIBRIO']]); updateTag('tag-nti', state.nti, [[0.35,'al','COHERENCIA BAJA'],[0.5,'wa','COHERENCIA MEDIA'],[0.65,'wa','COHERENCIA MED-ALTA'],[2,'ok','COHERENCIA ALTA']]); updateTag('tag-r', state.r, [[0.45,'al','RESISTENCIA CRÍTICA'],[0.55,'wa','RESISTENCIA BAJA'],[0.65,'wa','RESISTENCIA MEDIA'],[2,'ok','RESISTENCIA ALTA']]); ecgHist.push(state.ihg); if (ecgHist.length > 600) ecgHist.shift(); drawECG(); if (scorecard) { if (scorecard.bemoles || scorecard.sostenidos) renderArmadura(scorecard.bemoles || [], scorecard.sostenidos || []); } renderTensionBarsFromAPI(state.ihg, state.nti); if (control) { safeText('kpi-u', control.u.toFixed(3)); safeText('kpi-kp', control.kp.toFixed(2)); safeText('kpi-kd', control.kd.toFixed(2)); safeText('kpi-ki', control.ki.toFixed(2)); } if (stability) { safeText('stab-status', stability.stability?.toUpperCase() || '—'); safeText('stab-iad', stability.iad_approx?.toFixed(4) || '—'); const stabEl = safeEl('stab-status'); if (stabEl) stabEl.style.color = stability.stability === 'estable' ? 'var(--verde)' : stability.stability === 'inestable' ? 'var(--rojo)' : 'var(--oro)'; } if (proyeccion) { safeText('mc-ihg', proyeccion.ihg_esperado?.toFixed(3)); safeText('mc-collapse', proyeccion.probabilidad_colapso?.toFixed(1)); safeText('mc-sigma', proyeccion.sigma_usado?.toFixed(4)); } if (prediction_id) { safeText('pred-id', prediction_id); SF.lastPredictionId = prediction_id; } updateMIDIParamsFromState(); }
+function updateHeaderKPI(id, val, thresholds, invert = false) { const el = safeEl(id); if (!el) return; el.textContent = val.toFixed(3); const crit = invert ? (val < thresholds[0]) : (val < thresholds[0]); const warn = invert ? (val < thresholds[1]) : (val < thresholds[1]); el.className = 'hdr-kn' + (crit ? ' al' : warn ? ' wa' : ' ok'); }
+function updateTag(id, val, thresholds) { const el = safeEl(id); if (!el) return; for (const [thresh, cls, lbl] of thresholds) { if (val < thresh) { el.className = 'tag ' + cls; el.textContent = lbl; return; } } }
+function renderArmadura(bemoles, sostenidos) { const bEl = safeEl('arm-bemoles'); const sEl = safeEl('arm-sostenidos'); if (bEl) bEl.innerHTML = bemoles.map(b => `<div class="arm-item fl"><span class="arm-s">♭</span><div><div class="arm-ttl">${b}</div></div></div>`).join(''); if (sEl) sEl.innerHTML = sostenidos.map(s => `<div class="arm-item sh"><span class="arm-s">♯</span><div><div class="arm-ttl">${s}</div></div></div>`).join(''); }
+function renderTensionBarsFromAPI(ihg, nti) { const container = safeEl('tension-bars'); if (!container) return; const vectors = [{ label: 'V1 · Producción', tension: Math.min(100, Math.max(0, Math.round((Math.abs(ihg) + 0.5) * 50))) }, { label: 'V2 · Lanzamiento', tension: Math.min(100, Math.max(0, Math.round((1 - nti) * 90))) }, { label: 'V3 · Promoción', tension: Math.min(100, Math.max(0, Math.round((1 - (SF.r || 0.5)) * 70))) }, { label: 'V4 · Administración', tension: Math.min(100, Math.max(0, Math.round((SF.ldi || 30) / 60 * 80))) }, { label: 'V5 · Talento', tension: Math.min(100, Math.max(0, Math.round(((Math.abs(ihg) + (SF.r || 0.5)) * 0.5) * 60))) }]; const colors = { high: '#BE3A3A', med: '#C8A951', low: '#177A5E' }; container.innerHTML = vectors.map(v => { const color = v.tension > 65 ? colors.high : v.tension > 40 ? colors.med : colors.low; const lbl = v.tension > 65 ? 'alta' : v.tension > 40 ? 'media' : 'baja'; return `<div class="bar-row"><span class="bar-lbl">${v.label}</span><div class="bar-track"><div class="bar-fill" style="width:${v.tension}%;background:${color}"></div></div><span class="bar-val" style="color:${color}">${lbl}</span></div>`; }).join(''); }
+function initErrorChart() { const ctx = safeEl('errorChart'); if (!ctx) return; errorChart = new Chart(ctx, { type: 'line', data: { datasets: [{ label: 'Error absoluto', borderColor: '#ff6b6b', backgroundColor: 'rgba(255,107,107,0.2)', tension: 0.3, fill: true, data: [] }, { label: 'Error suavizado', borderColor: '#ff9f43', backgroundColor: 'rgba(255,159,67,0.15)', tension: 0.4, fill: false, borderDash: [5, 5], data: [] }] }, options: { scales: { x: { type: 'time', time: { unit: 'minute' }, title: { display: true, text: 'Fecha' } }, y: { min: 0, title: { display: true, text: 'Error (abs)' } } }, plugins: { tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.raw.y.toFixed(3)}` } } } } }); }
+async function loadRecentErrors() { if (!errorChart) return; const res = await apiCall('/history?limit=100'); if (!res || !res.history) return; const errors = res.history.filter(h => h.error !== undefined && h.error !== null).map(h => ({ x: new Date(h.timestamp), y: h.error, smoothed: h.error_smoothed || h.error })); if (errors.length === 0) return; errorChart.data.datasets[0].data = errors.map(e => ({ x: e.x, y: e.y })); let smooth = errors[0].y; errorChart.data.datasets[1].data = errors.map(e => { smooth = 0.7 * e.y + 0.3 * smooth; return { x: e.x, y: smooth }; }); errorChart.update(); safeText('err-st', `${errors.length} registros · último error ${errors[errors.length-1].y.toFixed(3)}`); }
+function drawECG() { const c = safeEl('ecg-c'); if (!c) return; const ctx = c.getContext('2d'); const w = c.offsetWidth, h = 80; ctx.clearRect(0, 0, w, h); ctx.strokeStyle = 'rgba(200,169,81,.025)'; ctx.lineWidth = 0.5; for (let x = 0; x < w; x += 60) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); } for (let y = 0; y < h; y += 20) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); } const ty = h - (((-0.4 + 2) / 3) * h * 0.8 + h * 0.1); ctx.setLineDash([3, 6]); ctx.strokeStyle = 'rgba(200,169,81,.15)'; ctx.lineWidth = 0.5; ctx.beginPath(); ctx.moveTo(0, ty); ctx.lineTo(w, ty); ctx.stroke(); ctx.setLineDash([]); if (ecgHist.length < 2) return; const cur = ecgHist[ecgHist.length - 1]; const lc = cur < -1.2 ? '#BE3A3A' : cur < -0.8 ? '#E6FF00' : '#C8A951'; ctx.strokeStyle = lc; ctx.lineWidth = 1; ctx.beginPath(); const maxP = Math.min(ecgHist.length, Math.floor(w / 2)); const si = Math.max(0, ecgHist.length - maxP); for (let i = si; i < ecgHist.length; i++) { const x = ((i - si) / maxP) * w; const y = h - (((ecgHist[i] + 2) / 3) * h * 0.8 + h * 0.1); if (i === si) ctx.moveTo(x, y); else ctx.lineTo(x, y); } ctx.stroke(); const ecgCur = safeEl('ecg-cur'); if (ecgCur) { ecgCur.textContent = 'IHG ' + cur.toFixed(3); ecgCur.style.color = lc; } }
+function tickECG() { const base = SF.ihg !== null ? SF.ihg : -0.4; ecgHist.push(base + (Math.random() - 0.5) * 0.035); if (ecgHist.length > 600) ecgHist.shift(); drawECG(); setTimeout(tickECG, 60); }
+
+// ========== MCM-C STUDIO ==========
+const SCALES = { Locrian:[0,1,3,5,6,8,10], Phrygian:[0,1,3,5,7,8,10], Dorian:[0,2,3,5,7,9,10], Ionian:[0,2,4,5,7,9,11] };
+const ROOTS_N = ['Do','Re♭','Re','Mi♭','Mi','Fa','Sol♭','Sol','La♭','La','Si♭','Si'];
+const ROOTS_M = [60,61,62,63,64,65,66,67,68,69,70,71];
+const SECTIONS = ['intro','verso','estribillo','outro'];
+let MCMC = { init:false, ihg:null, ifv:null, icc:null, irc:null, z:null, section:'intro', frozenMotif:null, frozenIdx:null, memory:[], c:0, rField:0, kappa:0.22, lambdaC:0.9, ifTarget:0.75, iccTarget:0.68, maxMotifs:3, tl:{ ihg:[], ifv:[], icc:[], irc:[], sec:[] }, step:0, genre:'synthwave', mode:'Dorian', ridx:0, vel:80, notes:8, ndur:'negra', baseOk:false, running:false, _timer:null, _pIhg:null };
+function mcmcSyncSlider(el, valId) { const v = parseFloat(el.value); const d = v < 10 ? 2 : 0; safeText(valId, v.toFixed(d)); const id = el.id; if (id==='mcmc-kappa') MCMC.kappa = v; else if (id==='mcmc-lambda') MCMC.lambdaC = v; else if (id==='mcmc-if-target') MCMC.ifTarget = v; else if (id==='mcmc-icc-target') MCMC.iccTarget = v; else if (id==='mcmc-motifs') MCMC.maxMotifs = Math.round(v); }
+function mcmcLog(msg) { const c = safeEl('mcmc-console'); if (!c) return; const t = new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit',second:'2-digit'}); c.innerHTML = '<span style="color:var(--t4)">['+t+']</span> '+msg+'\n' + c.innerHTML; }
+function mcmcModeFrom(ihg) { if (ihg < -1.2) return 'Locrian'; if (ihg < -0.8) return 'Phrygian'; if (ihg < -0.4) return 'Dorian'; return 'Ionian'; }
+function mcmcSetSection(sec, btn) { MCMC.section = sec; document.querySelectorAll('.mcmc-section-btn').forEach((b,i)=>b.classList.toggle('active', SECTIONS[i]===sec)); safeText('mcmc-sec-lbl', sec.toUpperCase()); if (MCMC.baseOk) mcmcDrawRoll(); }
+function mcmcInitState() { const ihgBase = SF.ihg !== null ? SF.ihg : -(0.3+Math.random()*0.3); MCMC.z = Array.from({length:8},()=>ihgBase*0.5+(Math.random()-0.5)*0.4); MCMC.ihg = ihgBase; MCMC.ifv = 0.52 + Math.random()*0.2; MCMC.icc = 0.35 + Math.random()*0.12; MCMC.irc = 0.28 + Math.random()*0.1; MCMC.c = 0.3; MCMC.rField = 0.2; MCMC.step = 0; MCMC.memory = []; MCMC.frozenMotif = null; MCMC.frozenIdx = null; MCMC._pIhg = ihgBase; MCMC.tl = { ihg:[], ifv:[], icc:[], irc:[], sec:[] }; MCMC.genre = (safeEl('mcmc-genre')||{value:'synthwave'}).value; MCMC.ridx = SF.nti !== null ? Math.abs(Math.round(SF.nti*11))%12 : Math.floor(Math.random()*12); MCMC.mode = mcmcModeFrom(MCMC.ihg); MCMC.vel = Math.round(40+((MCMC.ihg+2)/3)*55); MCMC.notes = Math.round(6+MCMC.ifv*16); MCMC.ndur = MCMC.icc>0.5?'negra':'corchea'; }
+function mcmcTick(reward) { const gamma=0.15, eta=0.12, mu=0.15; MCMC.c = Math.max(0,Math.min(1,(1-gamma)*MCMC.c + eta*reward + (Math.random()-0.5)*0.02)); const impact = reward*0.8 + Math.random()*0.1; MCMC.rField = Math.max(0,Math.min(1, 0.82*MCMC.rField + 0.18*MCMC.c + 0.05*impact)); let cult = 0; if (MCMC.memory.length>0) { const cen = MCMC.memory.reduce((a,m)=>a+m.reward,0)/MCMC.memory.length; cult = MCMC.kappa*(cen-MCMC.icc); } const err = MCMC.ihg-(-0.4); const u = -(4.2*err + 1.3*(MCMC.ihg-(MCMC._pIhg||MCMC.ihg))); MCMC._pIhg = MCMC.ihg; MCMC.ihg = Math.max(-2.0,Math.min(0.5, MCMC.ihg + 0.04*u + cult*0.01 + (Math.random()-0.5)*0.015)); MCMC.ifv = Math.max(0.3,Math.min(0.98, MCMC.ifv + 0.015*(MCMC.ifTarget-MCMC.ifv) + 0.008*reward + (Math.random()-0.5)*0.01)); MCMC.icc = Math.max(0.1,Math.min(0.99, MCMC.icc + 0.012*(MCMC.iccTarget-MCMC.icc) + 0.02*cult + 0.015*(reward-0.5) - MCMC.lambdaC*0.005*(1-MCMC.icc)**2)); MCMC.irc = Math.max(0, Math.min(1, 0.65*MCMC.irc + 0.35*(reward*MCMC.ifv*impact))); MCMC.mode = mcmcModeFrom(MCMC.ihg); MCMC.vel = Math.round(40+((MCMC.ihg+2)/3)*55); MCMC.notes = Math.round(6+MCMC.ifv*16); MCMC.ndur = MCMC.icc>0.5?'negra':'corchea'; MCMC.tl.ihg.push(MCMC.ihg); MCMC.tl.ifv.push(MCMC.ifv); MCMC.tl.icc.push(MCMC.icc); MCMC.tl.irc.push(MCMC.irc); MCMC.tl.sec.push(MCMC.section); if (reward>0.65 && MCMC.memory.length<MCMC.maxMotifs) { const dup = MCMC.memory.some(m=>Math.abs(m.reward-reward)<0.05&&m.section===MCMC.section); if (!dup) { MCMC.memory.push({z:[...MCMC.z],reward,icc:MCMC.icc,section:MCMC.section,step:MCMC.step}); mcmcLog('+motivo · '+MCMC.section+' · r='+reward.toFixed(2)); } } if (MCMC.memory.length>2) { const avg = MCMC.memory.reduce((a,m)=>a+m.reward,0)/MCMC.memory.length; if (avg<0.5) { MCMC.memory.shift(); mcmcLog('−motivo olvidado'); } } if (MCMC.irc>0.65 && reward>0.75 && MCMC.step%12===0) { mcmcLog('★ MOMENTO MEME · IRC '+MCMC.irc.toFixed(2)); if (MCMC.memory.length>0) { const best=MCMC.memory.reduce((a,b)=>a.reward>b.reward?a:b); best.reward=Math.min(1,best.reward*1.2); } } MCMC.step++; }
+function mcmcSectionReward() { const m={intro:'rwd-intro',verso:'rwd-verso',estribillo:'rwd-estrib',outro:'rwd-outro'}; const el=safeEl(m[MCMC.section]||'rwd-estrib'); return el?parseFloat(el.value):0.5; }
+function mcmcRefresh() { if (!MCMC.baseOk) return; const ihgC = MCMC.ihg<-0.8?'var(--rojo)':MCMC.ihg<-0.4?'var(--azul)':'var(--verde)'; const ifC = MCMC.ifv>=MCMC.ifTarget?'var(--verde)':'var(--oro)'; const iccC = MCMC.icc>=MCMC.iccTarget?'var(--verde)':'var(--oro)'; const ircC = MCMC.irc>0.65?'#d080ff':'#a060d0'; const set=(id,v,c)=>{const e=safeEl(id);if(e){e.textContent=v;if(c)e.style.color=c;}}; set('mcmc-ihg-v', MCMC.ihg.toFixed(2), ihgC); set('mcmc-if-v2', MCMC.ifv.toFixed(2), ifC); set('mcmc-icc-v2',MCMC.icc.toFixed(2), iccC); set('mcmc-irc-v', MCMC.irc.toFixed(2), ircC); safeText('mcmc-sec-lbl', MCMC.section.toUpperCase()); safeText('mcmc-mode-root',MCMC.mode+' · '+ROOTS_N[MCMC.ridx]+'4'); safeText('mcmc-mem-cnt', MCMC.memory.length+' / '+MCMC.maxMotifs); safeText('mcmc-icc-evo', MCMC.icc.toFixed(3)+(MCMC.icc>=MCMC.iccTarget?' ✓':' → '+MCMC.iccTarget.toFixed(2))); const heat=safeEl('mcmc-heat'); if(heat){ heat.innerHTML=''; for(let i=0;i<MCMC.maxMotifs;i++){ const d=document.createElement('div'); d.className='meme-cell'; if(i<MCMC.memory.length){ const m=MCMC.memory[i]; const fz=(MCMC.frozenIdx===i); d.style.background=fz?'#a060d0':`rgba(200,169,81,${m.reward.toFixed(2)})`; d.style.border=fz?'1px solid #d080ff':'0.5px solid var(--bdr)'; d.title='Motivo '+(i+1)+' · '+m.section+' · r='+m.reward.toFixed(2)+(fz?' · CONGELADO':''); } else { d.style.background='var(--bg1)'; d.style.border='0.5px solid var(--bdr)'; } heat.appendChild(d); } } }
+function mcmcDrawTimeline() { const cv=safeEl('mcmc-timeline'); if(!cv) return; const dpr=window.devicePixelRatio||1; cv.width=cv.offsetWidth*dpr; cv.height=120*dpr; const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr); const w=cv.offsetWidth, h=120; ctx.fillStyle='#141410'; ctx.fillRect(0,0,w,h); const tl=MCMC.tl, n=tl.ihg.length; if(n<2) return; let prev=tl.sec[0]; for(let i=1;i<n;i++){ if(tl.sec[i]!==prev){ const x=(i/(n-1))*w; ctx.save(); ctx.strokeStyle='rgba(255,255,255,0.1)'; ctx.lineWidth=1; ctx.setLineDash([2,4]); ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,h); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle='rgba(255,255,255,0.18)'; ctx.font='7px Courier New'; ctx.fillText(tl.sec[i].slice(0,3).toUpperCase(),x+2,9); ctx.restore(); prev=tl.sec[i]; } } for(let i=0;i<n;i++){ if(tl.irc[i]>0.65){ const x=(i/(n-1))*w; ctx.fillStyle='rgba(160,96,208,0.07)'; ctx.fillRect(x,0,w/n+1,h); } } const itY=5+(1-(MCMC.ifTarget-0.3)/0.7)*(h-10); ctx.save(); ctx.strokeStyle='rgba(23,122,94,0.35)'; ctx.lineWidth=0.8; ctx.setLineDash([3,5]); ctx.beginPath(); ctx.moveTo(0,itY); ctx.lineTo(w,itY); ctx.stroke(); const icY=5+(1-MCMC.iccTarget)*(h-10); ctx.strokeStyle='rgba(200,169,81,0.35)'; ctx.beginPath(); ctx.moveTo(0,icY); ctx.lineTo(w,icY); ctx.stroke(); ctx.setLineDash([]); ctx.restore(); const curve=(data,col,mn,mx)=>{ ctx.save(); ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.beginPath(); for(let i=0;i<n;i++){ const x=(i/(n-1))*w, yn=1-(data[i]-mn)/(mx-mn), y=5+yn*(h-10); i===0?ctx.moveTo(x,y):ctx.lineTo(x,y); } ctx.stroke(); ctx.restore(); }; curve(tl.ihg,'#2c6e9e',-2.0,0.5); curve(tl.ifv,'#177a5e',0.3,1.0); curve(tl.icc,'#c8a951',0.0,1.0); curve(tl.irc,'#a060d0',0.0,1.0); }
+function mcmcDrawRoll() { const cv=safeEl('mcmc-roll'); if(!cv||!MCMC.baseOk) return; const dpr=window.devicePixelRatio||1; cv.width=cv.offsetWidth*dpr; cv.height=90*dpr; const ctx=cv.getContext('2d'); ctx.scale(dpr,dpr); const w=cv.offsetWidth, h=90; ctx.fillStyle='#141410'; ctx.fillRect(0,0,w,h); const scale=SCALES[MCMC.mode]||SCALES.Dorian, root=ROOTS_M[MCMC.ridx], n=MCMC.notes; const pitches=[]; for(let i=0;i<n;i++){ const s=i%scale.length, oct=Math.floor(i/scale.length); pitches.push(root+scale[s]+oct*12+(oct>Math.floor(MCMC.ifv*2)?12:0)); } const minP=Math.min(...pitches), rng=Math.max(Math.max(...pitches)-minP,1), nw=(w-8)/n; for(let i=0;i<n;i++){ const x=4+i*nw, yn=1-(pitches[i]-minP)/rng, y=yn*(h-10)+5; ctx.fillStyle=`rgba(200,169,81,${(0.3+MCMC.icc*0.6).toFixed(2)})`; ctx.fillRect(x, y, nw*0.84, 4+MCMC.icc*3); } if(MCMC.frozenMotif){ ctx.fillStyle='rgba(160,96,208,0.12)'; ctx.fillRect(0,0,w,h); } [48,60,72].forEach(o=>{ if(o>=minP&&o<=minP+rng){ const y=(1-(o-minP)/rng)*(h-10)+5; ctx.strokeStyle='rgba(255,255,255,0.05)'; ctx.lineWidth=0.5; ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(w,y); ctx.stroke(); } }); ctx.fillStyle='rgba(200,169,81,0.55)'; ctx.font='8px Courier New'; ctx.fillText(MCMC.mode+' · '+ROOTS_N[MCMC.ridx]+'4 · '+n+' notas · vel '+MCMC.vel+' · '+MCMC.section,6,h-5); safeText('mcmc-roll-info','IHG '+MCMC.ihg.toFixed(2)+' · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2)+' · IRC '+MCMC.irc.toFixed(2)+' · paso '+MCMC.step); }
+function mcmcGenerateBase() { mcmcInitState(); MCMC.baseOk=true; MCMC.tl.ihg.push(MCMC.ihg); MCMC.tl.ifv.push(MCMC.ifv); MCMC.tl.icc.push(MCMC.icc); MCMC.tl.irc.push(MCMC.irc); MCMC.tl.sec.push(MCMC.section); safeText('mcmc-phase-lbl','BASE GENERADA · listo para feedback'); safeText('mcmc-status','Base generada · '+MCMC.genre+' · '+MCMC.mode+' · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2)); ['btn-coevolve','btn-freeze','btn-export-midi'].forEach(id=>{const e=safeEl(id);if(e)e.disabled=false;}); mcmcLog('Generación base · '+MCMC.genre+' · IHG '+MCMC.ihg.toFixed(2)+' · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2)); mcmcRefresh(); mcmcDrawRoll(); mcmcDrawTimeline(); }
+function mcmcSimFeedback() { if(!MCMC.baseOk){mcmcLog('ERROR: Generar base primero');return;} const r=mcmcSectionReward(); safeText('mcmc-last-rwd','+'+r.toFixed(2)+' engagement'); for(let i=0;i<5;i++) mcmcTick(Math.max(0,Math.min(1,r+(Math.random()-0.5)*0.05))); mcmcLog('Feedback · '+MCMC.section+' · r='+r.toFixed(2)); mcmcRefresh(); mcmcDrawRoll(); mcmcDrawTimeline(); safeText('mcmc-status','Feedback simulado · ICC '+MCMC.icc.toFixed(2)+' → objetivo '+MCMC.iccTarget.toFixed(2)); }
+function mcmcCoevolve() { if(!MCMC.baseOk) return; if(MCMC.running){ clearInterval(MCMC._timer); MCMC._timer=null; MCMC.running=false; safeText('btn-coevolve','COEVOLUCIONAR'); safeText('mcmc-phase-lbl','DETENIDO · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2)); safeText('mcmc-status','Coevolución detenida · '+MCMC.step+' pasos'); return; } MCMC.running=true; safeText('btn-coevolve','■ DETENER'); safeText('mcmc-phase-lbl','COEVOLUCIONANDO…'); mcmcLog('Inicio coevolución · κ='+MCMC.kappa.toFixed(2)+' · λ_C='+MCMC.lambdaC.toFixed(2)); let s=0, MAX=256; MCMC._timer=setInterval(()=>{ const sec=SECTIONS[Math.floor(s/32)%SECTIONS.length]; if(sec!==MCMC.section) mcmcSetSection(sec,null); const r=Math.max(0,Math.min(1,mcmcSectionReward()+(Math.random()-0.5)*0.08)); mcmcTick(r); if(s%8===0){ mcmcRefresh(); mcmcDrawRoll(); mcmcDrawTimeline(); safeText('mcmc-last-rwd','+'+r.toFixed(2)+' engagement'); safeText('mcmc-status','Paso '+s+'/'+MAX+' · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2)+' · IRC '+MCMC.irc.toFixed(2)); } s++; if(s>=MAX){ clearInterval(MCMC._timer); MCMC._timer=null; MCMC.running=false; safeText('btn-coevolve','COEVOLUCIONAR'); const lbl='COMPLETO · IF '+MCMC.ifv.toFixed(2)+' · ICC '+MCMC.icc.toFixed(2)+' · IRC '+MCMC.irc.toFixed(2); safeText('mcmc-phase-lbl',lbl); mcmcLog('Coevolución completa · '+s+' pasos · IRC '+MCMC.irc.toFixed(2)); if(MCMC.irc>0.65) mcmcLog('★ IRC > 0.65 · Gramática colectiva transformada'); mcmcRefresh(); mcmcDrawRoll(); mcmcDrawTimeline(); } },40); }
+function mcmcFreezeMotif() { if(!MCMC.baseOk) return; if(MCMC.memory.length===0){mcmcLog('Sin motivos en memoria · ejecuta feedback primero');return;} const bi=MCMC.memory.reduce((bi,m,i,a)=>m.reward>a[bi].reward?i:bi,0); MCMC.frozenMotif={...MCMC.memory[bi]}; MCMC.frozenIdx=bi; mcmcLog('Motivo '+(bi+1)+' congelado · '+MCMC.frozenMotif.section+' · r='+MCMC.frozenMotif.reward.toFixed(2)); safeText('mcmc-status','Motivo congelado · sección '+MCMC.frozenMotif.section); mcmcRefresh(); mcmcDrawRoll(); }
+function mcmcExportMIDI() { if(!MCMC.baseOk) return; const TPB=480, bpm=Math.round(70+MCMC.icc*60+MCMC.irc*20), tempo=Math.round(60000000/bpm); const sc=SCALES[MCMC.mode]||SCALES.Dorian, root=ROOTS_M[MCMC.ridx]; const gm={synthwave:80,pop:0,techno:81,'lo-fi':25,jazz:32}; const instr=gm[MCMC.genre]||0, ch=0; const evts=[]; const vLen=v=>{if(v<128)return[v];const b=[];let x=v;while(x>0){b.unshift(x&0x7F);x>>=7;}for(let i=0;i<b.length-1;i++)b[i]|=0x80;return b;}; const push=(dt,b)=>evts.push(...vLen(dt),...b); push(0,[0xFF,0x51,0x03,(tempo>>16)&0xFF,(tempo>>8)&0xFF,tempo&0xFF]); push(0,[0xC0|ch, instr]); const dur=MCMC.icc>0.5?1.0:0.5; const N=MCMC.notes; for(let p=0;p<2;p++){ for(let i=0;i<N;i++){ const s=i%sc.length, oct=Math.floor(i/sc.length); const pitch=Math.max(0,Math.min(127,root+sc[s]+oct*12)); const vel=Math.max(1,Math.min(127,MCMC.vel+Math.round((Math.random()-0.5)*8))); const ticks=Math.round(dur*TPB); push(0,[0x90|ch,pitch,vel]); push(ticks,[0x80|ch,pitch,0x40]); } } if(MCMC.icc>0.6){ const chords=[root,root+sc[2],root+sc[4]]; for(const cr of chords){ const pitch=Math.max(0,Math.min(127,cr-12)); const vel=Math.max(1,Math.min(127,Math.round(MCMC.vel*0.7))); push(0,[0x90|ch,pitch,vel]); push(Math.round(2*TPB),[0x80|ch,pitch,0x40]); } } push(0,[0xFF,0x2F,0x00]); const tLen=evts.length; const bytes=new Uint8Array([0x4D,0x54,0x68,0x64,0,0,0,6,0,0,0,1,(TPB>>8)&0xFF,TPB&0xFF,0x4D,0x54,0x72,0x6B,(tLen>>24)&0xFF,(tLen>>16)&0xFF,(tLen>>8)&0xFF,tLen&0xFF,...evts]); const blob=new Blob([bytes],{type:'audio/midi'}); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='scorefriction_'+MCMC.genre+'_'+MCMC.mode+'_'+ROOTS_N[MCMC.ridx]+'4_IF'+MCMC.ifv.toFixed(2)+'_ICC'+MCMC.icc.toFixed(2)+'.mid'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url); mcmcLog('MIDI exportado · '+bpm+' BPM · '+MCMC.mode+' · '+ROOTS_N[MCMC.ridx]+'4'); safeText('mcmc-status','MIDI exportado · '+bpm+' BPM · '+MCMC.mode); }
+function mcmcReset() { if(MCMC._timer){clearInterval(MCMC._timer);MCMC._timer=null;} MCMC.baseOk=false; MCMC.running=false; MCMC.step=0; MCMC.ihg=null; MCMC.ifv=null; MCMC.icc=null; MCMC.irc=null; MCMC.memory=[]; MCMC.frozenMotif=null; MCMC.frozenIdx=null; MCMC.tl={ihg:[],ifv:[],icc:[],irc:[],sec:[]}; ['mcmc-ihg-v','mcmc-if-v2','mcmc-icc-v2','mcmc-irc-v','mcmc-sec-lbl','mcmc-mode-root','mcmc-last-rwd','mcmc-icc-evo','mcmc-roll-info'].forEach(id=>safeText(id,'—')); safeText('mcmc-mem-cnt','0'); safeText('mcmc-phase-lbl','NO INICIALIZADO'); safeText('btn-coevolve','COEVOLUCIONAR'); ['btn-coevolve','btn-freeze','btn-export-midi'].forEach(id=>{const e=safeEl(id);if(e)e.disabled=true;}); const heat=safeEl('mcmc-heat');if(heat)heat.innerHTML=''; const con=safeEl('mcmc-console');if(con)con.innerHTML=''; ['mcmc-roll','mcmc-timeline'].forEach(id=>{const cv=safeEl(id);if(cv){const ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);}}); safeText('mcmc-status','Sistema reiniciado · Presiona GENERAR BASE para inicializar'); mcmcLog('Sistema reiniciado'); }
+function updateMIDIParamsFromState() { if(MCMC.baseOk){ mcmcRefresh(); mcmcDrawTimeline(); mcmcDrawRoll(); } }
+
+// ========== ANÁLISIS DE CANCIONES ==========
+let lastAudioAnalysis = null;
+async function analyzeSong() {
+  const fileInput = safeEl('audioFile');
+  if (!fileInput.files.length) { alert('Selecciona un archivo de audio primero'); return; }
+  const file = fileInput.files[0];
+  const formData = new FormData();
+  formData.append('file', file);
+  showOverlay('Analizando canción...');
+  try {
+    const response = await fetch(`${API_URL}/upload`, { method: 'POST', body: formData });
+    const data = await response.json();
+    if (data.error) throw new Error(data.error);
+    lastAudioAnalysis = data;
+    displayAudioAnalysis(data);
+    hideOverlay();
+  } catch (err) { hideOverlay(); alert('Error al analizar: ' + err.message); }
 }
- 
-function getFigName(f) {
-  const m = { '𝅝': 'redonda', '𝅗𝅥': 'blanca', '♩': 'negra', '♪': 'corchea', '𝅘𝅥𝅯': 'semicorchea', '𝄽': 'silencio' };
-  return m[f] || 'negra';
+function displayAudioAnalysis(data) {
+  const resultDiv = safeEl('audioResult'); const instrDiv = safeEl('instruments-list'); const genresDiv = safeEl('genres-list'); const featuresDiv = safeEl('features-list');
+  instrDiv.innerHTML = ''; for (const [inst, conf] of Object.entries(data.instruments)) { const bar = `<div style="display:flex; align-items:center; margin-bottom:6px;"><span style="width:80px; font-size:9px;">${inst}</span><div style="flex:1; background:var(--bg2); height:6px; margin:0 8px;"><div style="width:${conf*100}%; background:var(--oro); height:6px;"></div></div><span style="font-size:9px;">${Math.round(conf*100)}%</span></div>`; instrDiv.innerHTML += bar; }
+  genresDiv.innerHTML = ''; for (const [gen, prob] of Object.entries(data.genre_estimates)) { const bar = `<div style="display:flex; align-items:center; margin-bottom:6px;"><span style="width:80px; font-size:9px;">${gen}</span><div style="flex:1; background:var(--bg2); height:6px; margin:0 8px;"><div style="width:${prob*100}%; background:var(--verde); height:6px;"></div></div><span style="font-size:9px;">${Math.round(prob*100)}%</span></div>`; genresDiv.innerHTML += bar; }
+  featuresDiv.innerHTML = `<div>Entropía espectral: ${data.spectral_entropy.toFixed(2)}</div><div>Densidad de onsets: ${data.onset_density.toFixed(2)} eventos/seg</div><div>Rango dinámico: ${data.dynamic_range.toFixed(3)}</div><div>Energía low: ${(data.band_energy.low*100).toFixed(0)}% · mid: ${(data.band_energy.mid*100).toFixed(0)}% · high: ${(data.band_energy.high*100).toFixed(0)}%</div>`;
+  resultDiv.style.display = 'block';
 }
- 
-function renderTrends(tendencias) {
-  const container = safeEl('trends-grid');
-  if (!container) return;
-  if (!tendencias || !tendencias.length) {
-    container.innerHTML = '<div class="trend-cell"><div style="font-size:10px;color:var(--t3);padding:1rem 0">sin tendencias detectadas</div></div>';
-    return;
-  }
-  container.innerHTML = tendencias.slice(0, 6).map(t => `
-    <div class="trend-cell">
-      <div class="trend-ttl">${t.nombre}</div>
-      <div class="trend-bar-row">
-        <span class="trend-lbl">Relevancia</span>
-        <div class="trend-track"><div class="trend-fill" style="width:${Math.round(t.relevancia * 100)}%"></div></div>
-        <span class="trend-pct">${Math.round(t.relevancia * 100)}%</span>
-      </div>
-      <div style="font-size:9px;color:var(--t3);margin-top:4px;">${t.accion}</div>
-    </div>
-  `).join('');
+function applyToMidi() {
+  if (!lastAudioAnalysis) return;
+  const topGenre = Object.entries(lastAudioAnalysis.genre_estimates).reduce((a,b) => a[1] > b[1] ? a : b)[0];
+  const genreSelect = safeEl('mcmc-genre'); if (genreSelect) { for (let opt of genreSelect.options) if (opt.value === topGenre) opt.selected = true; }
+  const ifTarget = Math.min(0.9, 0.5 + lastAudioAnalysis.onset_density / 15);
+  const ifSlider = safeEl('mcmc-if-target'); if (ifSlider) ifSlider.value = ifTarget;
+  const ifSpan = safeEl('mcmc-if-tv'); if (ifSpan) ifSpan.textContent = ifTarget.toFixed(2);
+  const iccTarget = Math.min(0.9, 0.4 + lastAudioAnalysis.spectral_entropy / 12);
+  const iccSlider = safeEl('mcmc-icc-target'); if (iccSlider) iccSlider.value = iccTarget;
+  const iccSpan = safeEl('mcmc-icc-tv'); if (iccSpan) iccSpan.textContent = iccTarget.toFixed(2);
+  const estribSlider = safeEl('rwd-estrib'); if (estribSlider && lastAudioAnalysis.instruments.drums > 0.6) { estribSlider.value = 0.85; safeText('rwd-estrib-v', '0.85'); }
+  alert('Parámetros del MIDI Studio actualizados según el análisis de la canción.');
+  openTab('midi', document.querySelector('.tab-btn[onclick*="midi"]'));
 }
- 
-function renderDuetos(duetos) {
-  const container = safeEl('duetos-panel');
-  if (!container) return;
-  if (!duetos || !duetos.length) {
-    container.innerHTML = '<div class="pnl-body" style="font-size:10px;color:var(--t3)">sin recomendaciones detectadas</div>';
-    return;
-  }
-  container.innerHTML = '<div class="pnl-hd"><span class="pnl-lbl">SINERGIA COMBINADA > SUMA DE PARTES · COEFICIENTE SF</span></div>' +
-    '<div class="pnl-body" style="display:flex;flex-direction:column;gap:8px">' +
-    duetos.map(d => `<div style="padding:10px 12px;background:var(--bg2);border-left:1.5px solid var(--oro)">
-      <div style="display:flex;justify-content:space-between;margin-bottom:4px">
-        <span style="font-size:11px;font-weight:400;color:var(--t1)">${d.tipo}</span>
-        <span style="font-size:11px;font-family:var(--mono);color:var(--oro)">×${(d.sinergia || 0).toFixed(2)}</span>
-      </div>
-      <div style="font-size:10px;color:var(--t2);margin-bottom:4px">${d.descripcion}</div>
-      <div style="font-size:9px;color:var(--t3)">${d.justificacion}</div>
-    </div>`).join('') + '</div>';
-}
- 
-function renderCalendar(proyectos) {
-  const container = safeEl('task-rows');
-  if (!container) return;
-  if (!proyectos || !proyectos.length) {
-    container.innerHTML = '<div style="padding:1.5rem;text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono);background:var(--bg1)">sin proyectos detectados</div>';
-    return;
-  }
-  container.innerHTML = proyectos.map(p => {
-    const ldiPct = Math.min(100, Math.round((p.ldi || 0) / 60 * 100));
-    const ldiColor = ldiPct > 70 ? 'var(--rojo)' : ldiPct > 40 ? 'var(--oro)' : 'var(--verde)';
-    const crit = p.criticidad === 'alta' ? '<span class="tag al">CRÍTICA</span>' : p.criticidad === 'media' ? '<span class="tag wa">MEDIA</span>' : '<span class="tag ok">BAJA</span>';
-    return `<div class="task-row">
-      <div><div class="tl name">${p.nombre}</div><div class="tl sub">${p.etapa}</div></div>
-      <div style="font-size:9px;font-family:var(--mono);color:var(--t3)">${(p.etapa || '').slice(0, 8).toUpperCase()}</div>
-      <div style="font-size:9px;color:var(--t3)">${p.responsable || '—'}</div>
-      <div><div style="display:flex;align-items:center;gap:5px"><div class="ldi-bar" style="flex:1"><div class="ldi-fill" style="width:${ldiPct}%;background:${ldiColor}"></div></div><span style="font-size:8px;font-family:var(--mono);color:${ldiColor}">${p.ldi || 0}d</span></div></div>
-      <div>${crit}</div>
-      <div style="font-size:8px;font-family:var(--mono);color:var(--t3)">${p.criticidad === 'alta' ? 'BLOQUEO' : 'RETRASO'}</div>
-    </div>`;
-  }).join('');
-}
- 
-function loadProjectTemplate() {
-  const template = [
-    { nombre: 'Álbum debut', etapa: 'grabación', vector: 'V1', figura: '𝅗𝅥', ldi: 35, responsable: 'productor', criticidad: 'alta' },
-    { nombre: 'EP single lanzamiento', etapa: 'masterización', vector: 'V2', figura: '♪', ldi: 14, responsable: 'director artístico', criticidad: 'alta' },
-    { nombre: 'Campaña redes Q1', etapa: 'ejecución', vector: 'V3', figura: '♩', ldi: 7, responsable: 'community manager', criticidad: 'media' },
-    { nombre: 'Propuestas entrantes', etapa: 'evaluación', vector: 'V1', figura: '𝄽', ldi: 45, responsable: '(sin asignar)', criticidad: 'alta' }
-  ];
-  SF.proyectos = template;
-  renderCalendar(template);
-  renderPartitura(template);
-  const promptEl = safeEl('cal-add-prompt');
-  if (promptEl) promptEl.style.display = 'none';
-  sysLog('Plantilla de producción musical cargada');
-}
- 
+
 // ========== UI HELPERS ==========
-function showPhase(name) {
-  document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
-  const phaseEl = safeEl('ph-' + name);
-  if (phaseEl) phaseEl.classList.add('active');
-  window.scrollTo(0, 0);
-}
- 
-function openTab(name, btn) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  const tabEl = safeEl('tab-' + name);
-  if (tabEl) tabEl.classList.add('active');
-  if (btn) btn.classList.add('active');
-}
- 
-function showOverlay(msg) {
-  const overlay = safeEl('api-overlay');
-  const msgEl = safeEl('ov-msg');
-  if (overlay) overlay.classList.add('show');
-  if (msgEl) msgEl.textContent = msg || 'procesando...';
-}
- 
-function hideOverlay() {
-  const overlay = safeEl('api-overlay');
-  if (overlay) overlay.classList.remove('show');
-}
- 
-function sysLog(msg) {
-  const log = safeEl('sys-log');
-  if (!log) return;
-  const ts = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-  log.innerHTML += `<span style="color:var(--t4)">${ts}</span> · ${msg}\n`;
-  log.scrollTop = log.scrollHeight;
-}
- 
-function checkTask(i, row) {
-  notifChecked[i] = !notifChecked[i];
-  const cb = safeEl('ncb-' + i);
-  if (cb) cb.classList.toggle('checked', notifChecked[i]);
-  const lbl = row?.querySelector('.notif-cb-lbl');
-  if (lbl) lbl.textContent = notifChecked[i] ? 'COMPLETADA' : 'MARCAR COMPLETADA';
-  const done = Object.values(notifChecked).filter(Boolean).length;
-  const total = SF.tareas_dia.length;
-  const pct = Math.round(done / total * 100);
-  const cumplEl = safeEl('cumpl-pct');
-  if (cumplEl) cumplEl.textContent = `${done} / ${total} (${pct}%)`;
-  if (pct === 100) {
-    sysLog('CUMPLIMIENTO 100% · Tareas diarias completadas.');
-  }
-}
- 
-async function exportData() {
-  if (currentMode !== MODE.API_FULL) {
-    sysLog('⚠️ Exportación solo disponible en modo API completa');
-    return;
-  }
-  const result = await apiCall('/export');
-  if (result) {
-    const dataStr = JSON.stringify(result, null, 2);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `mihm_export_${new Date().toISOString().slice(0, 19)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    sysLog('📥 Exportación completada.');
-  }
-}
- 
-async function resetSystem() {
-  if (currentMode === MODE.API_FULL) {
-    await apiCall('/reset', 'POST');
-  }
-  ecgHist = [];
-  notifChecked = {};
-  SF.ihg = null;
-  SF.nti = null;
-  SF.r = null;
-  sysLog('🔄 Sistema reiniciado. Ejecutar nueva auditoría.');
-  showPhase('kickoff');
-}
- 
-// ========== APRENDIZAJE (sendLearn) ==========
-async function sendLearn() {
-  const outcomeInput = safeEl('input-outcome');
-  if (!outcomeInput) return;
-  const val = parseFloat(outcomeInput.value);
-  if (isNaN(val)) {
-    sysLog('⚠️ Ingrese un valor numérico para el outcome');
-    return;
-  }
-  if (!SF.lastPredictionId) {
-    sysLog('⚠️ No hay predicción activa para aprender');
-    return;
-  }
-  await sendLearning(SF.lastPredictionId, val);
-  outcomeInput.value = '';
-}
- 
-// ========== INIT ==========
-window.addEventListener('resize', () => { resizeECG(); drawECG(); });
- 
-window.addEventListener('load', async () => {
-  resizeECG();
-  tickECG();
-  initErrorChart();
-  await healthCheck();
-  await loadRecentErrors();
-  
-  const cv = safeEl('roll-c');
-  if (cv) {
-    const ctx = cv.getContext('2d');
-    const dpr = window.devicePixelRatio || 1;
-    cv.width = cv.offsetWidth * dpr;
-    cv.height = 110 * dpr;
-    ctx.scale(dpr, dpr);
-    ctx.fillStyle = '#1b1b1b';
-    ctx.fillRect(0, 0, cv.offsetWidth, 110);
-    ctx.fillStyle = 'rgba(42,40,37,.4)';
-    ctx.font = '9px Courier New';
-    ctx.textAlign = 'center';
-    ctx.fillText('— completa auditoría —', cv.offsetWidth / 2, 58);
-  }
-  
-  sysLog(`🚀 System Friction iniciado · Modo: ${currentMode} · API: ${API_URL}`);
-});
- 
-// Exponer funciones globales
-window.startAudit = startAudit;
-window.auditNext = auditNext;
-window.auditPrev = auditPrev;
-window.submitAudit = submitAudit;
-window.toggleRec = toggleRec;
-window.stopRec = stopRec;
-window.openTab = openTab;
-window.sendLearning = sendLearning;
-window.genMIDI = genMIDI;
-window.genBoth = genBoth;
-window.exportData = exportData;
-window.resetSystem = resetSystem;
-window.loadProjectTemplate = loadProjectTemplate;
-window.checkTask = checkTask;
-window.electScenarioAPI = electScenarioAPI;
-window.sendLearn = sendLearn;
+function showPhase(name) { document.querySelectorAll('.phase').forEach(p => p.classList.remove('active')); const phaseEl = safeEl('ph-' + name); if (phaseEl) phaseEl.classList.add('active'); window.scrollTo(0, 0); }
+function openTab(name, btn) { document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); const tabEl = safeEl('tab-' + name); if (tabEl) tabEl.classList.add('active'); if (btn) btn.classList.add('active'); }
+async function sendLearn() { const outcomeInput = safeEl('input-outcome'); if (!outcomeInput) return; const val = parseFloat(outcomeInput.value); if (isNaN(val)) { sysLog('⚠️ Ingrese un valor numérico para el outcome'); return; } if (!SF.lastPredictionId) { sysLog('⚠️ No hay predicción activa para aprender'); return; } await sendLearning(SF.lastPredictionId, val); outcomeInput.value = ''; }
+
+window.addEventListener('resize', () => { const c = safeEl('ecg-c'); if (c) { c.width = c.offsetWidth * devicePixelRatio; c.height = 80 * devicePixelRatio; c.getContext('2d').scale(devicePixelRatio, devicePixelRatio); drawECG(); } });
+window.addEventListener('load', async () => { const c = safeEl('ecg-c'); if (c) { c.width = c.offsetWidth * devicePixelRatio; c.height = 80 * devicePixelRatio; c.getContext('2d').scale(devicePixelRatio, devicePixelRatio); } tickECG(); initErrorChart(); await healthCheck(); await loadRecentErrors(); sysLog(`🚀 System Friction iniciado · Modo: ${currentMode} · API: ${API_URL}`); });
 </script>
 </body>
 </html>

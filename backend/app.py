@@ -1,212 +1,155 @@
 import os
+import json
 import uuid
-from datetime import datetime
-from flask import Flask, request, jsonify, send_file
-from flask_cors import CORS
 import numpy as np
-
-from config import Config
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 from database import Database
+from audio_analyzer import analyze_audio
 from groq_client import GroqClient
-from audio_features import extract_features
-from mihm import MIHM
 
 app = Flask(__name__)
-app.config.from_object(Config)
 CORS(app)
-
-db = Database('instance/friction.db')
+db = Database()
 groq = GroqClient()
-mihm = MIHM()
 
-# Cargar parámetros guardados
-saved_params = db.get_parameters('mihm_params')
-if saved_params:
-    mihm.params.update(saved_params)
-
-def generate_prediction_id():
-    return str(uuid.uuid4())
+kp, ki, kd = 0.8, 0.2, 0.1
+integral_error = 0.0
+last_error = 0.0
+last_ihg = -0.4
+error_history = []
 
 @app.route('/health', methods=['GET'])
 def health():
-    return jsonify({'status': 'ok', 'version': '3.3', 'mihm': 'active'})
+    return jsonify({'status': 'ok', 'version': '3.3'})
+
+@app.route('/reset', methods=['POST'])
+def reset():
+    global kp, ki, kd, integral_error, last_error, last_ihg
+    kp, ki, kd = 0.8, 0.2, 0.1
+    integral_error = 0.0
+    last_error = 0.0
+    last_ihg = -0.4
+    return jsonify({'status': 'reset'})
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    data = request.get_json()
-    user = data.get('user', 'anon')
+    global kp, ki, kd, integral_error, last_error, last_ihg, error_history
+    data = request.json
+    user = data.get('user', 'system')
     text = data.get('text', '')
 
-    # Simular extracción de inputs desde el texto (o usar Groq)
-    # Por ahora, usamos valores de ejemplo o intentamos extraer con Groq
-    # En una versión completa, se llamaría a Groq para obtener métricas del texto.
-    # Pero para simplificar, podemos usar el estado actual del MIHM.
-    # El frontend ya llama a /groq/analyze antes de /predict.
-    # Así que aquí simplemente actualizamos el estado con valores del texto?
-    # En realidad, el texto ya contiene las métricas? No, el frontend envía el texto crudo.
-    # Para integrar correctamente, en el frontend después de obtener el análisis de Groq,
-    # se debería llamar a /predict con las métricas ya calculadas.
-    # Rediseñemos: /predict recibe un objeto con las métricas (ihg, nti, r) y actualiza.
-    # O podemos hacer que /predict llame a Groq internamente. Pero para mantener separación,
-    # dejaremos que el frontend llame a /groq/analyze y luego envíe el resultado a /predict.
+    ihg = last_ihg + (np.random.rand() - 0.5) * 0.03
+    ihg = max(-2.0, min(0.5, ihg))
 
-    # Por ahora, si no vienen métricas, usamos las del MIHM
-    ihg = data.get('ihg', mihm.state['ihg'])
-    nti = data.get('nti', mihm.state['nti'])
-    r = data.get('r', mihm.state['r'])
+    error = -0.4 - ihg
+    integral_error += error
+    derivative = error - last_error
+    u = kp * error + ki * integral_error + kd * derivative
+    u = np.tanh(u)
 
-    # Actualizar estado
-    mihm.state.update({'ihg': ihg, 'nti': nti, 'r': r})
+    last_error = error
+    last_ihg = ihg
 
-    # Calcular señal de control PID
-    u = mihm.pid_control()
-    # Proyección Monte Carlo
-    proyeccion = mihm.monte_carlo_projection()
-    # Estabilidad
-    stability = mihm.stability_analysis()
+    nti = 0.3 + 0.4 * (1 - abs(ihg + 0.4))
+    r = 0.5 + 0.3 * (1 - abs(ihg + 0.8))
 
-    # Generar intervención basada en IHG
-    if mihm.state['ihg'] < -1.2:
-        intervencion = "🔴 CRÍTICO: Hegemonía extrema. Se requiere redistribución de decisiones."
-    elif mihm.state['ihg'] < -0.8:
-        intervencion = "🟠 ALERTA: Alta concentración de poder. Revisar roles."
-    elif mihm.state['ihg'] < -0.4:
-        intervencion = "🟡 TENSIÓN: Equilibrio inestable. Monitorear flujo de decisiones."
-    else:
-        intervencion = "🟢 ESTABLE: La homeostasis está dentro de rangos aceptables."
-
-    pred_id = generate_prediction_id()
-    # Guardar en BD (sin error por ahora)
-    db.save_prediction(pred_id, user, text, mihm.state)
+    prediction_id = str(uuid.uuid4())
+    db.save_prediction(user, text, ihg, nti, r, prediction_id)
 
     return jsonify({
-        'prediction_id': pred_id,
-        'state': mihm.state,
-        'intervencion': intervencion,
-        'control': {
-            'u': u,
-            'kp': mihm.params['kp'],
-            'ki': mihm.params['ki'],
-            'kd': mihm.params['kd']
-        },
-        'stability': stability,
-        'proyeccion': proyeccion
+        'prediction_id': prediction_id,
+        'state': {'ihg': ihg, 'nti': nti, 'r': r},
+        'control': {'u': u, 'kp': kp, 'ki': ki, 'kd': kd},
+        'stability': {'stability': 'estable' if abs(error) < 0.1 else 'inestable', 'iad_approx': 0.05},
+        'intervencion': 'Ajustar dinámica' if abs(error) > 0.2 else 'Monitoreo',
+        'scorecard': {
+            'narrativa': f'Estado actual: IHG={ihg:.2f}, NTI={nti:.2f}, R={r:.2f}',
+            'bemoles': [],
+            'sostenidos': [],
+            'tareas_dia': []
+        }
     })
 
 @app.route('/learn', methods=['POST'])
 def learn():
-    data = request.get_json()
-    pred_id = data.get('prediction_id')
-    outcome = data.get('outcome')
-    if not pred_id or outcome is None:
-        return jsonify({'error': 'Missing prediction_id or outcome'}), 400
+    global kp, ki, kd, integral_error, last_error, error_history
+    data = request.json
+    prediction_id = data.get('prediction_id')
+    outcome = float(data.get('outcome'))
 
-    # Obtener predicción anterior (simplificado, aquí solo actualizamos MIHM)
-    # En producción, deberías obtener el valor predicho desde la BD
-    # Simulamos error
-    error = outcome - mihm.state['ihg']  # error absoluto
-    error_smoothed = 0.7 * error + 0.3 * (db.get_parameters('last_error') or 0)
-    db.save_parameters('last_error', error_smoothed)
-
-    new_params = mihm.learn(pred_id, outcome, db)
-
-    # Actualizar error en la BD (asumiendo que tenemos registro de esa predicción)
-    # Guardar error
     with db.get_connection() as conn:
-        conn.execute('UPDATE predictions SET error=?, error_smoothed=? WHERE prediction_id=?',
-                     (error, error_smoothed, pred_id))
+        cur = conn.execute('SELECT ihg, nti, r FROM predictions WHERE prediction_id = ?', (prediction_id,))
+        row = cur.fetchone()
+        if not row:
+            return jsonify({'error': 'Prediction not found'}), 404
+        ihg_pred, nti_pred, r_pred = row
+
+    error = abs(outcome - ihg_pred)
+    db.save_learning(prediction_id, outcome, error)
+
+    if len(error_history) > 10:
+        mean_error = np.mean(error_history[-10:])
+        if mean_error > 0.2:
+            kp *= 1.05
+            ki *= 1.02
+        elif mean_error < 0.05:
+            kp *= 0.98
+            ki *= 0.99
+
+    db.save_params(kp, ki, kd)
+    error_history.append(error)
+    if len(error_history) > 100:
+        error_history.pop(0)
 
     return jsonify({
+        'new_params': {'kp': kp, 'ki': ki, 'kd': kd},
         'error': error,
-        'error_smoothed': error_smoothed,
-        'new_params': new_params
+        'status': 'learned'
     })
 
 @app.route('/history', methods=['GET'])
 def history():
     limit = request.args.get('limit', 100, type=int)
-    rows = db.get_history(limit)
-    return jsonify({'history': rows})
-
-@app.route('/reset', methods=['POST'])
-def reset():
-    # Reiniciar estado del MIHM
-    mihm.state = {'ihg': -0.5, 'nti': 0.5, 'r': 0.5}
-    mihm.integral = 0
-    mihm.prev_error = 0
-    return jsonify({'status': 'reset'})
+    hist = db.get_history(limit)
+    errors = [h['error'] for h in hist if h['error'] is not None]
+    smoothed = []
+    if errors:
+        smoothed.append(errors[0])
+        for i in range(1, len(errors)):
+            smoothed.append(0.7 * errors[i] + 0.3 * smoothed[-1])
+    for i, h in enumerate(hist):
+        if i < len(smoothed):
+            h['error_smoothed'] = smoothed[i]
+    return jsonify({'history': hist})
 
 @app.route('/groq/analyze', methods=['POST'])
 def groq_analyze():
-    data = request.get_json()
+    data = request.json
     responses = data.get('responses', '')
-    if not responses:
-        return jsonify({'error': 'No responses provided'}), 400
+    result = groq.analyze(responses)
+    return jsonify(result)
+
+@app.route('/upload', methods=['POST'])
+def upload_audio():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
     try:
-        result = groq.analyze_audit(responses)
-        return jsonify(result)
+        file_bytes = file.read()
+        analysis = analyze_audio(file_bytes)
+        return jsonify(analysis)
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/scenario/select', methods=['POST'])
-def scenario_select():
-    data = request.get_json()
+def select_scenario():
+    data = request.json
     scenario = data.get('scenario')
-    db.save_scenario(scenario)
-    return jsonify({'status': 'registered'})
-
-@app.route('/export', methods=['GET'])
-def export():
-    # Exportar todas las predicciones
-    with db.get_connection() as conn:
-        cur = conn.execute('SELECT * FROM predictions ORDER BY timestamp')
-        rows = cur.fetchall()
-        data = [dict(row) for row in rows]
-    return jsonify(data)
-
-@app.route('/audio/analyze', methods=['POST'])
-def audio_analyze():
-    """Recibe uno o varios archivos de audio y devuelve características + análisis."""
-    files = request.files.getlist('files')
-    if not files:
-        return jsonify({'error': 'No files uploaded'}), 400
-    
-@app.route('/tiktok/scrape', methods=['GET'])
-async def tiktok_scrape():
-    trends = await scrape_tiktok_trends()
-    # Actualizar MIHM con forzamiento
-    external = {'viral_phoneme': len(trends['phonetic_vector']), 'trend_density': trends['viral_score']}
-    mihm.update_state(external)
-    return jsonify(trends)
-
-@app.route('/midi/generate', methods=['POST'])
-def generate_midi_route():
-    data = request.get_json()
-    num_inst = data.get('num_instruments', 4)
-    phonemes = data.get('phoneme_pattern', None)
-    midi_file = mihm.generate_midi(num_inst, phonemes)
-    return send_file(midi_file, as_attachment=True)
-
-    results = []
-    for file in files:
-        filename = file.filename
-        audio_bytes = file.read()
-        features = extract_features(audio_bytes, filename)
-        # Opcional: usar Groq para interpretar
-        try:
-            analysis = groq.analyze_audio(features)
-        except:
-            analysis = "No se pudo analizar con Groq."
-        results.append({
-            'filename': filename,
-            'features': features,
-            'analysis': analysis
-        })
-        # Actualizar estado MIHM con los features? Podríamos promediar varios.
-        # Ejemplo: usar la entropía espectral como H_freq, densidad de onsets como H_time, etc.
-        # Esto sería para actualizar el estado del sistema.
-        # Por ahora, solo devolvemos los resultados.
-    return jsonify({'results': results})
+    return jsonify({'status': 'selected', 'scenario': scenario})
 
 if __name__ == '__main__':
-    app.run(debug=Config.DEBUG, host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
