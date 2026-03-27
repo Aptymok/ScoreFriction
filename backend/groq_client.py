@@ -1,93 +1,130 @@
 import requests
-import json
-from config import Config
 
 class GroqClient:
-    def __init__(self):
-        self.api_key = Config.GROQ_API_KEY
-        self.model = Config.GROQ_MODEL
-        self.base_url = "https://api.groq.com/openai/v1/chat/completions"
+    # asumo que ya tienes self.base_url, self.api_key, self.model
+    # y que existen en __init__
 
-    def analyze_audit(self, responses_text):
-        """Envía el texto de las respuestas de auditoría a Groq para obtener análisis estructurado."""
-        prompt = f"""Eres un analista de sistemas musicales. A partir de las siguientes respuestas de auditoría, genera un análisis estructurado en JSON con estos campos:
-- ihg: número entre -2 y 0 (concentración de poder, más negativo = más hegemonía)
-- nti: número entre 0 y 1 (coherencia, más alto = mejor)
-- r: número entre 0 y 1 (resistencia/adaptabilidad)
-- ldi_days: número entero (latencia institucional en días)
-- dinamica: string, uno de: pianissimo, piano, mezzoforte, forte, fortissimo
-- figura_sistema: string, uno de: 𝅝, 𝅗𝅥, ♩, ♪, 𝅘𝅥𝅯, 𝄽
-- intervencion_inmediata: string breve (acción prioritaria)
-- narrativa: string (resumen en 2-3 líneas)
-- bemoles: lista de strings (factores que bajan el tono)
-- sostenidos: lista de strings (factores que suben la capacidad)
-- proyectos_detectados: lista de objetos con nombre, etapa, vector, figura, ldi, responsable, criticidad
-- escenario_a, escenario_b, escenario_c: cada uno con nombre, descripcion, prob_exito (0-100), acciones (lista), ihg_proy, nti_proy, r_proy
-- tareas_dia1: lista de strings (3-5 tareas)
-- tendencias: lista de objetos con nombre, relevancia (0-1), accion
-- duetos: lista de objetos con tipo, descripcion, sinergia (número), justificacion
+    def _call_groq(self, prompt: str, temperature: float = 0.5, max_tokens: int = 300) -> str:
+        """Llamada única a Groq para evitar repetir boilerplate."""
+        try:
+            response = requests.post(
+                self.base_url,
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": self.model,
+                    "messages": [{"role": "user", "content": prompt}],
+                    "temperature": float(temperature),
+                    "max_tokens": int(max_tokens),
+                },
+                timeout=30,
+            )
+        except Exception as e:
+            return f"No se pudo analizar con Groq (error de red): {e}"
 
-Responde solo con el JSON, sin texto adicional.
-
-Respuestas de auditoría:
-{responses_text}
-"""
-        response = requests.post(
-            self.base_url,
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": self.model,
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.2,
-                "response_format": {"type": "json_object"}
-            }
-        )
         if response.status_code == 200:
             data = response.json()
-            content = data['choices'][0]['message']['content']
-            return json.loads(content)
+            return data["choices"][0]["message"]["content"]
         else:
-            raise Exception(f"Groq API error: {response.status_code} - {response.text}")
+            # devuelvo un detalle útil por si falla
+            try:
+                err = response.json()
+            except Exception:
+                err = response.text
+            return f"No se pudo analizar con Groq (HTTP {response.status_code}): {err}"
 
-    def analyze_audio(self, features):
-        """Opcional: usar Groq para interpretar características de audio y generar insights."""
-        prompt = f"""Dadas las siguientes características de audio, genera un breve análisis musical y recomendaciones:
-- Entropía espectral: {features.get('spectral_entropy', 0)}
-- Energía por bandas: baja={features.get('band_energy_low', 0)}, media={features.get('band_energy_mid', 0)}, alta={features.get('band_energy_high', 0)}
-- Densidad de onsets: {features.get('onset_density', 0)}
-- Rango dinámico: {features.get('dynamic_range', 0)}
-- Periodicidad: {features.get('periodicity', 0)}
+    def analyze_audio(self, features: dict) -> str:
+        """
+        Opcional: usar Groq para interpretar características de audio y generar insights.
+        `features` viene del extractor (librosa/lo que uses).
+        """
 
-    def song_narrative(self, features, mihm_state):
-    prompt = f"""Convierte estas métricas técnicas en narrativa musical entendible y escala real para un productor:
-IHG = {mihm_state['ihg']:.3f} → (escala -2 a 0: más negativo = más hegemonía/caos controlado)
-NTI = {mihm_state['nti']:.3f}
-Features: {features}
+        # valores seguros (evita KeyError)
+        spectral_entropy = features.get("spectral_entropy", 0.0)
+        bel = features.get("band_energy_low", 0.0)
+        bem = features.get("band_energy_mid", 0.0)
+        beh = features.get("band_energy_high", 0.0)
+        onset_density = features.get("onset_density", 0.0)
+        dynamic_range = features.get("dynamic_range", 0.0)
+        periodicity = features.get("periodicity", 0.0)
 
-Responde en español, estilo productor experimentado:
-- Qué significa el número en términos de sonido real (ej. "drop con presión como 808 saturado a -6dB")
-- Fortalezas y riesgos
-- Recomendación concreta para TikTok (duración hook, fonema clave)"""
-Responde con un texto conciso.
+        prompt = f"""Eres un productor musical técnico y directo. 
+Con base en estas características de audio, genera un análisis breve y recomendaciones prácticas.
+
+MÉTRICAS DE AUDIO:
+- Entropía espectral: {spectral_entropy}
+- Energía por bandas: baja={bel}, media={bem}, alta={beh}
+- Densidad de onsets (ataques por unidad de tiempo): {onset_density}
+- Rango dinámico (contraste): {dynamic_range}
+- Periodicidad (regularidad/loop feeling): {periodicity}
+
+ENTREGA (máximo 10 bullets):
+1) Qué tipo de sonido sugiere (género/estética: lo-fi, techno, corrido, trap, ambient, etc.)
+2) Diagnóstico: claridad vs saturación, brillo vs opacidad, punch vs flojo, groove vs rígido
+3) Riesgos (ej: harsh en altas, fatiga, masking, dinámica plana)
+4) 3 acciones concretas en mezcla/master (EQ/comp/transient/saturación/limit)
+5) 1 recomendación de arreglo (estructura) y 1 de hook (5–12 s)
+
+Reglas:
+- No inventes datos externos.
+- Sé conciso y accionable.
 """
-        response = requests.post(
-            self.base_url,
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json"
-            },
-            json={
-                "model": self.model,
-                "messages": [{"role": "user", "content": prompt}],
-                "temperature": 0.5,
-                "max_tokens": 300
-            }
-        )
-        if response.status_code == 200:
-            data = response.json()
-            return data['choices'][0]['message']['content']
-        else:
-            return "No se pudo analizar con Groq."
+        return self._call_groq(prompt, temperature=0.5, max_tokens=300)
+
+    def song_narrative(self, features: dict, mihm_state: dict) -> str:
+        """
+        Convierte métricas técnicas + MIHM a narrativa útil para un productor,
+        incluyendo recomendación concreta para TikTok.
+        """
+
+        # MIHM seguro (evita KeyError)
+        ihg = float(mihm_state.get("ihg", 0.0))
+        nti = float(mihm_state.get("nti", 0.0))
+
+        # si quieres, puedes meter más campos:
+        r = mihm_state.get("r", None)
+        pcol = mihm_state.get("p_collapse", None)
+
+        extra_lines = []
+        if r is not None:
+            extra_lines.append(f"R = {float(r):.3f} (residual / resistencia)")
+        if pcol is not None:
+            # si viene 0..1, muestro porcentaje
+            try:
+                extra_lines.append(f"P(colapso) = {float(pcol)*100:.1f}%")
+            except Exception:
+                extra_lines.append(f"P(colapso) = {pcol}")
+
+        extra_block = "\n".join(extra_lines) if extra_lines else "(sin extras)"
+
+        prompt = f"""Eres un productor experimentado (mezcla + arreglo + viralidad).
+Convierte estas métricas técnicas en una narrativa musical entendible y una recomendación de producción real.
+
+MIHM (contexto del sistema):
+IHG = {ihg:.3f} → escala [-2..0] (más negativo = más hegemonía/caos controlado)
+NTI = {nti:.3f} → escala [0..1] (más alto = más turbulencia / inestabilidad)
+Extras: {extra_block}
+
+FEATURES (técnicas):
+{features}
+
+ENTREGA (en español, conciso, estilo productor):
+A) Traducción a sonido real:
+   - ¿Cómo se escucha esto? (ej: “drop con presión tipo 808 saturado a -6dB”, “hi-hats granulares”, “midrange tapado”, etc.)
+B) Fortalezas (2–4 bullets) y riesgos (2–4 bullets)
+C) Recomendación concreta para TikTok:
+   - Duración del hook ideal (en segundos)
+   - 1 fonema/palabra clave si hay voz o el equivalente sonoro si no hay voz (ej: “impacto”, “snap”, “reverse”, etc.)
+   - Estructura (Intro/Hook/Drop/Break) y dónde meter el “momento meme”
+D) 3 acciones de mezcla/master con números aproximados (rango):
+   - EQ (frecuencias)
+   - Compresión/limit (GR, ceiling)
+   - Saturación/transientes (dónde y por qué)
+
+Reglas:
+- No inventes instrumentos que no estén implicados por los features.
+- Si falta un dato, haz 1 pregunta al final, solo 1.
+"""
+        return self._call_groq(prompt, temperature=0.6, max_tokens=420)

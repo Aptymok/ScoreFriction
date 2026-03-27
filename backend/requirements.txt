@@ -6,3 +6,4 @@ scipy
 pydub
 python-dotenv
 requests
+gunicorns
