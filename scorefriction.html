@@ -157,7 +157,14 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
 .mcmc-slider-val { width: 34px; font-size: 10px; font-family: var(--mono); color: var(--oro); text-align: right; flex-shrink: 0; }
 .meme-heat { display: flex; gap: 3px; flex-wrap: wrap; margin-top: 4px; }
 .meme-cell { width: 22px; height: 22px; border-radius: 2px; cursor: default; transition: 0.2s; }
-@media (max-width: 800px) { .row3 { grid-template-columns: 1fr 1fr; } .hdr { flex-direction: column; align-items: stretch; } .tabs-bar { overflow-x: auto; } .sc-grid { grid-template-columns: 1fr; } }
+
+/* Responsive */
+@media (max-width: 800px) {
+  .row3 { grid-template-columns: 1fr 1fr; }
+  .hdr { flex-direction: column; align-items: stretch; }
+  .tabs-bar { overflow-x: auto; }
+  .sc-grid { grid-template-columns: 1fr; }
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
@@ -189,8 +196,7 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
     <button class="tab-btn" onclick="openTab('analytics',this)">III · ANÁLISIS</button>
     <button class="tab-btn" onclick="openTab('calendar',this)">IV · CALENDARIO</button>
     <button class="tab-btn" onclick="openTab('scenarios',this)">V · ESCENARIOS</button>
-    <button class="tab-btn" onclick="openTab('notif',this)">VI · SISTEMA</button>
-    <button class="tab-btn" onclick="openTab('audio',this)">VII · ANÁLISIS DE CANCIONES</button>
+    <button class="tab-btn" onclick="openTab('notif',this)">VI · SISTEMA<span class="tab-badge" id="notif-badge" style="display:none">0</span></button>
   </nav>
   <div class="wrap">
     <div id="tab-partitura" class="tab-panel active">
@@ -217,13 +223,118 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
     <div id="tab-scenarios" class="tab-panel"><div class="sec"><div class="sec-hd"><span class="sec-n">V</span><span class="sec-t">Escenarios de Intervención · SF</span></div><div id="sc-grid" class="sc-grid"></div></div></div>
     <div id="tab-notif" class="tab-panel"><div class="sec"><div class="sec-hd"><span class="sec-n">VI</span><span class="sec-t">Sistema · Errores recientes · Tareas Diarias · Alertas</span></div><div class="pnl" style="margin-bottom: 1rem;"><div class="pnl-hd"><span class="pnl-lbl">ERROR DE PREDICCIÓN · EVOLUCIÓN</span><span class="pnl-st" id="err-st">últimos 50 registros</span></div><div style="padding: 1rem;"><canvas id="errorChart" height="200"></canvas></div></div><div class="notif-list" id="notif-list"><div style="padding:1.5rem;text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono);background:var(--bg1)">pendiente análisis de auditoría</div></div><div style="margin-top:1rem;padding:.75rem 1.25rem;background:var(--bg1);border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:space-between"><span style="font-size:9px;font-family:var(--mono);color:var(--t3)">CUMPLIMIENTO HOY:</span><span style="font-size:14px;font-family:var(--mono);color:var(--t1)" id="cumpl-pct">—</span></div></div><div class="sec"><div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">Log del Sistema</span></div><div id="sys-log" style="background:var(--bg2);border:.5px solid var(--bdr);padding:1rem;font-family:var(--mono);font-size:9px;color:var(--t3);height:200px;overflow-y:auto;line-height:1.8"></div></div></div>
 
-    <div id="tab-audio" class="tab-panel">
-      <div class="sec"><div class="sec-hd"><span class="sec-n">VII</span><span class="sec-t">Análisis de Canciones · Identificación de Instrumentos</span></div>
-      <div class="pnl"><div class="pnl-body"><div style="margin-bottom: 1rem;"><input type="file" id="audioFile" accept="audio/*" style="background:var(--bg2); border:0.5px solid var(--bdr); color:var(--t1); padding:8px; width:100%;"><button class="btn btn-g" onclick="analyzeSong()" style="margin-top: 8px;">ANALIZAR CANCIÓN</button></div><div id="audioResult" style="background:var(--bg1); padding:1rem; border-radius:4px; margin-top:1rem; display:none;"><h3 style="font-size:12px; margin-bottom:8px;">Instrumentos detectados</h3><div id="instruments-list"></div><h3 style="font-size:12px; margin-top:12px;">Géneros estimados</h3><div id="genres-list"></div><h3 style="font-size:12px; margin-top:12px;">Características espectrales</h3><div id="features-list"></div><button class="btn" onclick="applyToMidi()" style="margin-top:12px;">APLICAR A MIDI STUDIO</button></div></div></div></div>
-    </div>
-  </div>
-</div>
+        <div class="pnl" style="margin-bottom:12px">
+          <div class="pnl-hd">CURVAS DE EVOLUCIÓN · IHG / IF / ICC / IRC</div>
+          <div class="pnl-body" style="padding:8px">
+            <canvas id="mcmc-timeline" height="120" style="width:100%;display:block;background:#141410"></canvas>
+            <div style="display:flex;gap:16px;margin-top:5px">
+              <span style="font-size:9px;font-family:var(--mono);color:var(--azul)">── IHG</span>
+              <span style="font-size:9px;font-family:var(--mono);color:var(--verde)">── IF</span>
+              <span style="font-size:9px;font-family:var(--mono);color:var(--oro)">── ICC</span>
+              <span style="font-size:9px;font-family:var(--mono);color:#a060d0">── IRC</span>
+              <span style="font-size:9px;font-family:var(--mono);color:var(--t4)">┆ sección · zona morada = momento meme</span>
+            </div>
+          </div>
+        </div>
 
+        <div class="mcmc-grid" style="margin-bottom:12px">
+          <div class="pnl">
+            <div class="pnl-hd">RESPUESTA DEL OYENTE · SIMULADA</div>
+            <div class="pnl-body">
+              <div class="mcmc-slider-row"><label>Intro</label><input type="range" class="mcmc-slider" id="rwd-intro" min="0" max="1" step="0.01" value="0.45" oninput="mcmcSyncSlider(this,'rwd-intro-v')"><span id="rwd-intro-v" class="mcmc-slider-val">0.45</span></div>
+              <div class="mcmc-slider-row"><label>Verso</label><input type="range" class="mcmc-slider" id="rwd-verso" min="0" max="1" step="0.01" value="0.52" oninput="mcmcSyncSlider(this,'rwd-verso-v')"><span id="rwd-verso-v" class="mcmc-slider-val">0.52</span></div>
+              <div class="mcmc-slider-row"><label>Estribillo</label><input type="range" class="mcmc-slider" id="rwd-estrib" min="0" max="1" step="0.01" value="0.82" oninput="mcmcSyncSlider(this,'rwd-estrib-v')"><span id="rwd-estrib-v" class="mcmc-slider-val">0.82</span></div>
+              <div class="mcmc-slider-row"><label>Outro</label><input type="range" class="mcmc-slider" id="rwd-outro" min="0" max="1" step="0.01" value="0.35" oninput="mcmcSyncSlider(this,'rwd-outro-v')"><span id="rwd-outro-v" class="mcmc-slider-val">0.35</span></div>
+              <button class="btn" onclick="mcmcSimFeedback()" style="margin-top:8px;width:100%">SIMULAR FEEDBACK</button>
+            </div>
+          </div>
+          <div class="pnl">
+            <div class="pnl-hd">CONSOLA CULTURAL</div>
+            <div class="pnl-body" style="padding:8px">
+              <div class="mcmc-console" id="mcmc-console"></div>
+              <div style="margin-top:6px"><span class="cell-lbl">Último reward</span><span id="mcmc-last-rwd" style="font-family:var(--mono);font-size:13px;color:var(--oro);margin-left:8px">—</span></div>
+              <div style="margin-top:4px"><span class="cell-lbl">ICC evolución</span><span id="mcmc-icc-evo" style="font-family:var(--mono);font-size:10px;color:var(--t1);margin-left:8px">—</span></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="pnl">
+          <div class="pnl-hd">ACCIONES</div>
+          <div class="pnl-body">
+            <div style="display:flex;gap:8px;flex-wrap:wrap">
+              <button class="btn" id="btn-gen-base" onclick="mcmcGenerateBase()">GENERAR BASE</button>
+              <button class="btn btn-g" id="btn-coevolve" onclick="mcmcCoevolve()" disabled>COEVOLUCIONAR</button>
+              <button class="btn" id="btn-freeze" onclick="mcmcFreezeMotif()" disabled>CONGELAR MOTIVO</button>
+              <button class="btn btn-g" id="btn-export-midi" onclick="mcmcExportMIDI()" disabled>EXPORTAR MIDI</button>
+              <button class="btn" onclick="mcmcReset()">REINICIAR</button>
+            </div>
+            <div id="mcmc-status" style="font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:8px">Sistema listo · Presiona GENERAR BASE para inicializar</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB III: ANÁLISIS (simplificado) -->
+    <div id="tab-analytics" class="tab-panel">
+      <div class="sec">
+        <div class="sec-hd"><span class="sec-n">III</span><span class="sec-t">Análisis · Tendencias de Mercado</span></div>
+        <div class="pnl"><div class="pnl-body"><div id="trends-grid" class="trends-grid" style="display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px;"></div></div></div>
+      </div>
+      <div class="sec">
+        <div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">Duetos · Sinergias Recomendadas</span></div>
+        <div id="duetos-panel" class="pnl"></div>
+      </div>
+    </div>
+ 
+    <!-- TAB IV: CALENDARIO -->
+    <div id="tab-calendar" class="tab-panel">
+      <div class="sec">
+        <div class="sec-hd"><span class="sec-n">IV</span><span class="sec-t">Calendario · Latencia Institucional</span></div>
+        <div class="pnl">
+          <div class="task-header" style="display:grid; grid-template-columns:3fr 1fr 1.5fr 1.2fr 1fr 1fr; background:var(--bg1); padding:8px 12px; font-size:8px;">
+            <span>PROYECTO</span><span>ETAPA</span><span>RESPONSABLE</span><span>LDI (días)</span><span>CRITICIDAD</span><span>ACCION</span>
+          </div>
+          <div id="task-rows" class="task-rows"></div>
+          <div style="margin-top:12px;"><button class="btn btn-g" onclick="loadProjectTemplate()">Cargar plantilla ejemplo</button></div>
+        </div>
+      </div>
+    </div>
+ 
+    <!-- TAB V: ESCENARIOS -->
+    <div id="tab-scenarios" class="tab-panel">
+      <div class="sec">
+        <div class="sec-hd"><span class="sec-n">V</span><span class="sec-t">Escenarios de Intervención · SF</span></div>
+        <div id="sc-grid" class="sc-grid"></div>
+      </div>
+    </div>
+ 
+    <!-- TAB VI: SISTEMA -->
+    <div id="tab-notif" class="tab-panel">
+      <div class="sec">
+        <div class="sec-hd"><span class="sec-n">VI</span><span class="sec-t">Sistema · Errores recientes · Tareas Diarias · Alertas</span></div>
+        <div class="pnl" style="margin-bottom: 1rem;">
+          <div class="pnl-hd"><span class="pnl-lbl">ERROR DE PREDICCIÓN · EVOLUCIÓN</span><span class="pnl-st" id="err-st">últimos 50 registros</span></div>
+          <div style="padding: 1rem;">
+            <canvas id="errorChart" height="200"></canvas>
+          </div>
+        </div>
+        <div class="notif-list" id="notif-list">
+          <div style="padding:1.5rem;text-align:center;font-size:10px;color:var(--t3);font-family:var(--mono);background:var(--bg1)">pendiente análisis de auditoría</div>
+        </div>
+        <div style="margin-top:1rem;padding:.75rem 1.25rem;background:var(--bg1);border:.5px solid var(--bdr);display:flex;align-items:center;justify-content:space-between">
+          <span style="font-size:9px;font-family:var(--mono);color:var(--t3)">CUMPLIMIENTO HOY:</span>
+          <span style="font-size:14px;font-family:var(--mono);color:var(--t1)" id="cumpl-pct">—</span>
+        </div>
+      </div>
+      <div class="sec">
+        <div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">Log del Sistema</span></div>
+        <div id="sys-log" style="background:var(--bg2);border:.5px solid var(--bdr);padding:1rem;font-family:var(--mono);font-size:9px;color:var(--t3);height:200px;overflow-y:auto;line-height:1.8"></div>
+      </div>
+    </div>
+ 
+  </div><!-- /wrap -->
+</div><!-- /ph-dashboard -->
+ 
 <script>
 // ========== CONFIGURACIÓN ==========
 const API_URL = (() => {
@@ -418,12 +529,151 @@ function applyToMidi() {
 }
 
 // ========== UI HELPERS ==========
-function showPhase(name) { document.querySelectorAll('.phase').forEach(p => p.classList.remove('active')); const phaseEl = safeEl('ph-' + name); if (phaseEl) phaseEl.classList.add('active'); window.scrollTo(0, 0); }
-function openTab(name, btn) { document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active')); document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); const tabEl = safeEl('tab-' + name); if (tabEl) tabEl.classList.add('active'); if (btn) btn.classList.add('active'); }
-async function sendLearn() { const outcomeInput = safeEl('input-outcome'); if (!outcomeInput) return; const val = parseFloat(outcomeInput.value); if (isNaN(val)) { sysLog('⚠️ Ingrese un valor numérico para el outcome'); return; } if (!SF.lastPredictionId) { sysLog('⚠️ No hay predicción activa para aprender'); return; } await sendLearning(SF.lastPredictionId, val); outcomeInput.value = ''; }
-
-window.addEventListener('resize', () => { const c = safeEl('ecg-c'); if (c) { c.width = c.offsetWidth * devicePixelRatio; c.height = 80 * devicePixelRatio; c.getContext('2d').scale(devicePixelRatio, devicePixelRatio); drawECG(); } });
-window.addEventListener('load', async () => { const c = safeEl('ecg-c'); if (c) { c.width = c.offsetWidth * devicePixelRatio; c.height = 80 * devicePixelRatio; c.getContext('2d').scale(devicePixelRatio, devicePixelRatio); } tickECG(); initErrorChart(); await healthCheck(); await loadRecentErrors(); sysLog(`🚀 System Friction iniciado · Modo: ${currentMode} · API: ${API_URL}`); });
+function showPhase(name) {
+  document.querySelectorAll('.phase').forEach(p => p.classList.remove('active'));
+  const phaseEl = safeEl('ph-' + name);
+  if (phaseEl) phaseEl.classList.add('active');
+  window.scrollTo(0, 0);
+}
+ 
+function openTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  const tabEl = safeEl('tab-' + name);
+  if (tabEl) tabEl.classList.add('active');
+  if (btn) btn.classList.add('active');
+}
+ 
+function showOverlay(msg) {
+  const overlay = safeEl('api-overlay');
+  const msgEl = safeEl('ov-msg');
+  if (overlay) overlay.classList.add('show');
+  if (msgEl) msgEl.textContent = msg || 'procesando...';
+}
+ 
+function hideOverlay() {
+  const overlay = safeEl('api-overlay');
+  if (overlay) overlay.classList.remove('show');
+}
+ 
+function sysLog(msg) {
+  const log = safeEl('sys-log');
+  if (!log) return;
+  const ts = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  log.innerHTML += `<span style="color:var(--t4)">${ts}</span> · ${msg}\n`;
+  log.scrollTop = log.scrollHeight;
+}
+ 
+function checkTask(i, row) {
+  notifChecked[i] = !notifChecked[i];
+  const cb = safeEl('ncb-' + i);
+  if (cb) cb.classList.toggle('checked', notifChecked[i]);
+  const lbl = row?.querySelector('.notif-cb-lbl');
+  if (lbl) lbl.textContent = notifChecked[i] ? 'COMPLETADA' : 'MARCAR COMPLETADA';
+  const done = Object.values(notifChecked).filter(Boolean).length;
+  const total = SF.tareas_dia.length;
+  const pct = Math.round(done / total * 100);
+  const cumplEl = safeEl('cumpl-pct');
+  if (cumplEl) cumplEl.textContent = `${done} / ${total} (${pct}%)`;
+  if (pct === 100) {
+    sysLog('CUMPLIMIENTO 100% · Tareas diarias completadas.');
+  }
+}
+ 
+async function exportData() {
+  if (currentMode !== MODE.API_FULL) {
+    sysLog('⚠️ Exportación solo disponible en modo API completa');
+    return;
+  }
+  const result = await apiCall('/export');
+  if (result) {
+    const dataStr = JSON.stringify(result, null, 2);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mihm_export_${new Date().toISOString().slice(0, 19)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    sysLog('📥 Exportación completada.');
+  }
+}
+ 
+async function resetSystem() {
+  if (currentMode === MODE.API_FULL) {
+    await apiCall('/reset', 'POST');
+  }
+  ecgHist = [];
+  notifChecked = {};
+  SF.ihg = null;
+  SF.nti = null;
+  SF.r = null;
+  sysLog('🔄 Sistema reiniciado. Ejecutar nueva auditoría.');
+  showPhase('kickoff');
+}
+ 
+// ========== APRENDIZAJE (sendLearn) ==========
+async function sendLearn() {
+  const outcomeInput = safeEl('input-outcome');
+  if (!outcomeInput) return;
+  const val = parseFloat(outcomeInput.value);
+  if (isNaN(val)) {
+    sysLog('⚠️ Ingrese un valor numérico para el outcome');
+    return;
+  }
+  if (!SF.lastPredictionId) {
+    sysLog('⚠️ No hay predicción activa para aprender');
+    return;
+  }
+  await sendLearning(SF.lastPredictionId, val);
+  outcomeInput.value = '';
+}
+ 
+// ========== INIT ==========
+window.addEventListener('resize', () => { resizeECG(); drawECG(); });
+ 
+window.addEventListener('load', async () => {
+  resizeECG();
+  tickECG();
+  initErrorChart();
+  await healthCheck();
+  await loadRecentErrors();
+  
+  const cv = safeEl('roll-c');
+  if (cv) {
+    const ctx = cv.getContext('2d');
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = cv.offsetWidth * dpr;
+    cv.height = 110 * dpr;
+    ctx.scale(dpr, dpr);
+    ctx.fillStyle = '#1b1b1b';
+    ctx.fillRect(0, 0, cv.offsetWidth, 110);
+    ctx.fillStyle = 'rgba(42,40,37,.4)';
+    ctx.font = '9px Courier New';
+    ctx.textAlign = 'center';
+    ctx.fillText('— completa auditoría —', cv.offsetWidth / 2, 58);
+  }
+  
+  sysLog(`🚀 System Friction iniciado · Modo: ${currentMode} · API: ${API_URL}`);
+});
+ 
+// Exponer funciones globales
+window.startAudit = startAudit;
+window.auditNext = auditNext;
+window.auditPrev = auditPrev;
+window.submitAudit = submitAudit;
+window.toggleRec = toggleRec;
+window.stopRec = stopRec;
+window.openTab = openTab;
+window.sendLearning = sendLearning;
+window.genMIDI = genMIDI;
+window.genBoth = genBoth;
+window.exportData = exportData;
+window.resetSystem = resetSystem;
+window.loadProjectTemplate = loadProjectTemplate;
+window.checkTask = checkTask;
+window.electScenarioAPI = electScenarioAPI;
+window.sendLearn = sendLearn;
 </script>
 </body>
 </html>

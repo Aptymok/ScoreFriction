@@ -8,124 +8,177 @@ from database import Database
 from audio_analyzer import analyze_audio
 from groq_client import GroqClient
 
+# Módulos del framework System Friction
+from modules.social_analyzer import SocialAnalyzer
+from modules.audio_analyzer_advanced import AudioAnalyzerAdvanced
+from modules.scraping_spotify import SpotifyScraper
+from modules.project_proposals import ProjectProposals
+from modules.marketing_engine import MarketingEngine
+from modules.project_manager import ProjectManager
+from modules.ml_friction import MLFriction
+from modules.integrations import Integrations
+from modules.reflexive_engine import ReflexiveEngine
+
+# ─────────────────────────────────────────────
+# Inicialización central
+# ─────────────────────────────────────────────
+
 app = Flask(__name__)
 CORS(app)
-db = Database()
-groq = GroqClient()
 
-kp, ki, kd = 0.8, 0.2, 0.1
-integral_error = 0.0
-last_error = 0.0
-last_ihg = -0.4
-error_history = []
+db     = Database('instance/friction.db')
+groq   = GroqClient()
+mihm   = MIHM()
+
+# Inyectar groq en mihm para propose_new_rule_via_groq
+mihm._groq = groq
+
+# Cargar parámetros guardados
+saved_params = db.get_parameters('mihm_params')
+if saved_params:
+    mihm.params.update(saved_params)
+
+# Instanciar todos los módulos con el mismo mihm (inyección de dependencia)
+social    = SocialAnalyzer(mihm)
+audio_adv = AudioAnalyzerAdvanced(mihm)
+spotify   = SpotifyScraper(mihm)
+proposals = ProjectProposals(mihm, groq)
+marketing = MarketingEngine(mihm)
+pm        = ProjectManager(mihm)
+ml        = MLFriction(mihm)
+integs    = Integrations(mihm)
+reflexive = ReflexiveEngine(mihm)
+
+
+def gen_id():
+    return str(uuid.uuid4())
+
+
+# ─────────────────────────────────────────────
+# ENDPOINTS LEGACY (compatibilidad total)
+# ─────────────────────────────────────────────
 
 @app.route('/health', methods=['GET'])
 def health():
-    return jsonify({'status': 'ok', 'version': '3.3'})
+    return jsonify({
+        'status':  'ok',
+        'version': '4.0-MIHM-MCM-A',
+        'mihm':    'active',
+        'state':   mihm.state,
+        'cost_j':  mihm.cost_function(),
+        'irc':     mihm.irc,
+    })
 
-@app.route('/reset', methods=['POST'])
-def reset():
-    global kp, ki, kd, integral_error, last_error, last_ihg
-    kp, ki, kd = 0.8, 0.2, 0.1
-    integral_error = 0.0
-    last_error = 0.0
-    last_ihg = -0.4
-    return jsonify({'status': 'reset'})
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    global kp, ki, kd, integral_error, last_error, last_ihg, error_history
-    data = request.json
-    user = data.get('user', 'system')
+    mihm.process_delayed_updates()
+    data = request.get_json()
+    user = data.get('user', 'anon')
     text = data.get('text', '')
 
-    ihg = last_ihg + (np.random.rand() - 0.5) * 0.03
-    ihg = max(-2.0, min(0.5, ihg))
+    ihg = data.get('ihg', mihm.state['ihg'])
+    nti = data.get('nti', mihm.state['nti'])
+    r   = data.get('r',   mihm.state['r'])
 
-    error = -0.4 - ihg
-    integral_error += error
-    derivative = error - last_error
-    u = kp * error + ki * integral_error + kd * derivative
-    u = np.tanh(u)
+    # Aplicar mediante apply_delta (regla de oro)
+    delta = {
+        'ihg': ihg - mihm.state['ihg'],
+        'nti': nti - mihm.state['nti'],
+        'r':   r   - mihm.state['r'],
+    }
+    u, J = mihm.apply_delta(delta, action=f"predict:{user}")
+    mihm.meta_control()
 
-    last_error = error
-    last_ihg = ihg
+    proyeccion = mihm.monte_carlo_projection()
+    stability  = mihm.stability_analysis()
 
-    nti = 0.3 + 0.4 * (1 - abs(ihg + 0.4))
-    r = 0.5 + 0.3 * (1 - abs(ihg + 0.8))
+    if mihm.state['ihg'] < -1.2:
+        intervencion = "CRITICO: Hegemonía extrema. Se requiere redistribución de decisiones."
+    elif mihm.state['ihg'] < -0.8:
+        intervencion = "ALERTA: Alta concentración de poder. Revisar roles."
+    elif mihm.state['ihg'] < -0.4:
+        intervencion = "TENSION: Equilibrio inestable. Monitorear flujo de decisiones."
+    else:
+        intervencion = "ESTABLE: La homeostasis está dentro de rangos aceptables."
 
-    prediction_id = str(uuid.uuid4())
-    db.save_prediction(user, text, ihg, nti, r, prediction_id)
+    pred_id = gen_id()
+    db.save_prediction(pred_id, user, text, mihm.state)
+    db.save_state(mihm.state, mihm.irc, f"predict:{user}", J)
 
     return jsonify({
-        'prediction_id': prediction_id,
-        'state': {'ihg': ihg, 'nti': nti, 'r': r},
-        'control': {'u': u, 'kp': kp, 'ki': ki, 'kd': kd},
-        'stability': {'stability': 'estable' if abs(error) < 0.1 else 'inestable', 'iad_approx': 0.05},
-        'intervencion': 'Ajustar dinámica' if abs(error) > 0.2 else 'Monitoreo',
-        'scorecard': {
-            'narrativa': f'Estado actual: IHG={ihg:.2f}, NTI={nti:.2f}, R={r:.2f}',
-            'bemoles': [],
-            'sostenidos': [],
-            'tareas_dia': []
-        }
+        'prediction_id': pred_id,
+        'state':         mihm.state,
+        'intervencion':  intervencion,
+        'control': {
+            'u':  u,
+            'kp': mihm.params['kp'],
+            'ki': mihm.params['ki'],
+            'kd': mihm.params['kd'],
+        },
+        'stability':  stability,
+        'proyeccion': proyeccion,
+        'cost_j':     J,
+        'irc':        mihm.irc,
     })
+
 
 @app.route('/learn', methods=['POST'])
 def learn():
-    global kp, ki, kd, integral_error, last_error, error_history
-    data = request.json
-    prediction_id = data.get('prediction_id')
-    outcome = float(data.get('outcome'))
+    mihm.process_delayed_updates()
+    data    = request.get_json()
+    pred_id = data.get('prediction_id')
+    outcome = data.get('outcome')
+    if not pred_id or outcome is None:
+        return jsonify({'error': 'Missing prediction_id or outcome'}), 400
+
+    error          = outcome - mihm.state['ihg']
+    error_smoothed = 0.7 * error + 0.3 * (db.get_parameters('last_error') or 0)
+    db.save_parameters('last_error', error_smoothed)
+
+    new_params = mihm.learn(pred_id, outcome, db)
 
     with db.get_connection() as conn:
-        cur = conn.execute('SELECT ihg, nti, r FROM predictions WHERE prediction_id = ?', (prediction_id,))
-        row = cur.fetchone()
-        if not row:
-            return jsonify({'error': 'Prediction not found'}), 404
-        ihg_pred, nti_pred, r_pred = row
-
-    error = abs(outcome - ihg_pred)
-    db.save_learning(prediction_id, outcome, error)
-
-    if len(error_history) > 10:
-        mean_error = np.mean(error_history[-10:])
-        if mean_error > 0.2:
-            kp *= 1.05
-            ki *= 1.02
-        elif mean_error < 0.05:
-            kp *= 0.98
-            ki *= 0.99
-
-    db.save_params(kp, ki, kd)
-    error_history.append(error)
-    if len(error_history) > 100:
-        error_history.pop(0)
+        conn.execute(
+            'UPDATE predictions SET error=?, error_smoothed=? WHERE prediction_id=?',
+            (error, error_smoothed, pred_id)
+        )
 
     return jsonify({
-        'new_params': {'kp': kp, 'ki': ki, 'kd': kd},
-        'error': error,
-        'status': 'learned'
+        'error':         error,
+        'error_smoothed': error_smoothed,
+        'new_params':    new_params,
     })
+
 
 @app.route('/history', methods=['GET'])
 def history():
     limit = request.args.get('limit', 100, type=int)
-    hist = db.get_history(limit)
-    errors = [h['error'] for h in hist if h['error'] is not None]
-    smoothed = []
-    if errors:
-        smoothed.append(errors[0])
-        for i in range(1, len(errors)):
-            smoothed.append(0.7 * errors[i] + 0.3 * smoothed[-1])
-    for i, h in enumerate(hist):
-        if i < len(smoothed):
-            h['error_smoothed'] = smoothed[i]
-    return jsonify({'history': hist})
+    rows  = db.get_history(limit)
+    return jsonify({'history': rows})
+
+
+@app.route('/reset', methods=['POST'])
+def reset():
+    mihm.state = {
+        'ihg':        -0.620,
+        'nti':         0.351,
+        'r':           0.450,
+        'phi_p':       0.000,
+        'psi_i':       0.000,
+        'h_scale':     0.500,
+        'ml_success':  0.500,
+    }
+    mihm.integral   = 0.0
+    mihm.prev_error = 0.0
+    mihm.irc        = 0.38
+    return jsonify({'status': 'reset', 'state': mihm.state})
+
 
 @app.route('/groq/analyze', methods=['POST'])
 def groq_analyze():
-    data = request.json
+    mihm.process_delayed_updates()
+    data      = request.get_json()
     responses = data.get('responses', '')
     result = groq.analyze(responses)
     return jsonify(result)
@@ -145,11 +198,294 @@ def upload_audio():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+
 @app.route('/scenario/select', methods=['POST'])
-def select_scenario():
-    data = request.json
+def scenario_select():
+    data     = request.get_json()
     scenario = data.get('scenario')
-    return jsonify({'status': 'selected', 'scenario': scenario})
+    db.save_scenario(scenario)
+    return jsonify({'status': 'registered'})
+
+
+@app.route('/export', methods=['GET'])
+def export():
+    with db.get_connection() as conn:
+        cur  = conn.execute('SELECT * FROM predictions ORDER BY timestamp')
+        rows = cur.fetchall()
+        data = [dict(row) for row in rows]
+    return jsonify(data)
+
+
+@app.route('/midi/generate', methods=['POST'])
+def generate_midi_route():
+    mihm.process_delayed_updates()
+    data      = request.get_json()
+    num_inst  = data.get('num_instruments', 4)
+    phonemes  = data.get('phoneme_pattern', None)
+    midi_file = mihm.generate_midi(num_inst, phonemes)
+    return send_file(midi_file, as_attachment=True)
+
+
+# ─────────────────────────────────────────────
+# AUDIO
+# ─────────────────────────────────────────────
+
+@app.route('/audio/analyze', methods=['POST'])
+def audio_analyze():
+    mihm.process_delayed_updates()
+    files = request.files.getlist('files')
+    if not files:
+        return jsonify({'error': 'No files uploaded'}), 400
+
+    results = []
+    for file in files:
+        filename   = file.filename
+        audio_bytes = file.read()
+        features   = extract_features(audio_bytes, filename)
+
+        # Análisis avanzado con acoplamiento al MIHM
+        adv = audio_adv.analyze(features)
+
+        try:
+            analysis = groq.analyze_audio(features)
+        except Exception:
+            analysis = "No se pudo analizar con Groq."
+
+        results.append({
+            'filename':  filename,
+            'features':  features,
+            'analysis':  analysis,
+            'advanced':  adv,
+        })
+
+    return jsonify({
+        'results':   results,
+        'mihm_state': mihm.state,
+        'cost_j':    mihm.cost_function(),
+        'irc':       mihm.irc,
+    })
+
+
+# ─────────────────────────────────────────────
+# SOCIAL
+# ─────────────────────────────────────────────
+
+@app.route('/social/analyze', methods=['POST'])
+def analyze_social():
+    mihm.process_delayed_updates()
+    data  = request.get_json()
+    query = data.get('query', '')
+    if not query:
+        return jsonify({'error': 'Missing query'}), 400
+    result = social.analyze_social(query)
+    return jsonify(result)
+
+
+# ─────────────────────────────────────────────
+# SPOTIFY
+# ─────────────────────────────────────────────
+
+@app.route('/spotify/trends', methods=['GET'])
+def spotify_trends():
+    mihm.process_delayed_updates()
+    genre = request.args.get('genre', 'reggaeton')
+    limit = request.args.get('limit', 20, type=int)
+    result = spotify.analyze_trends(genre, limit)
+    return jsonify(result)
+
+
+# ─────────────────────────────────────────────
+# TIKTOK (legacy + nuevo acoplamiento)
+# ─────────────────────────────────────────────
+
+@app.route('/tiktok/scrape', methods=['GET'])
+def tiktok_scrape():
+    mihm.process_delayed_updates()
+    query  = request.args.get('query', 'viral')
+    result = social.analyze_social(query)
+    return jsonify(result)
+
+
+# ─────────────────────────────────────────────
+# PROPUESTAS DE PROYECTOS
+# ─────────────────────────────────────────────
+
+@app.route('/projects/propose', methods=['POST'])
+def projects_propose():
+    mihm.process_delayed_updates()
+    data    = request.get_json() or {}
+    result  = proposals.generate(data)
+    return jsonify(result)
+
+
+# ─────────────────────────────────────────────
+# MARKETING
+# ─────────────────────────────────────────────
+
+@app.route('/marketing/campaign', methods=['POST'])
+def marketing_campaign():
+    mihm.process_delayed_updates()
+    data         = request.get_json()
+    release_name = data.get('release_name', 'Untitled')
+    budget       = float(data.get('budget', 1000.0))
+    channels     = data.get('channels', ['tiktok', 'instagram', 'spotify'])
+    result       = marketing.plan_campaign(release_name, budget, channels)
+    return jsonify(result)
+
+
+# ─────────────────────────────────────────────
+# PROJECT MANAGER
+# ─────────────────────────────────────────────
+
+@app.route('/pm/project', methods=['POST'])
+def pm_create():
+    mihm.process_delayed_updates()
+    data         = request.get_json()
+    name         = data.get('name', 'Proyecto sin nombre')
+    members      = data.get('members', [])
+    deadline     = int(data.get('deadline_days', 30))
+    result       = pm.create_project(name, members, deadline)
+    return jsonify(result)
+
+
+@app.route('/pm/task', methods=['POST'])
+def pm_task():
+    mihm.process_delayed_updates()
+    data       = request.get_json()
+    project_id = data.get('project_id', '')
+    task       = data.get('task', '')
+    done       = bool(data.get('done', False))
+    result     = pm.update_task(project_id, task, done)
+    return jsonify(result)
+
+
+@app.route('/pm/projects', methods=['GET'])
+def pm_list():
+    return jsonify({'projects': pm.list_projects()})
+
+
+# ─────────────────────────────────────────────
+# ML FRICTION
+# ─────────────────────────────────────────────
+
+@app.route('/ml/predict', methods=['POST'])
+def ml_predict():
+    mihm.process_delayed_updates()
+    data     = request.get_json()
+    features = data.get('features', {})
+    result   = ml.predict_success(features)
+    return jsonify(result)
+
+
+@app.route('/ml/train', methods=['POST'])
+def ml_train():
+    mihm.process_delayed_updates()
+    data         = request.get_json()
+    features     = data.get('features', {})
+    true_outcome = float(data.get('true_outcome', 0.5))
+    result       = ml.train(features, true_outcome)
+    return jsonify(result)
+
+
+# ─────────────────────────────────────────────
+# INTEGRATIONS
+# ─────────────────────────────────────────────
+
+@app.route('/integrations/youtube', methods=['POST'])
+def int_youtube():
+    mihm.process_delayed_updates()
+    data     = request.get_json()
+    video_id = data.get('video_id', '')
+    metrics  = data.get('metrics', {})
+    result   = integs.ingest_youtube_analytics(video_id, metrics)
+    return jsonify(result)
+
+
+@app.route('/integrations/soundcloud', methods=['POST'])
+def int_soundcloud():
+    mihm.process_delayed_updates()
+    data     = request.get_json()
+    track_id = data.get('track_id', '')
+    plays    = int(data.get('plays', 0))
+    reposts  = int(data.get('reposts', 0))
+    result   = integs.ingest_soundcloud(track_id, plays, reposts)
+    return jsonify(result)
+
+
+@app.route('/integrations/generic', methods=['POST'])
+def int_generic():
+    mihm.process_delayed_updates()
+    data        = request.get_json()
+    platform    = data.get('platform', 'unknown')
+    signal_name = data.get('signal_name', 'generic')
+    value       = float(data.get('value', 0.5))
+    weight      = float(data.get('weight', 0.1))
+    result      = integs.ingest_generic(platform, signal_name, value, weight)
+    return jsonify(result)
+
+
+# ─────────────────────────────────────────────
+# SISTEMA REFLEXIVO (MCM-A)
+# ─────────────────────────────────────────────
+
+@app.route('/system/health', methods=['GET'])
+def system_health():
+    """Estado reflexivo completo del sistema."""
+    mihm.process_delayed_updates()
+    mihm.meta_control()
+    result = reflexive.evaluate_system_health()
+    # Persistir en DB
+    db.save_state(mihm.state, mihm.irc, "system_health_check", mihm.cost_function())
+    return jsonify(result)
+
+
+@app.route('/system/meta_control', methods=['POST'])
+def force_meta_control():
+    """Fuerza meta_control independientemente del contador de historial."""
+    mihm.process_delayed_updates()
+    result = reflexive.force_meta_control()
+    db.save_state(mihm.state, mihm.irc, "forced_meta_control", mihm.cost_function())
+    return jsonify(result)
+
+
+@app.route('/system/history', methods=['GET'])
+def state_history():
+    """Historial de estados del sistema."""
+    limit  = request.args.get('limit', 200, type=int)
+    rows   = db.get_state_history(limit)
+    return jsonify({'state_history': rows, 'count': len(rows)})
+
+
+@app.route('/system/rules', methods=['GET'])
+def reflexive_rules():
+    """Reglas auto-descubiertas por el sistema."""
+    rows = db.get_reflexive_rules(50)
+    return jsonify({
+        'rules':      rows,
+        'live_rules': mihm.reflexive_rules[-10:],
+    })
+
+
+@app.route('/system/state', methods=['GET'])
+def system_state():
+    """Estado completo del MIHM en tiempo real."""
+    mihm.process_delayed_updates()
+    return jsonify({
+        'state':           mihm.state,
+        'irc':             mihm.irc,
+        'meta_j':          mihm.compute_meta_j(),
+        'cost_j':          mihm.cost_function(),
+        'params':          mihm.params,
+        'history_size':    len(mihm.history),
+        'delayed_queue':   len(mihm.delayed_updates),
+        'reflexive_rules': len(mihm.reflexive_rules),
+        'timestamp':       datetime.utcnow().isoformat(),
+    })
+
+
+# ─────────────────────────────────────────────
+# MAIN
+# ─────────────────────────────────────────────
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=Config.DEBUG, host='0.0.0.0', port=5000)
