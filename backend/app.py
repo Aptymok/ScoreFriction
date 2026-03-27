@@ -9,7 +9,7 @@ from config import Config
 from database import Database
 from groq_client import GroqClient
 from audio_features import extract_features
-from mihm import MIHM
+import mihm as mihm_
 
 # Módulos del framework System Friction
 from modules.social_analyzer import SocialAnalyzer
@@ -32,7 +32,7 @@ CORS(app)
 
 db     = Database('instance/friction.db')
 groq   = GroqClient()
-mihm   = MIHM()
+mihm   = mihm_.MIHM()
 
 # Inyectar groq en mihm para propose_new_rule_via_groq
 mihm._groq = groq
