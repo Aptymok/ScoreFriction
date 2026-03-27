@@ -985,7 +985,7 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
 // ===================== CONFIGURACIÓN =====================
 const API_URL = (() => {
   if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-    return 'http://localhost:5000';
+    return 'http://127.0.0.1:5000';
   }
   return 'https://system-friction.up.railway.app';
 })();
