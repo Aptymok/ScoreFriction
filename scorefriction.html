@@ -552,6 +552,23 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
   .tabs-bar { overflow-x: auto; }
   .sc-grid { grid-template-columns: 1fr; }
 }
+
+/* ========== TAB XI · REFLEXIÓN MCM-A ========== */
+#tab-reflexion .cell-v {
+  font-size: 22px;
+  font-family: var(--mono);
+  color: var(--oro);
+  margin: .4rem 0 .2rem;
+}
+#tab-reflexion .pnl-body { padding: .75rem 1.25rem; }
+.reflex-rule-item {
+  border-left: 2px solid var(--verde);
+  padding: 4px 10px;
+  margin-bottom: 6px;
+  background: rgba(23,122,94,.06);
+}
+.reflex-rule-item .rule-name { color: var(--verde); font-size: 10px; }
+.reflex-rule-item .rule-j { color: var(--oro); font-size: 9px; }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
@@ -624,6 +641,7 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
     <button class="tab-btn" onclick="openTab('calendar',this)">IV · CALENDARIO</button>
     <button class="tab-btn" onclick="openTab('scenarios',this)">V · ESCENARIOS</button>
     <button class="tab-btn" onclick="openTab('notif',this)">VI · SISTEMA<span class="tab-badge" id="notif-badge" style="display:none">0</span></button>
+    <button class="tab-btn" onclick="openTab('reflexion',this)">XI · REFLEXIÓN</button>
   </nav>
  
   <div class="wrap">
@@ -978,6 +996,115 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
       </div>
     </div>
  
+    <!-- TAB XI: REFLEXIÓN DEL SISTEMA (MCM-A) -->
+    <div id="tab-reflexion" class="tab-panel">
+      <div class="sec">
+        <div class="sec-hd"><span class="sec-n">XI</span><span class="sec-t">Reflexión del Sistema · MCM-A · Control Autopoiético</span></div>
+
+        <!-- Métricas reflexivas en tiempo real -->
+        <div class="row3" style="margin-bottom:1rem">
+          <div class="cell">
+            <div class="cell-lbl">SALUD GLOBAL</div>
+            <div class="cell-v" id="reflex-health">—</div>
+            <div class="cell-sub">global_health (0–1)</div>
+          </div>
+          <div class="cell">
+            <div class="cell-lbl">IRC</div>
+            <div class="cell-v" id="reflex-irc">—</div>
+            <div class="cell-sub">Índice de Reflexividad Colectiva</div>
+          </div>
+          <div class="cell">
+            <div class="cell-lbl">META_J</div>
+            <div class="cell-v" id="reflex-metaj">—</div>
+            <div class="cell-sub">Calidad de función de costo</div>
+          </div>
+        </div>
+
+        <div class="row3" style="margin-bottom:1.5rem">
+          <div class="cell">
+            <div class="cell-lbl">COSTO J</div>
+            <div class="cell-v" id="reflex-costj">—</div>
+            <div class="cell-sub">J = Σwᵢ·errores²</div>
+          </div>
+          <div class="cell">
+            <div class="cell-lbl">IAD REFLEX</div>
+            <div class="cell-v" id="reflex-iad">—</div>
+            <div class="cell-sub">IRC × (1 – Meta_J)</div>
+          </div>
+          <div class="cell">
+            <div class="cell-lbl">COLA RETARDOS</div>
+            <div class="cell-v" id="reflex-queue">—</div>
+            <div class="cell-sub">deltas pendientes</div>
+          </div>
+        </div>
+
+        <!-- Recomendación del sistema -->
+        <div class="pnl" style="margin-bottom:1rem">
+          <div class="pnl-hd"><span class="pnl-lbl">RECOMENDACIÓN SISTÉMICA</span></div>
+          <div class="pnl-body">
+            <div id="reflex-recommendation" style="font-size:12px;color:var(--t2);padding:.5rem 0;font-family:var(--mono);line-height:1.7">—</div>
+          </div>
+        </div>
+
+        <!-- Parámetros PID actuales -->
+        <div class="pnl" style="margin-bottom:1rem">
+          <div class="pnl-hd"><span class="pnl-lbl">PARÁMETROS PID ACTUALES</span><span class="pnl-st" id="reflex-params-ts">—</span></div>
+          <div class="pnl-body" style="display:flex;gap:2rem;padding:.75rem">
+            <div><span style="color:var(--t3);font-size:10px;font-family:var(--mono)">KP</span><div class="cell-v" id="reflex-kp">—</div></div>
+            <div><span style="color:var(--t3);font-size:10px;font-family:var(--mono)">KI</span><div class="cell-v" id="reflex-ki">—</div></div>
+            <div><span style="color:var(--t3);font-size:10px;font-family:var(--mono)">KD</span><div class="cell-v" id="reflex-kd">—</div></div>
+            <div><span style="color:var(--t3);font-size:10px;font-family:var(--mono)">HISTORIAL</span><div class="cell-v" id="reflex-histsize">—</div></div>
+          </div>
+        </div>
+
+        <!-- Gráfico IRC en el tiempo -->
+        <div class="pnl" style="margin-bottom:1rem">
+          <div class="pnl-hd"><span class="pnl-lbl">EVOLUCIÓN IRC · Índice de Reflexividad Colectiva</span></div>
+          <div style="padding:1rem">
+            <canvas id="ircChart" height="160"></canvas>
+          </div>
+        </div>
+
+        <!-- Gráfico Costo J en el tiempo -->
+        <div class="pnl" style="margin-bottom:1rem">
+          <div class="pnl-hd"><span class="pnl-lbl">EVOLUCIÓN COSTO J · Función de Costo Global</span></div>
+          <div style="padding:1rem">
+            <canvas id="costJChart" height="160"></canvas>
+          </div>
+        </div>
+
+        <!-- Reglas auto-descubiertas -->
+        <div class="pnl" style="margin-bottom:1rem">
+          <div class="pnl-hd"><span class="pnl-lbl">REGLAS AUTO-DESCUBIERTAS</span><span class="pnl-st" id="reflex-rules-count">0 reglas</span></div>
+          <div class="pnl-body">
+            <div id="reflex-rules-list" style="font-family:var(--mono);font-size:10px;color:var(--t2);min-height:40px">
+              <span style="color:var(--t4)">Sin reglas aún. El sistema necesita más historia para auto-aprender.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Acciones manuales -->
+        <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem">
+          <button class="kf-btn" onclick="reflexLoadHealth()" style="font-size:10px;padding:8px 18px">
+            ACTUALIZAR ESTADO REFLEXIVO
+          </button>
+          <button class="kf-btn" onclick="reflexForceMetaControl()" style="font-size:10px;padding:8px 18px;border-color:var(--verde);color:var(--verde)">
+            FORZAR META-CONTROL
+          </button>
+          <button class="kf-btn" onclick="reflexLoadHistory()" style="font-size:10px;padding:8px 18px;border-color:var(--azul);color:var(--azul)">
+            CARGAR HISTORIAL ESTADO
+          </button>
+        </div>
+
+        <!-- Log de meta-control -->
+        <div class="sec" style="margin-top:1.5rem">
+          <div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">Log Meta-Control</span></div>
+          <div id="reflex-log" style="background:var(--bg2);border:.5px solid var(--bdr);padding:1rem;font-family:var(--mono);font-size:9px;color:var(--t3);height:180px;overflow-y:auto;line-height:1.8"></div>
+        </div>
+
+      </div>
+    </div>
+
   </div><!-- /wrap -->
 </div><!-- /ph-dashboard -->
  
@@ -2296,6 +2423,198 @@ window.loadProjectTemplate = loadProjectTemplate;
 window.checkTask = checkTask;
 window.electScenarioAPI = electScenarioAPI;
 window.sendLearn = sendLearn;
+
+// ========== TAB XI: REFLEXIÓN DEL SISTEMA (MCM-A) ==========
+
+let ircChart = null;
+let costJChart = null;
+
+function reflexLog(msg) {
+  const el = safeEl('reflex-log');
+  if (!el) return;
+  const ts = new Date().toLocaleTimeString('es', { hour12: false });
+  el.textContent = `[${ts}] ${msg}\n` + el.textContent;
+}
+
+function initReflexCharts() {
+  const chartDefaults = {
+    type: 'line',
+    options: {
+      responsive: true,
+      animation: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#5c5a52', font: { size: 9, family: 'Courier New' } }, grid: { color: '#2f2d28' } },
+        y: { ticks: { color: '#5c5a52', font: { size: 9, family: 'Courier New' } }, grid: { color: '#2f2d28' } }
+      }
+    }
+  };
+
+  const ircCtx = safeEl('ircChart');
+  if (ircCtx && !ircChart) {
+    ircChart = new Chart(ircCtx, {
+      ...chartDefaults,
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'IRC',
+          data: [],
+          borderColor: '#c8a951',
+          backgroundColor: 'rgba(200,169,81,0.08)',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          tension: 0.4
+        }]
+      }
+    });
+  }
+
+  const costCtx = safeEl('costJChart');
+  if (costCtx && !costJChart) {
+    costJChart = new Chart(costCtx, {
+      ...chartDefaults,
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'J',
+          data: [],
+          borderColor: '#be3a3a',
+          backgroundColor: 'rgba(190,58,58,0.08)',
+          borderWidth: 1.5,
+          pointRadius: 0,
+          tension: 0.4
+        }]
+      }
+    });
+  }
+}
+
+function updateReflexCharts(ircHistory) {
+  if (!ircHistory || !ircHistory.length) return;
+
+  // Limitar a últimos 80 puntos para legibilidad
+  const slice = ircHistory.slice(-80);
+  const labels = slice.map(h => {
+    try { return new Date(h.timestamp).toLocaleTimeString('es', { hour12: false, hour: '2-digit', minute: '2-digit' }); }
+    catch { return ''; }
+  });
+  const ircVals  = slice.map(h => (typeof h.irc  === 'number' ? +h.irc.toFixed(4)  : null));
+  const costVals = slice.map(h => (typeof h.cost_j === 'number' ? +h.cost_j.toFixed(4) : null));
+
+  if (ircChart) {
+    ircChart.data.labels = labels;
+    ircChart.data.datasets[0].data = ircVals;
+    ircChart.update('none');
+  }
+  if (costJChart) {
+    costJChart.data.labels = labels;
+    costJChart.data.datasets[0].data = costVals;
+    costJChart.update('none');
+  }
+}
+
+function renderReflexRules(rules) {
+  const el = safeEl('reflex-rules-list');
+  if (!el) return;
+  if (!rules || !rules.length) {
+    el.innerHTML = '<span style="color:var(--t4)">Sin reglas aún. El sistema necesita más historia para auto-aprender.</span>';
+    safeText('reflex-rules-count', '0 reglas');
+    return;
+  }
+  safeText('reflex-rules-count', `${rules.length} reglas`);
+  el.innerHTML = rules.map(r => `
+    <div class="reflex-rule-item">
+      <div class="rule-name">${r.rule || r.description || '—'}</div>
+      <div class="rule-j">ΔJ = ${typeof r.j_improvement === 'number' ? r.j_improvement.toFixed(4) : '—'} · ${r.timestamp || ''}</div>
+    </div>
+  `).join('');
+}
+
+function renderReflexData(data) {
+  if (!data) { reflexLog('⚠️ Sin respuesta del servidor'); return; }
+
+  const fmt = v => (typeof v === 'number' ? v.toFixed(4) : '—');
+
+  safeText('reflex-health', fmt(data.global_health));
+  safeText('reflex-irc',    fmt(data.irc));
+  safeText('reflex-metaj',  fmt(data.meta_j));
+  safeText('reflex-costj',  fmt(data.cost_j));
+  safeText('reflex-iad',    fmt(data.iad_reflex));
+  safeText('reflex-queue',  data.delayed_queue ?? '—');
+  safeText('reflex-recommendation', data.recommendation || '—');
+  safeText('reflex-histsize', data.history_size ?? '—');
+
+  const params = data.params || {};
+  safeText('reflex-kp', fmt(params.kp));
+  safeText('reflex-ki', fmt(params.ki));
+  safeText('reflex-kd', fmt(params.kd));
+
+  const ts = data.timestamp ? new Date(data.timestamp).toLocaleTimeString('es', { hour12: false }) : '—';
+  safeText('reflex-params-ts', ts);
+
+  // Colorear salud
+  const healthEl = safeEl('reflex-health');
+  if (healthEl) {
+    healthEl.style.color =
+      data.global_health > 0.7 ? 'var(--verde)' :
+      data.global_health > 0.4 ? 'var(--oro)' : 'var(--rojo)';
+  }
+
+  renderReflexRules(data.reflexive_rules || []);
+  updateReflexCharts(data.irc_history || []);
+
+  // Actualizar también el IHG/NTI en Tab I si disponibles
+  if (data.state) {
+    const s = data.state;
+    safeText('v-ihg', typeof s.ihg === 'number' ? s.ihg.toFixed(3) : '—');
+    safeText('v-nti', typeof s.nti === 'number' ? s.nti.toFixed(3) : '—');
+  }
+}
+
+async function reflexLoadHealth() {
+  reflexLog('Consultando /system/health...');
+  const data = await apiCall('/system/health');
+  renderReflexData(data);
+  reflexLog(`OK · health=${data?.global_health?.toFixed(4)} · IRC=${data?.irc?.toFixed(4)} · J=${data?.cost_j?.toFixed(4)}`);
+}
+
+async function reflexForceMetaControl() {
+  reflexLog('Forzando meta_control...');
+  const data = await apiCall('/system/meta_control', 'POST');
+  if (!data) { reflexLog('⚠️ Error en meta_control'); return; }
+  reflexLog(`META-CONTROL · ${data.action_taken}`);
+  reflexLog(`  KP=${data.params?.kp?.toFixed(4)} KI=${data.params?.ki?.toFixed(4)} KD=${data.params?.kd?.toFixed(4)}`);
+  reflexLog(`  ΔJ = ${(data.j_delta ?? 0).toFixed(4)}`);
+  safeText('reflex-kp', data.params?.kp?.toFixed(4) ?? '—');
+  safeText('reflex-ki', data.params?.ki?.toFixed(4) ?? '—');
+  safeText('reflex-kd', data.params?.kd?.toFixed(4) ?? '—');
+  // Recargar salud después del ajuste
+  await reflexLoadHealth();
+}
+
+async function reflexLoadHistory() {
+  reflexLog('Cargando historial de estado...');
+  const data = await apiCall('/system/history?limit=100');
+  if (!data || !data.state_history) { reflexLog('⚠️ Sin historial'); return; }
+  const history = data.state_history.reverse(); // cronológico
+  updateReflexCharts(history.map(h => ({ timestamp: h.timestamp, irc: h.irc, cost_j: h.cost_j })));
+  reflexLog(`OK · ${data.count} registros cargados`);
+}
+
+// Exponer al global scope
+window.reflexLoadHealth = reflexLoadHealth;
+window.reflexForceMetaControl = reflexForceMetaControl;
+window.reflexLoadHistory = reflexLoadHistory;
+
+// Inicializar gráficos cuando se abre el tab
+const _origOpenTab = window.openTab;
+window.openTab = function(name, btn) {
+  _origOpenTab(name, btn);
+  if (name === 'reflexion') {
+    initReflexCharts();
+    reflexLoadHealth();
+  }
+};
 </script>
 </body>
 </html>
