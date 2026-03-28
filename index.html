@@ -641,8 +641,15 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
+<body>
 
-<!-- API Overlay -->
+    <div id="root"></div>
+     <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/babel-standalone@6.26.0/babel.min.js"></script>
+    <script type="text/babel" src="app.js"></script>
+    
+    <!-- API Overlay -->
 <div id="api-overlay">
   <div class="ov-sym">𝄞</div>
   <div class="ov-lbl">S[SYSTEM](SCORE).FRICTION</div>
@@ -1425,7 +1432,7 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
 
   </div><!-- /wrap -->
 </div><!-- /ph-dashboard -->
- 
+
 <script>
 // ===================== CONFIGURACIÓN =====================
 const API_URL = (() => {
