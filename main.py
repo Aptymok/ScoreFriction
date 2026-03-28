@@ -1,16 +1,13 @@
-"""
-main.py – Entry point para Railway/gunicorn.
-Railway busca 'main:app' desde la raíz del proyecto.
-Este archivo agrega backend/ al path y re-exporta la app Flask.
-"""
-import sys
 import os
+import sys
 
-# Asegura que backend/ esté en el path de Python
+# 1. Agregamos la carpeta backend al path de Python para que los imports funcionen
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'backend'))
 
-from app import app  # noqa: F401 – re-export para gunicorn
+# 2. Importamos la app de Flask que está dentro de backend/app.py
+from app import app
 
-if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=False)
+# 3. Railway usará este archivo para arrancar
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
