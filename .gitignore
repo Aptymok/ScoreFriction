@@ -1,0 +1,11 @@
+# System Friction – archivos a ignorar
+credentials/
+instance/midi_output/
+*.pyc
+__pycache__/
+.env
+venv/
+*.db
+*.mid
+*.log
+.DS_Store

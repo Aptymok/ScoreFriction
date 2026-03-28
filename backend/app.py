@@ -32,6 +32,9 @@ from modules.ml_friction              import MLFriction
 from modules.integrations             import Integrations
 from modules.reflexive_engine         import ReflexiveEngine
 from modules.frequency_coexistence    import FrequencyCoexistenceEngine
+from modules.emergent_melody_engine   import EmergentMelodyEngine
+from modules.drive_manager            import DriveManager
+from modules.proactive_orchestrator   import ProactiveOrchestrator
 
 # ══════════════════════════════════════════════════════════════════════
 # INICIALIZACIÓN CENTRAL
@@ -63,7 +66,39 @@ pm        = ProjectManager(mihm)
 ml        = MLFriction(mihm)
 integs    = Integrations(mihm)
 reflexive = ReflexiveEngine(mihm)
-freq_coex = FrequencyCoexistenceEngine(mihm, groq)
+freq_coex    = FrequencyCoexistenceEngine(mihm, groq)
+melody_engine = EmergentMelodyEngine(mihm, groq, ml, spotify)
+drive_mgr     = DriveManager(mihm, {
+    'GOOGLE_SERVICE_ACCOUNT_JSON': Config.GOOGLE_SERVICE_ACCOUNT_JSON,
+    'GOOGLE_CREDENTIALS_FILE':     Config.GOOGLE_CREDENTIALS_FILE,
+    'GOOGLE_DRIVE_FOLDER_ID':      Config.GOOGLE_DRIVE_FOLDER_ID,
+    'MIDI_OUTPUT_DIR':             Config.MIDI_OUTPUT_DIR,
+})
+orchestrator  = ProactiveOrchestrator(mihm, db, groq, melody_engine, drive_mgr, {
+    'TELEGRAM_BOT_TOKEN':        Config.TELEGRAM_BOT_TOKEN,
+    'TELEGRAM_CHAT_ID':          Config.TELEGRAM_CHAT_ID,
+    'GOOGLE_CALENDAR_ID':        Config.GOOGLE_CALENDAR_ID,
+    'GOOGLE_SERVICE_ACCOUNT_JSON': Config.GOOGLE_SERVICE_ACCOUNT_JSON,
+    'GOOGLE_CREDENTIALS_FILE':   Config.GOOGLE_CREDENTIALS_FILE,
+    'TRACK_KEYWORD':             Config.TRACK_KEYWORD,
+    'MIDI_OUTPUT_DIR':           Config.MIDI_OUTPUT_DIR,
+})
+
+# Crear directorio MIDI si no existe
+os.makedirs(Config.MIDI_OUTPUT_DIR, exist_ok=True)
+
+
+# ── genMIDI / genBoth: funciones reales (fix de bug JS referenciaba estos nombres) ──
+def _gen_midi_stub(params=None):
+    """Genera MIDI usando melody_engine con parámetros por defecto."""
+    p = params or {}
+    p.setdefault('motivos',        ['A', 'B', 'C', 'D'])
+    p.setdefault('duracion_seg',   120)
+    p.setdefault('frase_concepto', 'pista emergente')
+    p.setdefault('genero',         'pop')
+    p.setdefault('instrumentos',   ['piano', 'bajo'])
+    p.setdefault('enganche',       Config.HOOK_THRESHOLD)
+    return melody_engine.generate(p)
 
 
 def gen_id() -> str:
@@ -518,6 +553,85 @@ def system_state():
         'reflexive_rules': len(mihm.reflexive_rules),
         'timestamp':       datetime.utcnow().isoformat(),
     })
+
+
+# ══════════════════════════════════════════════════════════════════════
+# ORQUESTADOR PROACTIVO
+# ══════════════════════════════════════════════════════════════════════
+
+@app.route('/orchestrator/status', methods=['GET'])
+def orchestrator_status():
+    """Estado actual del orquestador + sesiones activas + MIHM state."""
+    return jsonify(orchestrator.get_status())
+
+
+@app.route('/orchestrator/tick', methods=['POST'])
+def orchestrator_tick():
+    """Ejecuta un ciclo del orquestador (Calendar scan + Telegram polling + estados)."""
+    mihm.process_delayed_updates()
+    result = orchestrator.tick()
+    db.save_state(mihm.state, mihm.irc, "orchestrator_tick", mihm.cost_function())
+    return jsonify(result)
+
+
+@app.route('/orchestrator/trigger', methods=['POST'])
+def orchestrator_trigger():
+    """Crea sesión manual sin Calendar. Útil para testing desde el frontend."""
+    data        = request.get_json() or {}
+    event_title = data.get('event_title', 'test generación de pista')
+    result      = orchestrator.force_trigger(event_title)
+    db.save_state(mihm.state, mihm.irc, "orchestrator_force_trigger", mihm.cost_function())
+    return jsonify(result)
+
+
+@app.route('/orchestrator/sessions', methods=['GET'])
+def orchestrator_sessions():
+    """Lista las últimas sesiones del orquestador."""
+    limit = request.args.get('limit', 10, type=int)
+    return jsonify({'sessions': db.get_recent_orchestrator_sessions(limit)})
+
+
+@app.route('/orchestrator/session/<session_id>', methods=['GET'])
+def orchestrator_session(session_id):
+    """Detalle de una sesión específica."""
+    sess = db.get_orchestrator_session(session_id)
+    if sess is None:
+        return jsonify({'error': 'Session not found'}), 404
+    return jsonify(sess)
+
+
+@app.route('/orchestrator/params', methods=['POST'])
+def orchestrator_params():
+    """
+    Recibe parámetros manuales y ejecuta melody_engine.generate() directamente.
+    Útil para testing del flujo completo sin Telegram.
+    """
+    mihm.process_delayed_updates()
+    data = request.get_json() or {}
+
+    params = {
+        'motivos':        data.get('motivos', ['A', 'B', 'C', 'D']),
+        'duracion_seg':   int(data.get('duracion_seg', 120)),
+        'frase_concepto': data.get('frase_concepto', 'pista emergente'),
+        'genero':         data.get('genero', 'pop'),
+        'instrumentos':   data.get('instrumentos', ['piano', 'bajo']),
+        'enganche':       float(data.get('enganche', Config.HOOK_THRESHOLD)),
+        'session_id':     data.get('session_id', gen_id()),
+    }
+
+    try:
+        result = melody_engine.generate(params)
+        db.save_state(mihm.state, mihm.irc, "orchestrator_params_generate", mihm.cost_function())
+        return jsonify({
+            'status':     'generated',
+            'midi_path':  result.get('midi_path'),
+            'cost_j':     result.get('cost_j'),
+            'mihm_state': result.get('mihm_state'),
+            'tension':    result.get('tension_peak'),
+            'mc':         result.get('mc_projection'),
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 # ══════════════════════════════════════════════════════════════════════

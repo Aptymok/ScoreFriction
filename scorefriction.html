@@ -570,6 +570,45 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
 .reflex-rule-item .rule-name { color: var(--verde); font-size: 10px; }
 .reflex-rule-item .rule-j { color: var(--oro); font-size: 9px; }
 
+/* ========== TAB XIII · ORQUESTADOR ========== */
+.orch-session-card {
+  border: .5px solid var(--bdr);
+  border-left: 3px solid var(--t4);
+  padding: 10px 14px;
+  margin-bottom: .75rem;
+  background: var(--bg1);
+  border-radius: 2px;
+}
+.orch-session-card.status-done         { border-left-color: var(--verde); }
+.orch-session-card.status-generating   { border-left-color: var(--oro); }
+.orch-session-card.status-uploading    { border-left-color: var(--azul); }
+.orch-session-card.status-error        { border-left-color: var(--rojo); }
+.orch-session-card.status-waiting_telegram { border-left-color: var(--azul); }
+.orch-status-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 9px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  background: var(--bg2);
+  color: var(--t3);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+.orch-status-badge.done         { background: var(--verde); color: #fff; }
+.orch-status-badge.generating   { background: var(--oro); color: #000; }
+.orch-status-badge.uploading    { background: var(--azul); color: #fff; }
+.orch-status-badge.error        { background: var(--rojo); color: #fff; }
+.orch-status-badge.waiting_telegram { background: var(--azul); color: #fff; }
+.orch-deliverable-link {
+  color: var(--azul);
+  font-family: var(--mono);
+  font-size: 9px;
+  text-decoration: none;
+  margin-right: .75rem;
+}
+.orch-deliverable-link:hover { color: var(--oro); }
+
 /* ========== TAB XII · FRECUENCIAS CFF ========== */
 #tab-frecuencias .cell-v {
   font-size: 22px;
@@ -672,6 +711,7 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
     <button class="tab-btn" onclick="openTab('notif',this)">VI · SISTEMA<span class="tab-badge" id="notif-badge" style="display:none">0</span></button>
     <button class="tab-btn" onclick="openTab('reflexion',this)">XI · REFLEXIÓN</button>
     <button class="tab-btn" onclick="openTab('frecuencias',this)">XII · FRECUENCIAS</button>
+    <button class="tab-btn" onclick="openTab('orquestador',this)">XIII · ORQUESTADOR</button>
   </nav>
  
   <div class="wrap">
@@ -1275,6 +1315,113 @@ canvas#ecg-c { width: 100%; height: 80px; display: block; }
 
       </div>
     </div>
+
+    <!-- TAB XIII: ORQUESTADOR PROACTIVO -->
+    <div id="tab-orquestador" class="tab-panel">
+      <div class="sec">
+        <div class="sec-hd"><span class="sec-n">XIII</span><span class="sec-t">Orquestador Proactivo · Ciclo Autónomo de Generación</span></div>
+
+        <!-- Métricas globales -->
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem;margin-bottom:1.5rem">
+          <div class="pnl">
+            <div class="pnl-hd"><span class="pnl-lbl">SESIONES ACTIVAS</span></div>
+            <div class="pnl-body"><div id="orch-active-count" class="cell-v" style="font-size:28px;font-family:var(--mono);color:var(--oro)">—</div></div>
+          </div>
+          <div class="pnl">
+            <div class="pnl-hd"><span class="pnl-lbl">ÚLTIMO ESTADO</span></div>
+            <div class="pnl-body"><div id="orch-last-status" class="orch-status-badge" style="font-size:11px">—</div></div>
+          </div>
+          <div class="pnl">
+            <div class="pnl-hd"><span class="pnl-lbl">COSTO J</span></div>
+            <div class="pnl-body"><div id="orch-cost-j" class="cell-v" style="font-family:var(--mono);color:var(--azul)">—</div></div>
+          </div>
+          <div class="pnl">
+            <div class="pnl-hd"><span class="pnl-lbl">ÚLTIMO MIDI</span></div>
+            <div class="pnl-body"><div id="orch-last-midi" style="font-size:9px;font-family:var(--mono);color:var(--t3);word-break:break-all">—</div></div>
+          </div>
+        </div>
+
+        <!-- Gráfico de costo J en el tiempo -->
+        <div class="pnl" style="margin-bottom:1.5rem">
+          <div class="pnl-hd"><span class="pnl-lbl">FUNCIÓN DE COSTO J · CICLO DE GENERACIÓN</span></div>
+          <div class="pnl-body">
+            <canvas id="orch-cost-chart" height="80"></canvas>
+          </div>
+        </div>
+
+        <!-- Trigger manual -->
+        <div class="pnl" style="margin-bottom:1.5rem">
+          <div class="pnl-hd"><span class="pnl-lbl">TRIGGER MANUAL · INICIAR CICLO SIN CALENDAR</span></div>
+          <div class="pnl-body">
+            <div style="display:grid;grid-template-columns:1fr auto;gap:.75rem;align-items:end;margin-bottom:1rem">
+              <div>
+                <div style="font-size:9px;color:var(--t3);font-family:var(--mono);margin-bottom:4px">TÍTULO DEL EVENTO</div>
+                <input id="orch-event-title" type="text" value="generación de pista – test"
+                  style="width:100%;background:var(--bg2);border:.5px solid var(--bdr);color:var(--t1);padding:6px 10px;font-family:var(--mono);font-size:11px">
+              </div>
+              <button class="kf-btn" onclick="orchForceTrigger()" style="font-size:10px;padding:8px 18px">
+                TRIGGER
+              </button>
+            </div>
+
+            <!-- Params manuales -->
+            <div style="font-size:9px;color:var(--t3);font-family:var(--mono);margin-bottom:.5rem">PARÁMETROS MANUALES (sin Telegram)</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.5rem;margin-bottom:.75rem">
+              <div>
+                <div style="font-size:8px;color:var(--t4);font-family:var(--mono);margin-bottom:2px">MOTIVOS (coma)</div>
+                <input id="orch-motivos" type="text" value="amor, ritmo, ciudad, noche"
+                  style="width:100%;background:var(--bg2);border:.5px solid var(--bdr);color:var(--t1);padding:5px 8px;font-family:var(--mono);font-size:10px">
+              </div>
+              <div>
+                <div style="font-size:8px;color:var(--t4);font-family:var(--mono);margin-bottom:2px">GÉNERO</div>
+                <input id="orch-genero" type="text" value="reggaeton"
+                  style="width:100%;background:var(--bg2);border:.5px solid var(--bdr);color:var(--t1);padding:5px 8px;font-family:var(--mono);font-size:10px">
+              </div>
+              <div>
+                <div style="font-size:8px;color:var(--t4);font-family:var(--mono);margin-bottom:2px">DURACIÓN (seg)</div>
+                <input id="orch-duracion" type="number" value="120"
+                  style="width:100%;background:var(--bg2);border:.5px solid var(--bdr);color:var(--t1);padding:5px 8px;font-family:var(--mono);font-size:10px">
+              </div>
+              <div>
+                <div style="font-size:8px;color:var(--t4);font-family:var(--mono);margin-bottom:2px">FRASE-CONCEPTO</div>
+                <input id="orch-frase" type="text" value="el amor duele pero suena"
+                  style="width:100%;background:var(--bg2);border:.5px solid var(--bdr);color:var(--t1);padding:5px 8px;font-family:var(--mono);font-size:10px">
+              </div>
+              <div>
+                <div style="font-size:8px;color:var(--t4);font-family:var(--mono);margin-bottom:2px">INSTRUMENTOS (coma)</div>
+                <input id="orch-instrumentos" type="text" value="bajo, batería, sintetizador"
+                  style="width:100%;background:var(--bg2);border:.5px solid var(--bdr);color:var(--t1);padding:5px 8px;font-family:var(--mono);font-size:10px">
+              </div>
+              <div>
+                <div style="font-size:8px;color:var(--t4);font-family:var(--mono);margin-bottom:2px">ENGANCHE (0-1)</div>
+                <input id="orch-enganche" type="number" step="0.05" min="0" max="1" value="0.7"
+                  style="width:100%;background:var(--bg2);border:.5px solid var(--bdr);color:var(--t1);padding:5px 8px;font-family:var(--mono);font-size:10px">
+              </div>
+            </div>
+            <button class="kf-btn" onclick="orchSendParams()" style="font-size:10px;padding:8px 18px;border-color:var(--verde);color:var(--verde)">
+              GENERAR PISTA (SIN TELEGRAM)
+            </button>
+          </div>
+        </div>
+
+        <!-- Timeline de sesiones -->
+        <div class="pnl" style="margin-bottom:1.5rem">
+          <div class="pnl-hd"><span class="pnl-lbl">SESIONES · TIMELINE DE ESTADOS</span></div>
+          <div class="pnl-body">
+            <div id="orch-sessions-list" style="min-height:60px">
+              <span style="color:var(--t4);font-size:11px">Sin sesiones registradas.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Log en tiempo real -->
+        <div class="sec" style="margin-top:1.5rem">
+          <div class="sec-hd"><span class="sec-n">·</span><span class="sec-t">Log Orquestador (polling 8s)</span></div>
+          <div id="orch-log" style="background:var(--bg2);border:.5px solid var(--bdr);padding:1rem;font-family:var(--mono);font-size:9px;color:var(--t3);height:180px;overflow-y:auto;line-height:1.8"></div>
+        </div>
+
+      </div>
+    </div><!-- /tab-orquestador -->
 
   </div><!-- /wrap -->
 </div><!-- /ph-dashboard -->
@@ -2577,6 +2724,24 @@ window.addEventListener('load', async () => {
   sysLog(`🚀 System Friction iniciado · Modo: ${currentMode} · API: ${API_URL}`);
 });
  
+// ── Fix: genMIDI y genBoth definidas antes de ser referenciadas ──
+async function genMIDI() {
+  orchLog('Generando MIDI con parámetros actuales...');
+  const data = await apiCall('/orchestrator/params', 'POST', {
+    motivos:        ['A', 'B', 'C', 'D'],
+    duracion_seg:   120,
+    frase_concepto: 'pista emergente',
+    genero:         'pop',
+    instrumentos:   ['piano', 'bajo'],
+    enganche:       0.7,
+  });
+  if (data) orchLog(`MIDI generado: ${data.midi_path || '—'}`);
+}
+async function genBoth() {
+  await genMIDI();
+  await freqAnalyzeNeutral();
+}
+
 // Exponer funciones globales
 window.startAudit = startAudit;
 window.auditNext = auditNext;
@@ -3071,6 +3236,189 @@ async function freqLoadMap() {
 window.freqAnalyzeNeutral = freqAnalyzeNeutral;
 window.freqProposeRitual  = freqProposeRitual;
 window.freqLoadMap        = freqLoadMap;
+
+// ========== TAB XIII: ORQUESTADOR PROACTIVO ==========
+
+let orchPollInterval  = null;
+let orchStatusChart   = null;
+const orchCostHistory = [];
+
+function orchLog(msg) {
+  const el = safeEl('orch-log');
+  if (!el) return;
+  const ts = new Date().toLocaleTimeString('es', { hour12: false });
+  el.textContent = `[${ts}] ${msg}\n` + el.textContent;
+}
+
+function initOrchChart() {
+  if (orchStatusChart) return;
+  const ctx = safeEl('orch-cost-chart');
+  if (!ctx || typeof Chart === 'undefined') return;
+  orchStatusChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels:   [],
+      datasets: [{
+        label:           'Costo J',
+        data:            [],
+        borderColor:     '#c8a951',
+        backgroundColor: 'rgba(200,169,81,.08)',
+        borderWidth:     1.5,
+        pointRadius:     0,
+        tension:         0.3,
+      }],
+    },
+    options: {
+      responsive:  true,
+      animation:   false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#5c5a52', font: { size: 8, family: 'Courier New' } }, grid: { color: '#2f2d28' } },
+        y: { ticks: { color: '#5c5a52', font: { size: 8, family: 'Courier New' } }, grid: { color: '#2f2d28' } },
+      },
+    },
+  });
+}
+
+function updateOrchChart(costJ) {
+  if (!orchStatusChart) return;
+  const ts = new Date().toLocaleTimeString('es', { hour12: false });
+  orchStatusChart.data.labels.push(ts);
+  orchStatusChart.data.datasets[0].data.push(costJ);
+  if (orchStatusChart.data.labels.length > 40) {
+    orchStatusChart.data.labels.shift();
+    orchStatusChart.data.datasets[0].data.shift();
+  }
+  orchStatusChart.update('none');
+}
+
+function renderOrchSessions(sessions) {
+  const el = safeEl('orch-sessions-list');
+  if (!el) return;
+
+  if (!sessions || sessions.length === 0) {
+    el.innerHTML = '<span style="color:var(--t4);font-size:11px">Sin sesiones registradas.</span>';
+    return;
+  }
+
+  el.innerHTML = sessions.map(sess => {
+    const statusClass = (sess.status || 'idle').replace(/_/g, '_');
+    const createdAt   = sess.created_at ? new Date(sess.created_at).toLocaleString('es') : '—';
+    const updatedAt   = sess.updated_at ? new Date(sess.updated_at).toLocaleTimeString('es') : '—';
+    const midiPath    = sess.midi_path ? sess.midi_path.split('/').pop() : '—';
+    const costJ       = sess.cost_j_at_trigger != null ? parseFloat(sess.cost_j_at_trigger).toFixed(5) : '—';
+
+    let deliverableLinks = '';
+    if (sess.status === 'done') {
+      deliverableLinks = `<div style="margin-top:4px">
+        <span class="orch-deliverable-link">📄 Doc Ejecutivo</span>
+        <span class="orch-deliverable-link">📊 Doc Social</span>
+      </div>`;
+    }
+
+    return `<div class="orch-session-card status-${sess.status || 'idle'}">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--t1)">${sess.calendar_event_title || sess.session_id}</span>
+        <span class="orch-status-badge ${statusClass}">${(sess.status || 'idle').replace(/_/g, ' ')}</span>
+      </div>
+      <div style="font-size:9px;color:var(--t3);font-family:var(--mono)">
+        ID: ${(sess.session_id || '').slice(0, 12)} · Creado: ${createdAt} · Act: ${updatedAt}
+      </div>
+      <div style="font-size:9px;color:var(--t2);font-family:var(--mono);margin-top:2px">
+        MIDI: ${midiPath} · J: ${costJ}
+      </div>
+      ${sess.error_msg ? `<div style="font-size:9px;color:var(--rojo);margin-top:2px">${sess.error_msg}</div>` : ''}
+      ${deliverableLinks}
+    </div>`;
+  }).join('');
+}
+
+async function orchLoadStatus() {
+  const data = await apiCall('/orchestrator/status');
+  if (!data) { orchLog('⚠️ Sin respuesta del servidor'); return; }
+
+  const sessions = data.sessions || [];
+  const costJ    = data.cost_j != null ? parseFloat(data.cost_j) : null;
+
+  // Métricas globales
+  safeText('orch-active-count', data.active_count != null ? data.active_count : '0');
+  if (costJ !== null) {
+    safeText('orch-cost-j', costJ.toFixed(5));
+    updateOrchChart(costJ);
+  }
+
+  // Último estado
+  const lastSess = sessions[0];
+  if (lastSess) {
+    const badge = safeEl('orch-last-status');
+    if (badge) {
+      badge.textContent  = (lastSess.status || '—').replace(/_/g, ' ');
+      badge.className    = `orch-status-badge ${lastSess.status || ''}`;
+    }
+    if (lastSess.midi_path) {
+      safeText('orch-last-midi', lastSess.midi_path.split('/').pop());
+    }
+  }
+
+  renderOrchSessions(sessions);
+  orchLog(`Polling OK · ${sessions.length} sesiones · J=${costJ != null ? costJ.toFixed(5) : '—'}`);
+}
+
+async function orchForceTrigger() {
+  const eventTitle = safeEl('orch-event-title')?.value || 'test generación de pista';
+  orchLog(`Trigger manual: "${eventTitle}"...`);
+  const data = await apiCall('/orchestrator/trigger', 'POST', { event_title: eventTitle });
+  if (!data) { orchLog('⚠️ Error al ejecutar trigger'); return; }
+  orchLog(`Sesión creada: ${data.session_id} · Telegram: ${data.telegram_sent ? 'enviado' : 'no enviado'} · J=${data.cost_j?.toFixed(5)}`);
+  await orchLoadStatus();
+}
+
+async function orchSendParams() {
+  const motivos     = (safeEl('orch-motivos')?.value     || 'A,B,C,D').split(',').map(s => s.trim());
+  const genero      = safeEl('orch-genero')?.value       || 'pop';
+  const duracion    = parseInt(safeEl('orch-duracion')?.value || 120);
+  const frase       = safeEl('orch-frase')?.value        || 'pista emergente';
+  const instrumentos = (safeEl('orch-instrumentos')?.value || 'piano,bajo').split(',').map(s => s.trim());
+  const enganche    = parseFloat(safeEl('orch-enganche')?.value || 0.7);
+
+  orchLog(`Generando pista: ${genero} · ${duracion}s · enganche=${enganche}...`);
+  const data = await apiCall('/orchestrator/params', 'POST', {
+    motivos, genero, duracion_seg: duracion, frase_concepto: frase, instrumentos, enganche,
+  });
+  if (!data) { orchLog('⚠️ Error en generación'); return; }
+  orchLog(`MIDI: ${data.midi_path?.split('/').pop() || '—'} · J=${data.cost_j?.toFixed(5)} · tensión beat ${data.tension?.beat}`);
+  await orchLoadStatus();
+}
+
+function startOrchPolling() {
+  if (orchPollInterval) return;
+  orchLoadStatus();
+  orchPollInterval = setInterval(orchLoadStatus, 8000);
+  orchLog('Polling iniciado (cada 8s)');
+}
+
+function stopOrchPolling() {
+  if (orchPollInterval) {
+    clearInterval(orchPollInterval);
+    orchPollInterval = null;
+  }
+}
+
+// Extender _origOpenTab para tab orquestador
+const _origOpenTabFreq = window.openTab;
+window.openTab = function(name, btn) {
+  _origOpenTabFreq(name, btn);
+  if (name === 'orquestador') {
+    initOrchChart();
+    startOrchPolling();
+  } else {
+    stopOrchPolling();
+  }
+};
+
+window.orchForceTrigger = orchForceTrigger;
+window.orchSendParams   = orchSendParams;
+window.orchLoadStatus   = orchLoadStatus;
 </script>
 </body>
 </html>

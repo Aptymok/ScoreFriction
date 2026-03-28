@@ -214,3 +214,87 @@ Genera un JSON con:
                 "cff_delta":            0.0,
                 "narrative":            f"Análisis no disponible: {e}",
             }
+
+    # ------------------------------------------------------------------
+    # generate_executive_doc – Documento 1 del Orquestador Proactivo
+    # ------------------------------------------------------------------
+
+    def generate_executive_doc(self, mihm_state: dict, mc_projection: dict,
+                               midi_analysis: dict, params: dict) -> str:
+        """
+        Genera el contenido narrativo del Documento 1 (análisis ejecutivo)
+        en formato Markdown. Usado por DriveManager.create_executive_doc().
+        """
+        prompt = f"""Eres un analista ejecutivo de producción musical con expertise en sistemas complejos.
+Genera una narrativa ejecutiva de 3-4 párrafos en español sobre el siguiente ciclo de generación de pista:
+
+Estado MIHM:
+- IHG (Inercia Hegemónica Global): {mihm_state.get('ihg', 0):.4f}
+- NTI (Tensión Narrativa): {mihm_state.get('nti', 0):.4f}
+- R (Resonancia): {mihm_state.get('r', 0):.4f}
+- CFF (Campo Frecuencia Colectiva): {mihm_state.get('cff', 0):.4f}
+- Costo J: {mihm_state.get('cost_j', 0):.6f}
+
+Proyección Monte Carlo:
+- IHG esperado: {mc_projection.get('ihg_esperado', 'N/A')}
+- Probabilidad de éxito: {mc_projection.get('prob_exito', 'N/A')}
+- Fecha óptima de lanzamiento: en {mc_projection.get('fecha_optima', 'N/A')} días
+
+Parámetros del track:
+- Género: {params.get('genero', 'N/A')}
+- Motivos: {', '.join(params.get('motivos', []))}
+- Frase-concepto: {params.get('frase_concepto', 'N/A')}
+- Enganche target: {params.get('enganche', 0.7)}
+
+Análisis MIDI:
+- Beat de pico de tensión: {midi_analysis.get('tension_beat', 'N/A')}
+- Intensidad del pico: {midi_analysis.get('tension_intensity', 'N/A')}
+
+Incluye: interpretación del estado del sistema, riesgos y oportunidades, recomendación estratégica de lanzamiento."""
+
+        try:
+            return self._call(
+                [{"role": "user", "content": prompt}],
+                temperature=0.5,
+                max_tokens=600,
+            )
+        except Exception as e:
+            return f"Narrativa ejecutiva no disponible: {e}"
+
+    # ------------------------------------------------------------------
+    # generate_social_proposal – Documento 2 del Orquestador Proactivo
+    # ------------------------------------------------------------------
+
+    def generate_social_proposal(self, params: dict, midi_analysis: dict,
+                                 mihm_state: dict) -> str:
+        """
+        Genera el contenido narrativo del Documento 2 (propuesta redes sociales)
+        en formato Markdown. Usado por DriveManager.create_social_proposal_doc().
+        """
+        prompt = f"""Eres un estratega de redes sociales especializado en música emergente.
+Genera una propuesta de estrategia social de 3-4 párrafos en español para el siguiente track:
+
+Género: {params.get('genero', 'N/A')}
+Motivos clave: {', '.join(params.get('motivos', []))}
+Frase-concepto: {params.get('frase_concepto', 'N/A')}
+Instrumentos: {', '.join(params.get('instrumentos', []))}
+Enganche target: {params.get('enganche', 0.7)}
+Duración: {params.get('duracion_seg', 120)}s
+Beat de pico de tensión (momento viral): {midi_analysis.get('tension_beat', 'N/A')}
+
+Estado MIHM que informa la estrategia:
+- IHG: {mihm_state.get('ihg', 0):.4f} (inercia hegemónica del mercado)
+- R: {mihm_state.get('r', 0):.4f} (resonancia actual del artista)
+- CFF: {mihm_state.get('cff', 0):.4f} (campo de frecuencias colectivas)
+
+Incluye: plataformas prioritarias, timing de publicación, tipo de contenido visual, KPIs esperados,
+copy de lanzamiento principal (máx 280 chars para Twitter/X)."""
+
+        try:
+            return self._call(
+                [{"role": "user", "content": prompt}],
+                temperature=0.6,
+                max_tokens=600,
+            )
+        except Exception as e:
+            return f"Propuesta social no disponible: {e}"
