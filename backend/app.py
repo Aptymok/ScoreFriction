@@ -11,7 +11,7 @@ solo a través de apply_delta().
 import os
 import uuid
 from datetime import datetime
-from flask import Flask, request, jsonify, send_file
+from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
 import numpy as np
 
@@ -635,8 +635,38 @@ def orchestrator_params():
 
 
 # ══════════════════════════════════════════════════════════════════════
+# FRONTEND – servir index.html y archivos estáticos
+# ══════════════════════════════════════════════════════════════════════
+ 
+# El HTML vive un nivel arriba de backend/
+_ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ 
+ 
+@app.route('/')
+def serve_index():
+    return send_from_directory(_ROOT_DIR, 'index.html')
+ 
+ 
+@app.route('/<path:filename>')
+def serve_static(filename):
+    # Proteger endpoints de la API: no interceptar rutas /api/*
+    if filename.startswith(('health', 'predict', 'learn', 'history', 'reset',
+                            'groq', 'scenario', 'export', 'midi', 'audio',
+                            'frequency', 'social', 'spotify', 'tiktok',
+                            'projects', 'marketing', 'pm', 'ml',
+                            'integrations', 'system', 'orchestrator')):
+        return jsonify({'error': 'Not found'}), 404
+    try:
+        return send_from_directory(_ROOT_DIR, filename)
+    except Exception:
+        return send_from_directory(_ROOT_DIR, 'index.html')
+ 
+ 
+# ══════════════════════════════════════════════════════════════════════
 # MAIN
 # ══════════════════════════════════════════════════════════════════════
-
+ 
 if __name__ == '__main__':
-    app.run(debug=Config.DEBUG, host='0.0.0.0', port=5000)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(debug=Config.DEBUG, host='0.0.0.0', port=port)
+ 
