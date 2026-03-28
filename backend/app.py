@@ -13,13 +13,26 @@ import uuid
 from datetime import datetime
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
-import numpy as np
+
+try:
+    import numpy as np
+    _numpy_ok = True
+except ImportError:
+    _numpy_ok = False
 
 from config import Config
 from database import Database
 from groq_client import GroqClient
-from audio_features import extract_features
 from mihm import MIHM
+
+# extract_features usa librosa — import opcional
+try:
+    from audio_features import extract_features
+    _audio_ok = True
+except Exception:
+    _audio_ok = False
+    def extract_features(*a, **kw):
+        return {}
 
 # ── Módulos del framework System Friction ────────────────────────────
 from modules.social_analyzer          import SocialAnalyzer
@@ -44,47 +57,54 @@ app  = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
 
+# Directorio de instancia (SQLite)
+os.makedirs('instance', exist_ok=True)
+
 db   = Database('instance/friction.db')
 groq = GroqClient()
 mihm = MIHM()
 
-# Inyectar groq en MIHM para meta_control → propose_new_rule_via_groq
 mihm._groq = groq
 
-# Cargar parámetros persistidos
 saved_params = db.get_parameters('mihm_params')
 if saved_params:
     mihm.params.update(saved_params)
 
-# ── Instanciar módulos con mihm compartido ───────────────────────────
-social    = SocialAnalyzer(mihm)
-audio_adv = AudioAnalyzerAdvanced(mihm)
-spotify   = SpotifyScraper(mihm)
-proposals = ProjectProposals(mihm, groq)
-marketing = MarketingEngine(mihm)
-pm        = ProjectManager(mihm)
-ml        = MLFriction(mihm)
-integs    = Integrations(mihm)
-reflexive = ReflexiveEngine(mihm)
-freq_coex    = FrequencyCoexistenceEngine(mihm, groq)
-melody_engine = EmergentMelodyEngine(mihm, groq, ml, spotify)
-drive_mgr     = DriveManager(mihm, {
+# ── Instanciar módulos (con manejo de errores para entornos sin todas las libs) ──
+def _safe_init(cls, *args, **kwargs):
+    try:
+        return cls(*args, **kwargs)
+    except Exception as e:
+        print(f"[WARN] No se pudo inicializar {cls.__name__}: {e}")
+        return None
+
+social    = _safe_init(SocialAnalyzer, mihm)
+audio_adv = _safe_init(AudioAnalyzerAdvanced, mihm)
+spotify   = _safe_init(SpotifyScraper, mihm)
+proposals = _safe_init(ProjectProposals, mihm, groq)
+marketing = _safe_init(MarketingEngine, mihm)
+pm        = _safe_init(ProjectManager, mihm)
+ml        = _safe_init(MLFriction, mihm)
+integs    = _safe_init(Integrations, mihm)
+reflexive = _safe_init(ReflexiveEngine, mihm)
+freq_coex = _safe_init(FrequencyCoexistenceEngine, mihm, groq)
+melody_engine = _safe_init(EmergentMelodyEngine, mihm, groq, ml, spotify)
+drive_mgr = _safe_init(DriveManager, mihm, {
     'GOOGLE_SERVICE_ACCOUNT_JSON': Config.GOOGLE_SERVICE_ACCOUNT_JSON,
     'GOOGLE_CREDENTIALS_FILE':     Config.GOOGLE_CREDENTIALS_FILE,
     'GOOGLE_DRIVE_FOLDER_ID':      Config.GOOGLE_DRIVE_FOLDER_ID,
     'MIDI_OUTPUT_DIR':             Config.MIDI_OUTPUT_DIR,
 })
-orchestrator  = ProactiveOrchestrator(mihm, db, groq, melody_engine, drive_mgr, {
-    'TELEGRAM_BOT_TOKEN':        Config.TELEGRAM_BOT_TOKEN,
-    'TELEGRAM_CHAT_ID':          Config.TELEGRAM_CHAT_ID,
-    'GOOGLE_CALENDAR_ID':        Config.GOOGLE_CALENDAR_ID,
+orchestrator = _safe_init(ProactiveOrchestrator, mihm, db, groq, melody_engine, drive_mgr, {
+    'TELEGRAM_BOT_TOKEN':          Config.TELEGRAM_BOT_TOKEN,
+    'TELEGRAM_CHAT_ID':            Config.TELEGRAM_CHAT_ID,
+    'GOOGLE_CALENDAR_ID':          Config.GOOGLE_CALENDAR_ID,
     'GOOGLE_SERVICE_ACCOUNT_JSON': Config.GOOGLE_SERVICE_ACCOUNT_JSON,
-    'GOOGLE_CREDENTIALS_FILE':   Config.GOOGLE_CREDENTIALS_FILE,
-    'TRACK_KEYWORD':             Config.TRACK_KEYWORD,
-    'MIDI_OUTPUT_DIR':           Config.MIDI_OUTPUT_DIR,
+    'GOOGLE_CREDENTIALS_FILE':     Config.GOOGLE_CREDENTIALS_FILE,
+    'TRACK_KEYWORD':               Config.TRACK_KEYWORD,
+    'MIDI_OUTPUT_DIR':             Config.MIDI_OUTPUT_DIR,
 })
 
-# Crear directorio MIDI si no existe
 os.makedirs(Config.MIDI_OUTPUT_DIR, exist_ok=True)
 
 
@@ -111,13 +131,19 @@ def gen_id() -> str:
 
 @app.route('/health', methods=['GET'])
 def health():
+    try:
+        state = mihm.state
+        cost  = mihm.cost_function()
+        irc   = mihm.irc
+    except Exception:
+        state, cost, irc = {}, 0.0, 0.0
     return jsonify({
         'status':  'ok',
-        'version': '4.1-CFF',
+        'version': '4.2-Orchestrator',
         'mihm':    'active',
-        'state':   mihm.state,
-        'cost_j':  mihm.cost_function(),
-        'irc':     mihm.irc,
+        'state':   state,
+        'cost_j':  cost,
+        'irc':     irc,
     })
 
 
