@@ -57,18 +57,26 @@ app  = Flask(__name__)
 app.config.from_object(Config)
 CORS(app)
 
-# Directorio de instancia (SQLite)
-os.makedirs('instance', exist_ok=True)
+# Path absoluto para SQLite – independiente del directorio de trabajo
+_BACKEND_DIR  = os.path.dirname(os.path.abspath(__file__))
+_INSTANCE_DIR = os.path.join(_BACKEND_DIR, 'instance')
+_DB_PATH      = os.path.join(_INSTANCE_DIR, 'friction.db')
+_MIDI_DIR     = os.path.join(_INSTANCE_DIR, 'midi_output')
+os.makedirs(_INSTANCE_DIR, exist_ok=True)
+os.makedirs(_MIDI_DIR,     exist_ok=True)
 
-db   = Database('instance/friction.db')
+db   = Database(_DB_PATH)
 groq = GroqClient()
 mihm = MIHM()
 
 mihm._groq = groq
 
-saved_params = db.get_parameters('mihm_params')
-if saved_params:
-    mihm.params.update(saved_params)
+try:
+    saved_params = db.get_parameters('mihm_params')
+    if saved_params:
+        mihm.params.update(saved_params)
+except Exception as e:
+    print(f"[WARN] No se pudieron cargar params persistidos: {e}")
 
 # ── Instanciar módulos (con manejo de errores para entornos sin todas las libs) ──
 def _safe_init(cls, *args, **kwargs):
@@ -93,7 +101,7 @@ drive_mgr = _safe_init(DriveManager, mihm, {
     'GOOGLE_SERVICE_ACCOUNT_JSON': Config.GOOGLE_SERVICE_ACCOUNT_JSON,
     'GOOGLE_CREDENTIALS_FILE':     Config.GOOGLE_CREDENTIALS_FILE,
     'GOOGLE_DRIVE_FOLDER_ID':      Config.GOOGLE_DRIVE_FOLDER_ID,
-    'MIDI_OUTPUT_DIR':             Config.MIDI_OUTPUT_DIR,
+    'MIDI_OUTPUT_DIR':             _MIDI_DIR,
 })
 orchestrator = _safe_init(ProactiveOrchestrator, mihm, db, groq, melody_engine, drive_mgr, {
     'TELEGRAM_BOT_TOKEN':          Config.TELEGRAM_BOT_TOKEN,
@@ -105,7 +113,7 @@ orchestrator = _safe_init(ProactiveOrchestrator, mihm, db, groq, melody_engine, 
     'MIDI_OUTPUT_DIR':             Config.MIDI_OUTPUT_DIR,
 })
 
-os.makedirs(Config.MIDI_OUTPUT_DIR, exist_ok=True)
+# _MIDI_DIR ya fue creado con makedirs arriba
 
 
 # ── genMIDI / genBoth: funciones reales (fix de bug JS referenciaba estos nombres) ──
