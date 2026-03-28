@@ -1,4 +1,5 @@
 import sqlite3
+import json
 import os
 
 
@@ -71,6 +72,13 @@ class Database:
                     outcome TEXT
                 )
             ''')
+            # Tabla key-value para parámetros persistidos
+            conn.execute('''
+                CREATE TABLE IF NOT EXISTS parameters (
+                    key TEXT PRIMARY KEY,
+                    value TEXT
+                )
+            ''')
             # Tabla de sesiones del Orquestador Proactivo
             conn.execute('''
                 CREATE TABLE IF NOT EXISTS orchestrator_sessions (
@@ -132,14 +140,14 @@ class Database:
                 ORDER BY timestamp DESC LIMIT ?
             ''', (limit,))
             rows = cur.fetchall()
-            return [{'timestamp': r[0], 'error': r[1], 'error_smoothed': r[2]}
+            return [{'timestamp': r[0], 'error': r[1]}
                     for r in rows]
 
     # ------------------------------------------------------------------
     # parameters
     # ------------------------------------------------------------------
 
-    def save_params(self, kp, ki, kd):
+    def save_params(self, key, value):
         with self.get_connection() as conn:
             conn.execute('REPLACE INTO parameters (key, value) VALUES (?, ?)',
                          (key, json.dumps(value)))
