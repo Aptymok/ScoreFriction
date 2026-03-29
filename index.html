@@ -1039,7 +1039,7 @@ const API={
   },
   async pmEvent(type,extra={}){
     if(!this.online)return;
-    this.call('/pm/event','POST',{type,...extra}).catch(()=>{});
+    this.call('/pm/event', { type, ...extra }, 'POST');
   },
   saveURL(){
     const url=document.getElementById('api-url-inp')?.value.trim();
@@ -1099,7 +1099,10 @@ const AUTH={
   showReg(){document.getElementById('af-login').style.display='none';document.getElementById('af-reg').style.display='block';},
   boot(){
     const s=DB.g('sess',null);
-    if(!s||Date.now()-s.ts>86400000*30){SC.show('sc-auth');return;}
+if (!s || (Date.now() - s.ts > 86400000 * 30)) {
+  SC.show('sc-auth');
+  return;
+}
     const u=DB.g('users',[]).find(u=>u.id===s.uid);
     if(!u){SC.show('sc-auth');return;}
     this.user=u;
@@ -2301,14 +2304,7 @@ const STU2={
 
   _log(msg){const el=document.getElementById('stu-log');if(!el)return;const ts=new Date().toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});el.textContent='['+ts+'] '+msg+'\n'+el.textContent;}
 };
-window.STU2=STU2;
-// Keep STU as alias for backward compatibility (btn-gen etc)
-const STU={generate:()=>STU2.generate(),reset:()=>STU2.reset(),coevolve:()=>STU2.coevolve(),exportMIDI:()=>STU2.exportMIDI(),freeze:()=>STU2.freeze(),toggleStep:(c,i)=>STU2.toggleStep(c,i)};
-window.STU=STU;
 
-window.AUD=AUD;window.OB=OB;window.M=M;window.AUTH=AUTH;window.NAV=NAV;
-window.OPS=OPS;window.PROJ=PROJ;window.TASK=TASK;window.CAL=CAL;window.CAMP=CAMP;
-window.CHAT=CHAT;window.OBS=OBS;window.STU=STU;window.CFG=CFG;window.API=API;
 <script>
 document.addEventListener("click", async () => {
   if (window.Tone && Tone.context.state !== "running") {
@@ -2319,5 +2315,14 @@ document.addEventListener("click", async () => {
   }
 }, { once: true });
 </script>
+
+window.AUD=AUD;window.OB=OB;window.M=M;window.AUTH=AUTH;window.NAV=NAV;
+window.OPS=OPS;window.PROJ=PROJ;window.TASK=TASK;window.CAL=CAL;window.CAMP=CAMP;
+window.CHAT=CHAT;window.OBS=OBS;window.STU=STU;window.CFG=CFG;window.API=API;
+window.STU2=STU2;
+// Keep STU as alias for backward compatibility (btn-gen etc)
+const STU={generate:()=>STU2.generate(),reset:()=>STU2.reset(),coevolve:()=>STU2.coevolve(),exportMIDI:()=>STU2.exportMIDI(),freeze:()=>STU2.freeze(),toggleStep:(c,i)=>STU2.toggleStep(c,i)};
+window.STU=STU;
+
 </body>
 </html>
