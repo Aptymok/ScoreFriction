@@ -2161,25 +2161,6 @@ const STU2={
     this.renderHeatmap();
   },
 
-  async fetchDates(){
-    const el=document.getElementById('intel-dates');
-    if(el)el.innerHTML='<div style="font-family:var(--mono);font-size:8.5px;color:var(--t3)">Calculando...</div>';
-    let dates=[];
-    if(API.online){const r=await API.call('/propose_release_dates','POST',{});if(r?.fechas_optimas)dates=r.fechas_optimas.map(f=>({date:f.fecha,prob:Math.round(f.prob_exito*100),reason:f.razon||'Proyección MC'}));}
-    if(!dates.length){
-      const now=new Date();
-      dates=[{date:new Date(now.getTime()+30*86400000).toISOString().split('T')[0],prob:Math.round(72-Math.abs(ENG.st.ihg)*10),reason:'IHG proyectado óptimo · IRC alta'},
-             {date:new Date(now.getTime()+60*86400000).toISOString().split('T')[0],prob:Math.round(61-Math.abs(ENG.st.ihg)*8),reason:'Ventana cultural identificada'},
-             {date:new Date(now.getTime()+90*86400000).toISOString().split('T')[0],prob:Math.round(48-Math.abs(ENG.st.ihg)*6),reason:'Riesgo moderado · R en recuperación'}];
-    }
-    if(el)el.innerHTML=dates.map(d=>`
-      <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:.45rem 0;border-bottom:1px solid rgba(200,169,81,.05)">
-        <div><div style="font-family:var(--mono);font-size:10.5px;color:var(--t1)">${d.date}</div><div style="font-family:var(--mono);font-size:8px;color:var(--t3);margin-top:2px">${d.reason}</div></div>
-<span style="font-family:var(--mono);font-size:12px;color:${d.prob>=65?'var(--green)':d.prob>=45?'var(--amber)':'var(--red)'};font-weight:500">${d.prob}%</span>
-      </div>`).join('');
-    this._dates=dates;
-  },
-
   _renderResonance(){
     const el=document.getElementById('intel-resonance');if(!el)return;
     const m=ENG.momentum();const cff=ENG.st.cff;
