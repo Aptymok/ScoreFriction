@@ -1,0 +1,1806 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>S[SYSTEM](SCORE).FRICTION · MUSICSCORE v2.1 PRODUCTION</title>
+<script src="https://cdn.jsdelivr.net/npm/tone@14/build/Tone.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500;600&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#060504;--bg1:#0e0c0a;--bg2:#161412;--bg3:#1f1d1a;--bg4:#272522;--bg5:#2f2d29;
+  --t1:#ede9d8;--t2:#ada99a;--t3:#6e6b62;--t4:#3e3c38;
+  --bdr:#252320;--bdr2:#302e2a;
+  --oro:#C8A951;--oro2:#9a7e38;--neon:#D8F000;
+  --verde:#1a9068;--rojo:#b83838;--azul:#2a6898;--warn:#c49520;--purple:#7c4f8e;
+  --mono:'IBM Plex Mono',monospace;--sans:'IBM Plex Sans',system-ui,sans-serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);}
+body{color:var(--t1);font-family:var(--sans);font-size:12px;line-height:1.4;}
+button{cursor:pointer;}
+input[type=range]{cursor:ew-resize;}
+
+/* ─── SPLASH ─────────────────────────────── */
+#splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:9999;transition:opacity .5s;}
+#splash.gone{opacity:0;pointer-events:none;}
+.sp-pulse{width:5px;height:5px;border-radius:50%;background:var(--oro);animation:spulse 1.6s infinite;margin-bottom:2rem;}
+@keyframes spulse{0%,100%{opacity:.15;transform:scale(1);}50%{opacity:1;transform:scale(2.2);}}
+.sp-label{font-family:var(--mono);font-size:9px;color:var(--t4);letter-spacing:.35em;text-transform:uppercase;margin-bottom:1.8rem;}
+.sp-title{font-family:var(--mono);font-size:clamp(26px,3.5vw,50px);font-weight:300;line-height:1.08;text-align:center;margin-bottom:.6rem;}
+.sp-title em{color:var(--oro);font-style:normal;}
+.sp-sub{font-family:var(--mono);font-size:10px;color:var(--t3);letter-spacing:.1em;margin-bottom:3rem;text-align:center;}
+.sp-btn{background:transparent;border:1px solid var(--oro);color:var(--oro);font-family:var(--mono);font-size:11px;letter-spacing:.2em;padding:13px 38px;transition:.15s;}
+.sp-btn:hover{background:rgba(200,169,81,.1);}
+.sp-ver{position:absolute;bottom:1.6rem;font-family:var(--mono);font-size:8px;color:var(--t4);letter-spacing:.08em;}
+
+/* ─── STUDIO SHELL ───────────────────────── */
+#studio{display:none;flex-direction:column;width:100%;height:100vh;}
+
+/* ─── HEADER ─────────────────────────────── */
+.hdr{height:46px;display:flex;align-items:stretch;background:var(--bg1);border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.hdr-brand{font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--oro);padding:0 18px;border-right:1px solid var(--bdr);display:flex;align-items:center;white-space:nowrap;min-width:210px;}
+.hdr-brand span{color:var(--t4);}
+.hdr-kpis{display:flex;flex:1;overflow:hidden;}
+.kpi{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 14px;border-right:1px solid var(--bdr);min-width:72px;cursor:default;}
+.kpi-l{font-family:var(--mono);font-size:6.5px;color:var(--t4);letter-spacing:.12em;margin-bottom:3px;}
+.kpi-v{font-family:var(--mono);font-size:13px;font-weight:500;}
+.kpi-v.al{color:var(--rojo);} .kpi-v.wa{color:var(--warn);} .kpi-v.ok{color:var(--verde);} .kpi-v.nu{color:var(--t2);}
+.kpi-trend{font-family:var(--mono);font-size:8px;margin-top:1px;}
+.kpi-trend.up{color:var(--verde);} .kpi-trend.dn{color:var(--rojo);} .kpi-trend.fl{color:var(--t4);}
+
+.hdr-transport{display:flex;align-items:center;gap:8px;padding:0 16px;border-right:1px solid var(--bdr);}
+.t-btn{background:transparent;border:none;font-size:15px;color:var(--t2);padding:6px 8px;border-radius:2px;transition:.1s;}
+.t-btn:hover{background:var(--bg3);color:var(--t1);}
+.t-btn.active{color:var(--neon);}
+.bpm-drag{font-family:var(--mono);font-size:17px;font-weight:500;color:var(--t1);cursor:ew-resize;user-select:none;min-width:46px;text-align:center;}
+.bpm-lbl{font-family:var(--mono);font-size:6.5px;color:var(--t4);letter-spacing:.1em;text-align:center;}
+
+.hdr-genres{display:flex;align-items:center;gap:4px;padding:0 14px;border-right:1px solid var(--bdr);}
+.g-btn{background:transparent;border:1px solid var(--bdr2);color:var(--t3);font-family:var(--mono);font-size:8px;padding:4px 8px;transition:.1s;letter-spacing:.06em;}
+.g-btn:hover{border-color:var(--t3);color:var(--t2);}
+.g-btn.active{border-color:var(--oro);color:var(--oro);background:rgba(200,169,81,.06);}
+
+.hdr-right{margin-left:auto;display:flex;align-items:center;gap:10px;padding:0 16px;}
+.hdr-icon-btn{background:transparent;border:1px solid var(--bdr2);color:var(--t3);font-family:var(--mono);font-size:8px;padding:5px 10px;transition:.1s;letter-spacing:.1em;}
+.hdr-icon-btn:hover{border-color:var(--t2);color:var(--t1);}
+.hdr-icon-btn.danger{border-color:var(--rojo);color:var(--rojo);}
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--t4);flex-shrink:0;}
+.live-dot.on{background:var(--neon);animation:livepulse 1s infinite;}
+@keyframes livepulse{0%,100%{opacity:.35;}50%{opacity:1;}}
+.status-lbl{font-family:var(--mono);font-size:8px;color:var(--t4);letter-spacing:.06em;}
+
+/* ─── WAVEFORM BAR ───────────────────────── */
+.wfbar{height:60px;background:var(--bg1);border-bottom:1px solid var(--bdr);position:relative;flex-shrink:0;overflow:hidden;}
+.wfbar canvas{width:100%;height:100%;}
+.wf-overlay{position:absolute;inset:0;pointer-events:none;display:flex;align-items:center;justify-content:space-between;padding:0 14px;}
+.wf-lbl{font-family:var(--mono);font-size:7px;color:var(--t4);letter-spacing:.1em;}
+.wf-info{font-family:var(--mono);font-size:9px;color:var(--t3);}
+
+/* ─── MAIN BODY ──────────────────────────── */
+.main{display:flex;flex:1;overflow:hidden;min-height:0;}
+
+/* ─── LEFT PANEL: MIHM ───────────────────── */
+.lp{width:216px;flex-shrink:0;background:var(--bg1);border-right:1px solid var(--bdr);display:flex;flex-direction:column;overflow-y:auto;}
+.section{border-bottom:1px solid var(--bdr);padding:12px 14px;}
+.sec-title{font-family:var(--mono);font-size:6.5px;color:var(--t4);letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.sec-title-badge{font-family:var(--mono);font-size:7px;color:var(--t4);background:var(--bg3);padding:1px 5px;border-radius:1px;}
+
+.meter{margin-bottom:9px;}
+.meter-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px;}
+.meter-lbl{font-family:var(--mono);font-size:7.5px;color:var(--t3);}
+.meter-val{font-family:var(--mono);font-size:10px;font-weight:500;}
+.meter-track{height:2.5px;background:var(--bg4);border-radius:1px;overflow:hidden;}
+.meter-fill{height:100%;border-radius:1px;transition:width .35s ease;}
+.meter-delta{font-family:var(--mono);font-size:7px;margin-left:4px;}
+
+.cost-big{font-family:var(--mono);font-size:26px;font-weight:300;letter-spacing:-.02em;margin-bottom:2px;}
+.cost-sub{font-family:var(--mono);font-size:7px;color:var(--t4);letter-spacing:.1em;}
+.irc-wrap{margin-top:8px;}
+.irc-bar{height:3px;background:var(--bg4);border-radius:1px;overflow:hidden;margin-top:4px;}
+.irc-fill{height:100%;background:var(--azul);transition:width .5s;}
+.irc-label{font-family:var(--mono);font-size:7px;color:var(--t4);display:flex;justify-content:space-between;}
+
+.pid-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-top:4px;}
+.pid-cell{background:var(--bg2);padding:5px;text-align:center;border:1px solid var(--bdr);}
+.pid-v{font-family:var(--mono);font-size:10px;color:var(--t2);}
+.pid-v.editable{cursor:ew-resize;color:var(--oro);}
+.pid-l{font-family:var(--mono);font-size:6px;color:var(--t4);margin-top:2px;letter-spacing:.08em;}
+
+.interv-box{background:var(--bg2);border-left:2px solid var(--warn);padding:8px 9px;font-family:var(--mono);font-size:7.5px;color:var(--t2);line-height:1.6;margin-top:6px;}
+.interv-box.critical{border-color:var(--rojo);}
+.interv-box.ok{border-color:var(--verde);}
+
+.mini-chart{background:var(--bg);border:1px solid var(--bdr);margin-top:6px;overflow:hidden;}
+.mini-chart canvas{display:block;width:100%;}
+
+.lp-btn{width:100%;background:transparent;border:1px solid var(--bdr2);color:var(--t3);font-family:var(--mono);font-size:8px;padding:7px;transition:.15s;letter-spacing:.1em;text-transform:uppercase;margin-top:6px;}
+.lp-btn:hover{border-color:var(--oro);color:var(--oro);background:rgba(200,169,81,.04);}
+.lp-btn.active{border-color:var(--neon);color:var(--neon);background:rgba(216,240,0,.04);}
+
+/* ─── CENTER: DAW ────────────────────────── */
+.center{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+
+.mixer-zone{background:var(--bg1);border-bottom:1px solid var(--bdr);padding:10px 14px 0;flex-shrink:0;}
+.mix-title{font-family:var(--mono);font-size:6.5px;color:var(--t4);letter-spacing:.15em;margin-bottom:10px;}
+.channels{display:flex;gap:7px;align-items:flex-end;}
+.channel{display:flex;flex-direction:column;align-items:center;width:54px;}
+.vu-wrap{width:7px;height:68px;background:var(--bg3);border-radius:1px;overflow:hidden;display:flex;flex-direction:column-reverse;margin-bottom:7px;}
+.vu-fill{width:100%;border-radius:1px;transition:height .05s;}
+.fader-wrap{height:88px;display:flex;align-items:center;justify-content:center;}
+.ch-fader{-webkit-appearance:none;appearance:none;writing-mode:vertical-lr;direction:rtl;width:88px;height:5px;background:transparent;}
+.ch-fader::-webkit-slider-runnable-track{height:88px;width:3px;background:var(--bg4);border-radius:1px;}
+.ch-fader::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:7px;background:var(--t2);border-radius:1px;margin-left:-5.5px;cursor:pointer;transition:.1s;}
+.ch-fader::-webkit-slider-thumb:hover{background:var(--t1);}
+.ch-btns{display:flex;gap:3px;margin-bottom:4px;}
+.ch-btn{background:var(--bg3);border:1px solid var(--bdr);color:var(--t4);font-family:var(--mono);font-size:7px;padding:2px 4px;border-radius:1px;transition:.1s;}
+.ch-btn:hover{color:var(--t2);border-color:var(--t3);}
+.ch-btn.muted{background:rgba(184,56,56,.15);border-color:var(--rojo);color:var(--rojo);}
+.ch-btn.soloed{background:rgba(200,169,81,.15);border-color:var(--oro);color:var(--oro);}
+.ch-lbl{font-family:var(--mono);font-size:6.5px;letter-spacing:.06em;margin-top:3px;}
+.ch-db{font-family:var(--mono);font-size:7px;color:var(--t4);margin-top:1px;}
+
+.seq-zone{flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:0;}
+.seq-header{height:30px;display:flex;align-items:stretch;background:var(--bg1);border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.seq-header-pad{width:76px;border-right:1px solid var(--bdr);flex-shrink:0;display:flex;align-items:center;padding:0 10px;}
+.seq-header-pad span{font-family:var(--mono);font-size:6.5px;color:var(--t4);letter-spacing:.1em;}
+.step-nums{display:flex;flex:1;align-items:center;padding:0 4px;}
+.snum{width:26px;text-align:center;font-family:var(--mono);font-size:7px;color:var(--t4);flex-shrink:0;}
+.snum.beat{color:var(--t3);} .snum.act{color:var(--oro);}
+.seq-bar-lbl{font-family:var(--mono);font-size:7.5px;color:var(--t4);display:flex;align-items:center;padding:0 12px;flex-shrink:0;letter-spacing:.06em;}
+
+.pattern-body{flex:1;overflow-y:auto;}
+.pat-row{display:flex;align-items:stretch;height:36px;border-bottom:1px solid var(--bdr);}
+.pat-row:last-child{border-bottom:none;}
+.pat-row-lbl{width:76px;flex-shrink:0;border-right:1px solid var(--bdr);display:flex;align-items:center;padding:0 8px;gap:6px;font-family:var(--mono);font-size:7.5px;color:var(--t3);letter-spacing:.06em;}
+.pat-col{width:4px;height:14px;border-radius:1px;flex-shrink:0;}
+.pat-steps{display:flex;align-items:center;gap:3px;padding:0 8px;flex:1;}
+.step{width:24px;height:22px;background:var(--bg2);border:1px solid var(--bdr);border-radius:2px;cursor:pointer;transition:.07s;flex-shrink:0;position:relative;overflow:hidden;}
+.step:hover{border-color:var(--t3);}
+.step.on{background:var(--bg4);border-color:var(--t4);}
+.step.beat0{background:var(--bg3);}
+.step.playing{background:var(--neon)!important;border-color:var(--neon)!important;}
+.step .vel{position:absolute;bottom:0;left:0;right:0;border-radius:0 0 1px 1px;transition:height .1s;}
+/* channel colors */
+[data-ch=kick] .step.on .vel{background:rgba(200,169,81,.6);}
+[data-ch=snare] .step.on .vel{background:rgba(216,240,0,.3);}
+[data-ch=hihat] .step.on .vel{background:rgba(42,104,152,.6);}
+[data-ch=bass] .step.on .vel{background:rgba(26,144,104,.5);}
+[data-ch=lead] .step.on .vel{background:rgba(200,169,81,.4);}
+[data-ch=pad] .step.on .vel{background:rgba(124,79,142,.5);}
+
+/* ─── RIGHT PANEL: ANALYTICS ─────────────── */
+.rp{width:280px;flex-shrink:0;background:var(--bg1);border-left:1px solid var(--bdr);display:flex;flex-direction:column;overflow:hidden;}
+.rp-tabs{display:flex;border-bottom:1px solid var(--bdr);flex-shrink:0;}
+.rp-tab{flex:1;background:transparent;border:none;color:var(--t4);font-family:var(--mono);font-size:7.5px;padding:9px 4px;letter-spacing:.06em;transition:.1s;border-bottom:2px solid transparent;}
+.rp-tab:hover{color:var(--t2);}
+.rp-tab.active{color:var(--oro);border-bottom-color:var(--oro);}
+.rp-panel{display:none;flex:1;overflow-y:auto;padding:12px;}
+.rp-panel.active{display:block;}
+
+.chart-container{background:var(--bg);border:1px solid var(--bdr);margin-bottom:10px;padding:6px;}
+.chart-title{font-family:var(--mono);font-size:6.5px;color:var(--t4);letter-spacing:.12em;margin-bottom:6px;}
+.chart-container canvas{display:block;width:100%;}
+
+.log-entry{font-family:var(--mono);font-size:8px;color:var(--t3);padding:4px 0;border-bottom:1px solid var(--bdr);line-height:1.5;}
+.log-entry .ts{color:var(--t4);font-size:7px;}
+.log-entry .val{color:var(--oro);}
+.log-entry.learn{color:var(--azul);}
+.log-entry.improve{color:var(--verde);}
+.log-entry.degrade{color:var(--rojo);}
+
+.scrape-item{background:var(--bg2);border:1px solid var(--bdr);border-left:2px solid var(--azul);padding:8px 10px;margin-bottom:8px;}
+.scrape-item-title{font-family:var(--mono);font-size:8.5px;color:var(--t1);margin-bottom:4px;}
+.scrape-item-lyrics{font-family:var(--mono);font-size:7.5px;color:var(--t3);line-height:1.6;border-top:1px solid var(--bdr);padding-top:4px;margin-top:4px;}
+.scrape-keyword{display:inline-block;background:var(--bg3);border:1px solid var(--bdr);font-family:var(--mono);font-size:7px;color:var(--t2);padding:2px 6px;margin:2px;border-radius:1px;}
+.scrape-keyword.hot{border-color:var(--oro);color:var(--oro);}
+
+.upload-zone{border:1px dashed var(--bdr2);padding:24px;text-align:center;cursor:pointer;transition:.15s;margin-bottom:12px;}
+.upload-zone:hover{border-color:var(--oro);}
+.upload-zone.dragging{border-color:var(--neon);background:rgba(216,240,0,.03);}
+.upload-lbl{font-family:var(--mono);font-size:9px;color:var(--t3);margin-bottom:4px;}
+.upload-sub{font-family:var(--mono);font-size:7.5px;color:var(--t4);}
+.upload-result{background:var(--bg2);border:1px solid var(--bdr);padding:10px;font-family:var(--mono);font-size:8px;line-height:1.8;}
+.upload-result .feat-key{color:var(--t3);}
+.upload-result .feat-val{color:var(--oro);}
+
+/* ─── STATUS BAR ─────────────────────────── */
+.statusbar{height:24px;display:flex;align-items:center;padding:0 14px;background:var(--bg1);border-top:1px solid var(--bdr);flex-shrink:0;gap:18px;}
+.sb{font-family:var(--mono);font-size:7.5px;color:var(--t4);letter-spacing:.05em;}
+.sb span{color:var(--t2);}
+.sb-r{margin-left:auto;display:flex;gap:18px;}
+
+/* ─── MODALS ─────────────────────────────── */
+.modal-bg{position:fixed;inset:0;background:rgba(6,5,4,.92);display:none;align-items:center;justify-content:center;z-index:800;}
+.modal-bg.open{display:flex;}
+.modal{background:var(--bg1);border:1px solid var(--bdr);width:min(540px,96vw);padding:28px;position:relative;max-height:90vh;overflow-y:auto;}
+.modal-title{font-family:var(--mono);font-size:14px;font-weight:500;color:var(--oro);margin-bottom:4px;}
+.modal-sub{font-family:var(--mono);font-size:8px;color:var(--t3);letter-spacing:.08em;margin-bottom:22px;}
+.modal-close{position:absolute;top:14px;right:14px;background:none;border:none;color:var(--t4);font-size:16px;padding:4px;transition:.1s;}
+.modal-close:hover{color:var(--t1);}
+.form-row{margin-bottom:16px;}
+.form-lbl{font-family:var(--mono);font-size:8px;color:var(--t2);display:block;margin-bottom:5px;letter-spacing:.05em;}
+.form-lbl em{color:var(--oro);font-style:normal;}
+.form-input,.form-select,.form-textarea{width:100%;background:var(--bg);border:1px solid var(--bdr2);color:var(--t1);font-family:var(--mono);font-size:10px;padding:8px 11px;outline:none;transition:.15s;}
+.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--oro);}
+.form-select option{background:var(--bg1);}
+.form-textarea{resize:vertical;min-height:110px;font-size:9px;}
+.modal-actions{display:flex;justify-content:space-between;gap:10px;margin-top:22px;}
+.modal-btn{background:transparent;border:1px solid var(--bdr2);color:var(--t2);font-family:var(--mono);font-size:8.5px;padding:8px 18px;transition:.15s;letter-spacing:.1em;}
+.modal-btn:hover{border-color:var(--t2);}
+.modal-btn.primary{border-color:var(--oro);color:var(--oro);}
+.modal-btn.primary:hover{background:rgba(200,169,81,.08);}
+.modal-btn.danger{border-color:var(--rojo);color:var(--rojo);}
+
+.progress-bar-wrap{height:2px;background:var(--bg3);margin-bottom:20px;}
+.progress-bar-fill{height:100%;background:var(--oro);transition:width .3s;}
+
+/* ─── NOTIFICATION ───────────────────────── */
+.notif{position:fixed;bottom:36px;right:18px;background:var(--bg2);border:1px solid var(--bdr);border-left:2px solid var(--oro);font-family:var(--mono);font-size:8.5px;color:var(--t2);padding:9px 14px;z-index:1000;transition:opacity .3s,transform .3s;max-width:310px;line-height:1.6;}
+.notif.hide{opacity:0;transform:translateY(6px);}
+.notif.ok{border-left-color:var(--verde);}
+.notif.err{border-left-color:var(--rojo);}
+
+/* ─── LEARNING REWARD RING ───────────────── */
+.reward-display{display:flex;align-items:center;gap:10px;margin-top:6px;}
+.reward-ring{width:44px;height:44px;flex-shrink:0;}
+.reward-ring svg{width:44px;height:44px;}
+.reward-ring-val{font-family:var(--mono);font-size:10px;font-weight:500;}
+.reward-ring-lbl{font-family:var(--mono);font-size:7px;color:var(--t4);margin-top:2px;}
+
+/* scrollbars */
+::-webkit-scrollbar{width:3px;height:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--bg4);}
+::-webkit-scrollbar-thumb:hover{background:var(--t4);}
+</style>
+</head>
+<body>
+
+<!-- ═══════ SPLASH ═══════ -->
+<div id="splash">
+  <div class="sp-pulse"></div>
+  <div class="sp-label">System Friction · Nodo AGS · v2.1 Production</div>
+  <h1 class="sp-title">MUSIC<em>SCORE</em><br>PRODUCTION</h1>
+  <p class="sp-sub">Motor cognitivo emergente · MIHM v3.2 · PID adaptativo · Auto-aprendizaje</p>
+  <button class="sp-btn" id="splashBtn">◼ INICIAR SISTEMA</button>
+  <div class="sp-ver">Groq · llama-3.3-70b-versatile · Tone.js 14 · Web Audio API · localStorage persistence</div>
+</div>
+
+<!-- ═══════ STUDIO ═══════ -->
+<div id="studio">
+
+  <!-- HEADER -->
+  <header class="hdr">
+    <div class="hdr-brand">S[SYSTEM]<span>(</span>SCORE<span>)</span>.FRICTION</div>
+    <div class="hdr-kpis">
+      <div class="kpi"><div class="kpi-l">IHG</div><div class="kpi-v nu" id="h-ihg">—</div><div class="kpi-trend fl" id="h-ihg-t">—</div></div>
+      <div class="kpi"><div class="kpi-l">NTI</div><div class="kpi-v nu" id="h-nti">—</div><div class="kpi-trend fl" id="h-nti-t">—</div></div>
+      <div class="kpi"><div class="kpi-l">R</div><div class="kpi-v nu" id="h-r">—</div><div class="kpi-trend fl" id="h-r-t">—</div></div>
+      <div class="kpi"><div class="kpi-l">CFF</div><div class="kpi-v nu" id="h-cff">—</div><div class="kpi-trend fl" id="h-cff-t">—</div></div>
+      <div class="kpi"><div class="kpi-l">J</div><div class="kpi-v nu" id="h-j">—</div><div class="kpi-trend fl" id="h-j-t">—</div></div>
+      <div class="kpi"><div class="kpi-l">IRC</div><div class="kpi-v nu" id="h-irc">—</div><div class="kpi-trend fl" id="h-irc-t">—</div></div>
+    </div>
+    <div class="hdr-transport">
+      <button class="t-btn" id="btnPlay" onclick="togglePlay()">▶</button>
+      <button class="t-btn" onclick="stopEngine()">■</button>
+      <div>
+        <div class="bpm-drag" id="bpmDisp">95</div>
+        <div class="bpm-lbl">BPM</div>
+      </div>
+    </div>
+    <div class="hdr-genres">
+      <button class="g-btn active" data-g="reggaeton" onclick="setGenre('reggaeton',this)">REG</button>
+      <button class="g-btn" data-g="trap" onclick="setGenre('trap',this)">TRAP</button>
+      <button class="g-btn" data-g="pop" onclick="setGenre('pop',this)">POP</button>
+      <button class="g-btn" data-g="hiphop" onclick="setGenre('hiphop',this)">HIP</button>
+      <button class="g-btn" data-g="latin" onclick="setGenre('latin',this)">LAT</button>
+    </div>
+    <div class="hdr-right">
+      <button class="hdr-icon-btn" onclick="openModal('auditModal')">⚙ AUDITORÍA</button>
+      <button class="hdr-icon-btn" onclick="openModal('settingsModal')">⚙ CONFIG</button>
+      <button class="hdr-icon-btn" onclick="callAutopoietic()">⟳ AUTOPOIÉTICO</button>
+      <div class="live-dot" id="liveDot"></div>
+      <span class="status-lbl" id="statusLbl">STANDBY</span>
+    </div>
+  </header>
+
+  <!-- WAVEFORM BAR -->
+  <div class="wfbar"><canvas id="wfCanvas"></canvas>
+    <div class="wf-overlay">
+      <span class="wf-lbl">FORMA DE ONDA · MÁSTER · EMERGENTE DESDE MIHM</span>
+      <span class="wf-info" id="wfInfo">—</span>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- LEFT: MIHM PANEL -->
+    <aside class="lp">
+      <div class="section">
+        <div class="sec-title">VECTOR DE ESTADO · MIHM v3.2 <span class="sec-title-badge" id="lp-bar-count">BAR 0</span></div>
+        <div class="meter" id="m-ihg-wrap">
+          <div class="meter-row"><span class="meter-lbl">IHG · Hegemonía</span><span class="meter-val" id="m-ihg">-0.620</span></div>
+          <div class="meter-track"><div class="meter-fill" id="mf-ihg" style="width:19%"></div></div>
+        </div>
+        <div class="meter">
+          <div class="meter-row"><span class="meter-lbl">NTI · Coherencia inst.</span><span class="meter-val" id="m-nti">0.351</span></div>
+          <div class="meter-track"><div class="meter-fill" id="mf-nti" style="width:35%;background:var(--warn)"></div></div>
+        </div>
+        <div class="meter">
+          <div class="meter-row"><span class="meter-lbl">R · Resistencia</span><span class="meter-val" id="m-r">0.450</span></div>
+          <div class="meter-track"><div class="meter-fill" id="mf-r" style="width:45%;background:var(--warn)"></div></div>
+        </div>
+        <div class="meter">
+          <div class="meter-row"><span class="meter-lbl">CFF · Campo frec.</span><span class="meter-val" id="m-cff">0.000</span></div>
+          <div class="meter-track"><div class="meter-fill" id="mf-cff" style="width:50%;background:var(--azul)"></div></div>
+        </div>
+        <div class="meter">
+          <div class="meter-row"><span class="meter-lbl">ML Success</span><span class="meter-val" id="m-ml">0.500</span></div>
+          <div class="meter-track"><div class="meter-fill" id="mf-ml" style="width:50%;background:var(--purple)"></div></div>
+        </div>
+        <div class="mini-chart"><canvas id="mihmChart" height="50"></canvas></div>
+      </div>
+
+      <div class="section">
+        <div class="sec-title">FUNCIÓN DE COSTO · J</div>
+        <div class="cost-big" id="costJ">1.240</div>
+        <div class="cost-sub">J = Σwᵢ·errores²  objetivo → 0</div>
+        <div class="irc-wrap">
+          <div class="irc-label"><span>IRC</span><span id="ircVal">0.380</span></div>
+          <div class="irc-bar"><div class="irc-fill" id="ircFill" style="width:38%"></div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="sec-title">CONTROLADOR PID</div>
+        <div class="pid-grid">
+          <div class="pid-cell"><div class="pid-v editable" id="kpV" title="Arrastra para cambiar Kp">4.20</div><div class="pid-l">Kp</div></div>
+          <div class="pid-cell"><div class="pid-v editable" id="kiV" title="Arrastra para cambiar Ki">0.35</div><div class="pid-l">Ki</div></div>
+          <div class="pid-cell"><div class="pid-v editable" id="kdV" title="Arrastra para cambiar Kd">1.30</div><div class="pid-l">Kd</div></div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="sec-title">APRENDIZAJE · RECOMPENSA</div>
+        <div class="reward-display">
+          <div class="reward-ring">
+            <svg viewBox="0 0 44 44"><circle cx="22" cy="22" r="18" fill="none" stroke="var(--bg3)" stroke-width="3"/><circle id="rewardRing" cx="22" cy="22" r="18" fill="none" stroke="var(--verde)" stroke-width="3" stroke-dasharray="113" stroke-dashoffset="56" transform="rotate(-90 22 22)" style="transition:stroke-dashoffset .5s,stroke .5s"/></svg>
+          </div>
+          <div><div class="reward-ring-val" id="rewardVal">0.50</div><div class="reward-ring-lbl">REWARD ACTUAL</div><div style="font-family:var(--mono);font-size:7px;color:var(--t4);margin-top:3px" id="rewardTrend">evolución →</div></div>
+        </div>
+        <div class="mini-chart"><canvas id="rewardChart" height="40"></canvas></div>
+      </div>
+
+      <div class="section" style="flex:1">
+        <div class="sec-title">DIAGNÓSTICO</div>
+        <div class="interv-box" id="intervBox">Sistema en espera de producción.</div>
+        <button class="lp-btn" onclick="callProposeDates()">PROPONER FECHAS LANZAMIENTO</button>
+        <button class="lp-btn" id="learnBtn" onclick="forceSelfLearn()">CICLO DE APRENDIZAJE</button>
+        <div id="proposedDates" style="margin-top:6px;display:none"></div>
+      </div>
+    </aside>
+
+    <!-- CENTER: DAW -->
+    <div class="center">
+      <div class="mixer-zone">
+        <div class="mix-title">MIXER · 6 STEMS · PARÁMETROS EMERGENTES DEL MIHM</div>
+        <div class="channels" id="channelsEl"></div>
+      </div>
+      <div class="seq-zone">
+        <div class="seq-header">
+          <div class="seq-header-pad"><span>STEP SEQ · 16</span></div>
+          <div class="step-nums" id="stepNums"></div>
+          <div class="seq-bar-lbl" id="barLbl">BAR 0</div>
+        </div>
+        <div class="pattern-body" id="patternBody"></div>
+      </div>
+    </div>
+
+    <!-- RIGHT: ANALYTICS + LEARNING + SCRAPING + UPLOAD -->
+    <aside class="rp">
+      <div class="rp-tabs">
+        <button class="rp-tab active" onclick="switchTab('analytics',this)">ANÁLISIS</button>
+        <button class="rp-tab" onclick="switchTab('learning',this)">APRENDIZAJE</button>
+        <button class="rp-tab" onclick="switchTab('scraping',this)">SCRAPING</button>
+        <button class="rp-tab" onclick="switchTab('upload',this)">UPLOAD</button>
+      </div>
+      <div class="rp-panel active" id="tab-analytics">
+        <div class="chart-container"><div class="chart-title">IHG — HISTÓRICO</div><canvas id="ihgChart" height="60"></canvas></div>
+        <div class="chart-container"><div class="chart-title">NTI / R — HISTÓRICO</div><canvas id="ntiChart" height="60"></canvas></div>
+        <div class="chart-container"><div class="chart-title">COSTO J — EVOLUCIÓN</div><canvas id="jChart" height="60"></canvas></div>
+        <div style="font-family:var(--mono);font-size:6.5px;color:var(--t4);margin-bottom:8px;letter-spacing:.12em">PARÁMETROS ACTUALES DE AUDIO</div>
+        <div id="audioParamsDisplay"></div>
+      </div>
+      <div class="rp-panel" id="tab-learning">
+        <div style="font-family:var(--mono);font-size:6.5px;color:var(--t4);letter-spacing:.12em;margin-bottom:8px">LOG DE AUTO-APRENDIZAJE</div>
+        <div id="learningLog"></div>
+      </div>
+      <div class="rp-panel" id="tab-scraping">
+        <div style="font-family:var(--mono);font-size:6.5px;color:var(--t4);letter-spacing:.12em;margin-bottom:8px">DATOS SCRAPING · GENIUS + TENDENCIAS</div>
+        <div id="scrapingDisplay"></div>
+        <button class="lp-btn" style="width:100%;margin-top:8px" onclick="fetchScraping()">⟳ ACTUALIZAR SCRAPING</button>
+      </div>
+      <div class="rp-panel" id="tab-upload">
+        <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+          <input type="file" id="fileInput" accept="audio/*" style="display:none" onchange="handleUpload(event)">
+          <div class="upload-lbl">SUBIR AUDIO PARA ANÁLISIS</div>
+          <div class="upload-sub">.wav · .mp3 · .flac · .ogg</div>
+        </div>
+        <div id="uploadProgress" style="display:none">
+          <div class="progress-bar-wrap"><div class="progress-bar-fill" id="uploadPBar" style="width:0%"></div></div>
+          <div style="font-family:var(--mono);font-size:8px;color:var(--t3)" id="uploadStatus">Analizando...</div>
+        </div>
+        <div id="uploadResult"></div>
+        <div style="font-family:var(--mono);font-size:6.5px;color:var(--t4);letter-spacing:.12em;margin-top:12px;margin-bottom:6px">TRACKS ANALIZADOS</div>
+        <div id="tracksHistory"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- STATUS BAR -->
+  <div class="statusbar">
+    <div class="sb">TONO: <span id="sb-key">—</span></div>
+    <div class="sb">MODO: <span id="sb-mode">—</span></div>
+    <div class="sb">GÉNERO: <span id="sb-genre">—</span></div>
+    <div class="sb">DENSIDAD: <span id="sb-density">—</span></div>
+    <div class="sb">TENSIÓN: <span id="sb-tension">—</span></div>
+    <div class="sb">EVOLUCIÓN c/<span id="sb-evo">4</span> bars</div>
+    <div class="sb-r">
+      <div class="sb">API: <span id="sb-api">offline</span></div>
+      <div class="sb">BARS: <span id="sb-bars">0</span></div>
+      <div class="sb">v2.1 · MUSICSCORE PRODUCTION · System Friction</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════ MODALS ═══════ -->
+
+<!-- AUDIT MODAL -->
+<div class="modal-bg" id="auditModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('auditModal')">✕</button>
+    <div class="modal-title">S.F.SCORE.KICKOFF</div>
+    <div class="modal-sub">AUDITORÍA RÁPIDA · CALIBRA EL ESTADO MIHM INICIAL</div>
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" id="auditPBar" style="width:33%"></div></div>
+    <div id="audit-s1">
+      <div class="form-row"><label class="form-lbl"><em>[01]</em> Nombre del proyecto / release más urgente</label><input type="text" class="form-input" id="aq1" placeholder="ej: EP debut, Album principal…" autocomplete="off"></div>
+    </div>
+    <div id="audit-s2" style="display:none">
+      <div class="form-row"><label class="form-lbl"><em>[02]</em> Personas que toman decisiones en la productora</label><select class="form-select" id="aq2"><option value="">— Seleccionar —</option><option value="1">Solo yo (1 persona)</option><option value="2-4">Equipo pequeño (2–4)</option><option value="5-10">Equipo mediano (5–10)</option><option value="10+">Organización grande (10+)</option></select></div>
+    </div>
+    <div id="audit-s3" style="display:none">
+      <div class="form-row"><label class="form-lbl"><em>[03]</em> ¿Hay lanzamiento urgente sin fecha confirmada?</label><select class="form-select" id="aq3"><option value="">— Seleccionar —</option><option value="critico">Sí, crítico (LDI > 30 días sin resolver)</option><option value="medio">Sí, gestionándose</option><option value="no">No, todo tiene fecha</option></select></div>
+      <div class="form-row"><label class="form-lbl"><em>[04]</em> Género principal de producción</label><select class="form-select" id="aq4"><option value="reggaeton">Reggaeton / Urbano</option><option value="trap">Trap / Dark</option><option value="pop">Pop / Comercial</option><option value="hiphop">Hip-Hop / Boom Bap</option><option value="latin">Latin / Cumbia</option></select></div>
+    </div>
+    <div class="modal-actions">
+      <button class="modal-btn" id="auditPrev" onclick="auditPrev()" style="opacity:.3">← ANTERIOR</button>
+      <button class="modal-btn primary" id="auditNext" onclick="auditNext()">SIGUIENTE →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-bg" id="settingsModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('settingsModal')">✕</button>
+    <div class="modal-title">CONFIGURACIÓN · SYSTEM FRICTION</div>
+    <div class="modal-sub">IMPORTA UN JSON O CONFIGURA MANUALMENTE · SE PERSISTE EN localStorage</div>
+    <div class="form-row"><label class="form-lbl">API URL (backend Flask)</label><input type="text" class="form-input" id="cfg-api" placeholder="http://localhost:5000" value="http://localhost:5000"></div>
+    <div class="form-row"><label class="form-lbl">GROQ API Key (opcional, si no tienes backend)</label><input type="text" class="form-input" id="cfg-groq" placeholder="gsk_…" type="password"></div>
+    <div class="form-row"><label class="form-lbl">Nombre del proyecto</label><input type="text" class="form-input" id="cfg-project" placeholder="Mi Proyecto"></div>
+    <div class="form-row"><label class="form-lbl">Importar / Exportar JSON de configuración</label><textarea class="form-textarea" id="cfg-json" placeholder='{"session":"…","mihm_initial":{…},"pid":{…}}'></textarea></div>
+    <div class="modal-actions">
+      <button class="modal-btn" onclick="exportConfig()">EXPORTAR JSON</button>
+      <button class="modal-btn" onclick="importConfig()">IMPORTAR JSON</button>
+      <button class="modal-btn danger" onclick="clearPersistence()">BORRAR MEMORIA</button>
+      <button class="modal-btn primary" onclick="saveSettings()">GUARDAR →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+// MUSICSCORE v2.1 PRODUCTION — S[SYSTEM](SCORE).FRICTION
+// Motor de síntesis emergente desde MIHM v3.2 + Self-Learning + API
+// ═══════════════════════════════════════════════════════════════════
+
+// ── CONFIG ───────────────────────────────────────────────────────
+let CFG = {
+  apiUrl: 'http://localhost:5000',
+  groqKey: '',
+  project: 'Sin Título',
+  evolutionRate: 4,
+  mutationProb: 0.15,
+  learningRate: 0.012
+};
+
+// ── PERSISTENCE ──────────────────────────────────────────────────
+const DB = {
+  save(key, val) { try { localStorage.setItem('sf_'+key, JSON.stringify(val)); } catch(e){} },
+  load(key, def) { try { const v = localStorage.getItem('sf_'+key); return v ? JSON.parse(v) : def; } catch(e){ return def; } },
+  del(key) { localStorage.removeItem('sf_'+key); },
+  clearAll() { Object.keys(localStorage).filter(k=>k.startsWith('sf_')).forEach(k=>localStorage.removeItem(k)); }
+};
+
+// ── MIHM ENGINE ──────────────────────────────────────────────────
+const MIHM = {
+  s: DB.load('mihm_state', { ihg:-0.620, nti:0.351, r:0.450, cff:0.000, ml_success:0.500 }),
+  pid: DB.load('mihm_pid', { kp:4.2, ki:0.35, kd:1.3 }),
+  integral: 0, prevError: 0,
+  irc: DB.load('irc', 0.38),
+  bars: DB.load('bars', 0),
+  step: 0,
+  hist: { ihg:[], nti:[], r:[], j:[], irc:[], reward:[] },
+  _prevS: null,
+  TARGET_IHG: -0.4,
+
+  costJ() {
+    return 1.0*Math.pow(this.s.ihg+0.38,2) + 0.8*Math.pow(1-this.s.nti,2) +
+           0.6*Math.pow(1-this.s.r,2) + 0.4*Math.pow(this.s.cff,2);
+  },
+
+  tick() {
+    this._prevS = {...this.s};
+    const err = this.s.ihg - this.TARGET_IHG;
+    this.integral += err * 0.05;
+    const deriv = err - this.prevError;
+    const u = -(this.pid.kp*err + this.pid.ki*this.integral + this.pid.kd*deriv);
+    this.prevError = err;
+
+    // IHG PID correction
+    this.s.ihg = Math.max(-2, Math.min(0, this.s.ihg + u * 0.018));
+    // Natural evolution
+    this.s.nti = Math.max(0, Math.min(1, this.s.nti + (Math.random()-.48)*0.009));
+    this.s.r   = Math.max(0, Math.min(1, this.s.r   + (Math.random()-.49)*0.007));
+    this.s.cff = Math.max(-1,Math.min(1, this.s.cff + ((this.s.nti+this.s.r)/2-.5)*0.045));
+    this.s.ml_success = Math.max(0,Math.min(1, this.s.ml_success + (Math.random()-.49)*0.006));
+
+    const J = this.costJ();
+    // Push history
+    const push = (arr,v,max=120)=>{ arr.push(v); if(arr.length>max) arr.shift(); };
+    push(this.hist.ihg, this.s.ihg);
+    push(this.hist.nti, this.s.nti);
+    push(this.hist.r,   this.s.r);
+    push(this.hist.j,   J);
+    push(this.hist.irc, this.irc);
+
+    // IRC update
+    if (this.hist.j.length > 15) {
+      const recent = this.hist.j.slice(-15);
+      const slope = (recent[recent.length-1] - recent[0]) / recent.length;
+      this.irc = Math.max(0, Math.min(1, 0.72*this.irc + 0.28*(-slope*20+0.5)));
+    }
+
+    this.step++;
+    // Meta-control every 80 ticks
+    if (this.step % 80 === 0) this.metaControl();
+    this.persist();
+    return u;
+  },
+
+  metaControl() {
+    if (this.irc > 0.65 && this.costJ() < 0.5) {
+      this.pid.ki = Math.max(0.1, this.pid.ki * 0.96);
+    } else if (this.irc < 0.35) {
+      this.pid.kd = Math.max(0.5, Math.min(2.5, this.pid.kd * 1.07));
+    }
+    if (this.s.cff < -0.4) this.pid.kp = Math.min(6.0, this.pid.kp * 1.04);
+  },
+
+  applyExternal(delta) {
+    Object.entries(delta).forEach(([k,v])=>{
+      if (k in this.s) this.s[k] = Math.max(-2, Math.min(1, this.s[k] + v));
+    });
+    this.persist();
+  },
+
+  applyFromAPI(apiState) {
+    if (!apiState) return;
+    ['ihg','nti','r','cff','ml_success'].forEach(k => {
+      if (k in apiState) this.s[k] = parseFloat(apiState[k]);
+    });
+    this.persist();
+  },
+
+  persist() {
+    DB.save('mihm_state', this.s);
+    DB.save('mihm_pid', this.pid);
+    DB.save('irc', this.irc);
+    DB.save('bars', this.bars);
+  },
+
+  getIntervencion() {
+    const ih = this.s.ihg;
+    if (ih < -1.2) return { msg:'🔴 CRÍTICO: Hegemonía extrema. Redistribuir decisiones inmediatamente.', cls:'critical' };
+    if (ih < -0.8) return { msg:'🟡 ALERTA: Alta concentración de poder. Revisar roles.', cls:'warn' };
+    if (ih < -0.4) return { msg:'🟠 TENSIÓN: Equilibrio inestable. Monitorear flujo.', cls:'' };
+    return { msg:'🟢 ESTABLE: Homeostasis dentro de rangos aceptables.', cls:'ok' };
+  },
+
+  getAudioParams() {
+    const s = this.s;
+    const tension = Math.abs(s.ihg);
+    const cffAbs = Math.abs(s.cff);
+    return {
+      // KICK: IHG controls pitch and decay
+      kickPitch: Math.max(30, 52 + s.ihg * 14),
+      kickDecay: 0.28 + tension * 0.18,
+      // BASS: IHG controls root offset, R controls activity
+      bassRoot: Math.max(20, 42 + s.ihg * 18),
+      bassActivity: s.r,
+      // LEAD: NTI controls coherence, ML controls brightness
+      leadCoherence: s.nti,
+      leadVelocity: Math.round(55 + s.ml_success * 35),
+      // PAD: CFF controls harmony type
+      padHarmony: s.cff,
+      padReverb: 0.2 + cffAbs * 0.4,
+      // HIHAT: R controls subdivision density
+      hihatDensity: s.r,
+      // GLOBAL: IRC controls evolution speed
+      evolutionRate: Math.max(2, Math.round(2 + this.irc * 10)),
+      // BPM: NTI and IHG influence
+      bpmMod: s.nti * 14 - tension * 6
+    };
+  }
+};
+
+// ── SELF-LEARNING ENGINE ─────────────────────────────────────────
+const LEARN = {
+  rewards: DB.load('rewards', []),
+  patternHistory: DB.load('pattern_history', []),
+  weights: DB.load('learn_weights', { nti:0.4, density:0.3, coherence:0.3 }),
+  generation: DB.load('generation', 0),
+  log: [],
+
+  computeReward(patterns, s) {
+    const kickDensity = (patterns.kick||[]).filter(x=>x).length / 16;
+    const leadDensity = (patterns.lead||[]).filter(x=>x).length / 16;
+    const rwd = this.weights.nti * s.nti +
+                this.weights.density * ((kickDensity + leadDensity) / 2) +
+                this.weights.coherence * (1 - Math.abs(s.ihg));
+    return Math.max(0, Math.min(1, rwd));
+  },
+
+  record(reward, state) {
+    this.rewards.push({ reward, ts:Date.now(), ihg:state.ihg, nti:state.nti, r:state.r });
+    if (this.rewards.length > 200) this.rewards.shift();
+    MIHM.hist.reward.push(reward);
+    if (MIHM.hist.reward.length > 120) MIHM.hist.reward.shift();
+
+    // Gradient update
+    const trend = this.getRewardTrend();
+    let msg = '';
+    if (trend < -0.02) {
+      // Reward decreasing — try shifting weights
+      this.weights.density = Math.min(0.6, this.weights.density + 0.01);
+      this.weights.nti = Math.max(0.1, this.weights.nti - 0.005);
+      MIHM.applyExternal({ nti: 0.008 }); // nudge NTI up
+      msg = `↓ Reward cayendo (${reward.toFixed(3)}) → boost NTI+density`;
+      this.addLog(msg, 'degrade');
+    } else if (trend > 0.02) {
+      // Reward increasing — reinforce current direction
+      MIHM.applyExternal({ r: 0.004, nti: 0.003 });
+      msg = `↑ Reward subiendo (${reward.toFixed(3)}) → reinforcing`;
+      this.addLog(msg, 'improve');
+    } else {
+      this.addLog(`≈ Reward estable (${reward.toFixed(3)}) · gen ${this.generation}`, 'learn');
+    }
+
+    this.generation++;
+    DB.save('rewards', this.rewards.slice(-100));
+    DB.save('learn_weights', this.weights);
+    DB.save('generation', this.generation);
+    return reward;
+  },
+
+  getRewardTrend() {
+    const rws = this.rewards.slice(-12).map(r=>r.reward);
+    if (rws.length < 4) return 0;
+    return (rws[rws.length-1] - rws[0]) / rws.length;
+  },
+
+  getCurrentReward() {
+    if (!this.rewards.length) return 0.5;
+    return this.rewards[this.rewards.length-1].reward;
+  },
+
+  addLog(msg, cls='') {
+    const ts = new Date().toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    this.log.unshift({ msg, cls, ts });
+    if (this.log.length > 60) this.log.pop();
+    renderLearningLog();
+  },
+
+  forceCycle(patterns, state) {
+    const r = this.computeReward(patterns, state);
+    this.record(r, state);
+    return r;
+  }
+};
+
+// ── GENRE PRESETS ────────────────────────────────────────────────
+const GENRES = {
+  reggaeton:{ bpm:95, mode:'Mixolydio', root:'G', rootNote:'G',
+    notes:['G2','Bb2','C3','D3','F3','G3','Bb3','C4','D4','F4'],
+    chords:[['G2','Bb2','D3'],['F2','A2','C3'],['Eb2','G2','Bb2'],['D2','F2','A2']],
+    kick:[1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0] },
+  trap:{ bpm:140, mode:'Frigio', root:'C#', rootNote:'C#',
+    notes:['C#2','E2','F#2','G#2','B2','C#3','E3','F#3','G#3','B3'],
+    chords:[['C#2','E2','G#2'],['B1','D2','F#2'],['A1','C#2','E2'],['G#1','B1','D#2']],
+    kick:[1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0], snare:[0,0,0,0,0,0,0,0,1,0,0,0,1,1,0,0], hihat:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1] },
+  pop:{ bpm:120, mode:'Jónico', root:'C', rootNote:'C',
+    notes:['C3','E3','G3','A3','C4','D4','E4','G4','A4','B4'],
+    chords:[['C3','E3','G3'],['Am2','C3','E3'],['F2','A2','C3'],['G2','B2','D3']],
+    kick:[1,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0], hihat:[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0] },
+  hiphop:{ bpm:90, mode:'Dórico', root:'F', rootNote:'F',
+    notes:['F2','Ab2','Bb2','C3','Eb3','F3','Ab3','Bb3','C4','Eb4'],
+    chords:[['F2','Ab2','C3'],['Eb2','G2','Bb2'],['Db2','F2','Ab2'],['C2','Eb2','G2']],
+    kick:[1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0], snare:[0,0,0,0,1,0,0,0,0,0,0,0,1,0,1,0], hihat:[1,0,0,1,0,0,1,0,1,0,0,1,0,0,1,0] },
+  latin:{ bpm:105, mode:'Mixolydio', root:'A', rootNote:'A',
+    notes:['A2','C3','D3','E3','G3','A3','C4','D4','E4','G4'],
+    chords:[['A2','C3','E3'],['G2','B2','D3'],['F2','A2','C3'],['E2','G#2','B2']],
+    kick:[1,0,0,0,1,0,0,0,0,0,1,0,1,0,0,0], snare:[0,0,0,0,1,0,0,1,0,0,0,0,1,0,0,0], hihat:[1,0,1,1,0,0,1,0,1,0,1,1,0,0,1,0] }
+};
+
+// ── AUDIO ENGINE ─────────────────────────────────────────────────
+let ENG = null;
+let currentGenre = DB.load('genre','reggaeton') || 'reggaeton';
+let isPlaying = false;
+let seqs = {};
+let patterns = null;
+let lastStep = -1;
+let barStep = 0;
+
+const chDefs = [
+  {id:'kick',  name:'KICK',  color:'#C8A951', db:-4 },
+  {id:'snare', name:'SNARE', color:'#D8F000', db:-10},
+  {id:'hihat', name:'HIHAT', color:'#2a6898', db:-18},
+  {id:'bass',  name:'BASS',  color:'#1a9068', db:-8 },
+  {id:'lead',  name:'LEAD',  color:'#C8A951', db:-13},
+  {id:'pad',   name:'PAD',   color:'#7c4f8e', db:-19},
+];
+const chState = {};
+chDefs.forEach(c=>{ chState[c.id]={muted:false,soloed:false,vol:c.db}; });
+
+async function initAudio() {
+  if (ENG) return;
+  await Tone.start();
+  const E = {};
+
+  E.limiter  = new Tone.Limiter(-1).toDestination();
+  E.comp     = new Tone.Compressor(-18, 4).connect(E.limiter);
+  E.master   = new Tone.Volume(0).connect(E.comp);
+  E.wform    = new Tone.Analyser('waveform', 1024);
+  E.fft      = new Tone.Analyser('fft', 64);
+  E.master.connect(E.wform);
+  E.master.connect(E.fft);
+
+  // KICK — 808 MembraneSynth — pitch driven by IHG
+  E.kV = new Tone.Volume(chDefs[0].db).connect(E.master);
+  E.kick = new Tone.MembraneSynth({ pitchDecay:0.1, octaves:8, envelope:{attack:.001,decay:.45,sustain:0,release:.1} }).connect(E.kV);
+  E.kM = new Tone.Meter(); E.kick.connect(E.kM);
+
+  // SNARE — NoiseSynth — NTI controls decay
+  E.sV = new Tone.Volume(chDefs[1].db).connect(E.master);
+  E.snare = new Tone.NoiseSynth({ noise:{type:'white'}, envelope:{attack:.001,decay:.13,sustain:0,release:.04} }).connect(E.sV);
+  E.sM = new Tone.Meter(); E.snare.connect(E.sM);
+
+  // HIHAT — MetalSynth — R controls density
+  E.hV = new Tone.Volume(chDefs[2].db).connect(E.master);
+  E.hihat = new Tone.MetalSynth({ frequency:400, envelope:{attack:.001,decay:.06,release:.01}, harmonicity:5.1, modulationIndex:32, resonance:4000, octaves:1.5 }).connect(E.hV);
+  E.hM = new Tone.Meter(); E.hihat.connect(E.hM);
+
+  // BASS — MonoSynth — root pitch from IHG
+  E.bassFilter = new Tone.Filter(200,'lowpass').connect(E.master);
+  E.bV = new Tone.Volume(chDefs[3].db).connect(E.bassFilter);
+  E.bass = new Tone.MonoSynth({ oscillator:{type:'sawtooth'}, envelope:{attack:.012,decay:.25,sustain:.75,release:.25}, filterEnvelope:{attack:.01,decay:.2,sustain:.5,release:.2,baseFrequency:65,octaves:2.5} }).connect(E.bV);
+  E.bM = new Tone.Meter(); E.bass.connect(E.bM);
+
+  // LEAD — Synth + Delay + Reverb — NTI controls coherence, CFF controls reverb
+  E.lRev = new Tone.Reverb({decay:1.4, wet:0.28}).connect(E.master);
+  E.lDel = new Tone.FeedbackDelay('8n', 0.18).connect(E.lRev);
+  E.lV   = new Tone.Volume(chDefs[4].db).connect(E.lDel);
+  E.lead = new Tone.Synth({ oscillator:{type:'triangle'}, envelope:{attack:.02,decay:.28,sustain:.35,release:.5} }).connect(E.lV);
+  E.lM = new Tone.Meter(); E.lead.connect(E.lM);
+
+  // PAD — PolySynth — CFF controls harmony
+  E.pRev = new Tone.Reverb({decay:4.0, wet:0.6}).connect(E.master);
+  E.pV   = new Tone.Volume(chDefs[5].db).connect(E.pRev);
+  E.pad  = new Tone.PolySynth(Tone.Synth,{ oscillator:{type:'sine'}, envelope:{attack:.5,decay:.8,sustain:.5,release:2.5} }).connect(E.pV);
+  E.pM = new Tone.Meter(); E.pad.connect(E.pM);
+
+  ENG = E;
+}
+
+function buildPatterns() {
+  const g = GENRES[currentGenre];
+  const ap = MIHM.getAudioParams();
+  const s = MIHM.s;
+  const tension = Math.abs(s.ihg);
+  const density = s.r;
+  const coherence = s.nti;
+
+  // Copy base
+  let kick  = [...g.kick];
+  let snare = [...g.snare];
+  let hihat = [...g.hihat];
+
+  // IHG-driven tension fills
+  if (tension > 0.8) { kick[14]=1; kick[6]=kick[6]||1; }
+  if (tension > 1.0) { kick[12]=1; snare[14]=1; }
+  if (tension > 1.4) { kick[10]=1; kick[2]=1; }
+
+  // R-driven density
+  if (density > 0.6) { hihat[1]=1; hihat[9]=1; }
+  if (density > 0.72) { hihat[3]=1; hihat[11]=1; snare[6]=snare[6]||1; }
+  if (density > 0.85) { hihat[5]=1; hihat[13]=1; }
+
+  // BASS — driven by R + IHG
+  const bn = g.notes;
+  let bass = new Array(16).fill(null);
+  bass[0]=bn[0]; bass[8]=bn[1];
+  if (density > 0.35) { bass[4]=bn[2]; bass[12]=bn[1]; }
+  if (density > 0.55) { bass[6]=bn[0]; bass[10]=bn[2]; }
+  if (density > 0.70) { bass[2]=bn[3]; bass[14]=bn[0]; }
+  if (density > 0.85) { bass[3]=bn[4%bn.length]; bass[11]=bn[3]; }
+
+  // LEAD — NTI coherence-driven motif
+  const si = Math.min(Math.floor(tension*2.5), bn.length-5);
+  const ln = bn.slice(si, si+6);
+  let lead = new Array(16).fill(null);
+  if (coherence > 0.55) {
+    lead[0]=ln[0]; lead[2]=ln[2]; lead[4]=ln[1]; lead[6]=ln[3];
+    lead[8]=ln[4]; lead[10]=ln[2]; lead[12]=ln[0];
+    if(coherence>0.72) lead[14]=ln[5]||ln[0];
+  } else if (coherence > 0.35) {
+    lead[0]=ln[0]; lead[5]=ln[2]; lead[9]=ln[1]; lead[13]=ln[3];
+  } else {
+    // Scattered — low coherence
+    [0,4,11,15].forEach((i,j)=>lead[i]=ln[j%ln.length]);
+  }
+
+  // Chord — CFF adjusts voicing
+  const chordIdx = MIHM.bars % g.chords.length;
+  let chord = [...g.chords[chordIdx]];
+  if (s.cff < -0.3) chord = chord.map(n=>n.replace(/([A-G]#?b?)(\d)/,(m,p,oct)=>p+(parseInt(oct)-1))); // lower octave = darker
+
+  // Mutate randomly based on IRC
+  if (MIHM.irc > 0.4 && Math.random() < ap.evolutionRate * 0.01) {
+    const ri = Math.floor(Math.random()*16);
+    kick[ri] = kick[ri] ? 0 : (Math.random()>.7?1:0);
+  }
+
+  return { kick, snare, hihat, bass, lead, chord };
+}
+
+function applyAudioParams() {
+  if (!ENG) return;
+  const ap = MIHM.getAudioParams();
+  const s = MIHM.s;
+  // Kick pitch from IHG
+  try { ENG.kick.set({ pitchDecay: ap.kickDecay }); } catch(e){}
+  // Bass filter from IHG tension
+  const bassFreqCut = Math.max(80, 200 - Math.abs(s.ihg)*80);
+  try { ENG.bassFilter.frequency.rampTo(bassFreqCut, 0.3); } catch(e){}
+  // Lead reverb from CFF
+  try { ENG.lRev.set({ wet: 0.2 + Math.abs(s.cff)*0.35 }); } catch(e){}
+  // Lead oscillator type from ML_success
+  const oType = s.ml_success > 0.7 ? 'square' : s.ml_success > 0.4 ? 'triangle' : 'sine';
+  try { ENG.lead.set({ oscillator:{type:oType} }); } catch(e){}
+}
+
+function startSeq() {
+  if (!ENG) return;
+  if (!patterns) patterns = buildPatterns();
+  const g = GENRES[currentGenre];
+  const ap = MIHM.getAudioParams();
+  const bpm = Math.max(65, Math.min(160, g.bpm + ap.bpmMod));
+  Tone.Transport.bpm.value = bpm;
+
+  Object.values(seqs).forEach(s=>{ try{s.dispose();}catch(e){} });
+  seqs = {};
+  barStep = 0;
+
+  seqs.kick = new Tone.Sequence((time,hit)=>{
+    if(hit && !chState.kick.muted){
+      const pitch = MIHM.getAudioParams().kickPitch;
+      ENG.kick.triggerAttackRelease(pitch+'hz','8n',time);
+    }
+    updateStep(barStep%16);
+    barStep++;
+    if(barStep%16===0) onBar();
+  }, patterns.kick, '16n');
+
+  seqs.snare = new Tone.Sequence((time,hit)=>{
+    if(hit && !chState.snare.muted){
+      const dec = 0.1 + MIHM.s.nti * 0.06;
+      ENG.snare.set({ envelope:{decay:dec} });
+      ENG.snare.triggerAttackRelease('16n',time);
+    }
+  }, patterns.snare, '16n');
+
+  seqs.hihat = new Tone.Sequence((time,hit)=>{
+    if(hit && !chState.hihat.muted) ENG.hihat.triggerAttackRelease(time);
+  }, patterns.hihat, '16n');
+
+  seqs.bass = new Tone.Sequence((time,note)=>{
+    if(note && !chState.bass.muted) ENG.bass.triggerAttackRelease(note,'8n',time);
+  }, patterns.bass, '16n');
+
+  seqs.lead = new Tone.Sequence((time,note)=>{
+    if(note && !chState.lead.muted){
+      const vel = MIHM.getAudioParams().leadVelocity / 127;
+      ENG.lead.triggerAttackRelease(note,'8n',time,vel);
+    }
+  }, patterns.lead, '16n');
+
+  seqs.pad = new Tone.Part((time,chord)=>{
+    if(!chState.pad.muted) ENG.pad.triggerAttackRelease(chord,'2n',time);
+  },[[0,patterns.chord]]);
+  seqs.pad.loop=true; seqs.pad.loopEnd='1m';
+
+  Object.values(seqs).forEach(s=>s.start(0));
+  Tone.Transport.start();
+}
+
+function onBar() {
+  MIHM.bars++;
+  MIHM.tick();
+  applyAudioParams();
+
+  // Self-learning step
+  const reward = LEARN.computeReward(patterns, MIHM.s);
+  LEARN.record(reward, MIHM.s);
+
+  // Pattern evolution
+  const ap = MIHM.getAudioParams();
+  if (MIHM.bars % ap.evolutionRate === 0) {
+    patterns = buildPatterns();
+    if(seqs.kick)  seqs.kick.events = patterns.kick;
+    if(seqs.snare) seqs.snare.events = patterns.snare;
+    if(seqs.hihat) seqs.hihat.events = patterns.hihat;
+    if(seqs.bass)  seqs.bass.events = patterns.bass;
+    if(seqs.lead)  seqs.lead.events = patterns.lead;
+    if(seqs.pad)   { seqs.pad.clear(); seqs.pad.add(0,patterns.chord); }
+    const bpm = Math.max(65,Math.min(160, GENRES[currentGenre].bpm + ap.bpmMod));
+    Tone.Transport.bpm.rampTo(bpm, 2);
+    renderPattern();
+  }
+
+  updateAllUI();
+
+  // API sync every 8 bars
+  if (MIHM.bars % 8 === 0 && CFG.apiUrl) apiSync();
+}
+
+function stopAudio() {
+  Tone.Transport.stop();
+  Object.values(seqs).forEach(s=>{ try{s.stop();s.dispose();}catch(e){} });
+  seqs={}; patterns=null; barStep=0; lastStep=-1;
+  clearStepUI();
+}
+
+// ── UI BUILDING ──────────────────────────────────────────────────
+function buildMixer() {
+  const el = document.getElementById('channelsEl');
+  el.innerHTML = '';
+  chDefs.forEach(ch=>{
+    const div = document.createElement('div');
+    div.className='channel'; div.id='ch-'+ch.id;
+    div.innerHTML=`
+      <div class="vu-wrap" style="width:7px;height:68px"><div class="vu-fill" id="vu-${ch.id}" style="background:${ch.color};height:0%"></div></div>
+      <div class="fader-wrap">
+        <input type="range" class="ch-fader" id="fdr-${ch.id}" min="-40" max="6" value="${ch.db}" step="0.5" oninput="setCHVol('${ch.id}',+this.value)" style="transform:rotate(180deg)">
+      </div>
+      <div class="ch-btns">
+        <button class="ch-btn" id="mute-${ch.id}" onclick="toggleMute('${ch.id}')">M</button>
+        <button class="ch-btn" id="solo-${ch.id}" onclick="toggleSolo('${ch.id}')">S</button>
+      </div>
+      <div class="ch-lbl" style="color:${ch.color}">${ch.name}</div>
+      <div class="ch-db" id="db-${ch.id}">${ch.db} dB</div>`;
+    el.appendChild(div);
+  });
+}
+
+function buildSeq() {
+  // Step numbers
+  const sn = document.getElementById('stepNums');
+  sn.innerHTML='';
+  for(let i=0;i<16;i++){
+    const d=document.createElement('div');
+    d.className='snum'+(i%4===0?' beat':'');
+    d.id='snum-'+i; d.textContent=i+1;
+    sn.appendChild(d);
+  }
+  // Rows
+  const rows=[
+    {id:'kick',label:'KICK',color:'#C8A951'},
+    {id:'snare',label:'SNARE',color:'#D8F000'},
+    {id:'hihat',label:'HIHAT',color:'#2a6898'},
+    {id:'bass',label:'BASS',color:'#1a9068'},
+    {id:'lead',label:'LEAD',color:'#C8A951'},
+    {id:'pad',label:'PAD',color:'#7c4f8e'},
+  ];
+  const body=document.getElementById('patternBody');
+  body.innerHTML='';
+  rows.forEach(row=>{
+    const r=document.createElement('div');
+    r.className='pat-row'; r.setAttribute('data-ch',row.id);
+    let h=`<div class="pat-row-lbl"><div class="pat-col" style="background:${row.color}"></div>${row.label}</div><div class="pat-steps" id="steps-${row.id}">`;
+    for(let i=0;i<16;i++){
+      h+=`<div class="step${i%4===0?' beat0':''}" id="step-${row.id}-${i}" onclick="toggleStep('${row.id}',${i})"><div class="vel"></div></div>`;
+    }
+    h+='</div>';
+    r.innerHTML=h;
+    body.appendChild(r);
+  });
+  renderPattern();
+}
+
+function renderPattern() {
+  if(!patterns) return;
+  const map={kick:patterns.kick,snare:patterns.snare,hihat:patterns.hihat,bass:patterns.bass,lead:patterns.lead};
+  Object.entries(map).forEach(([id,pat])=>{
+    for(let i=0;i<16;i++){
+      const el=document.getElementById('step-'+id+'-'+i);
+      if(el){
+        const on=!!pat[i];
+        el.classList.toggle('on',on);
+        const vel=el.querySelector('.vel');
+        if(vel) vel.style.height = on ? (60+Math.random()*40)+'%' : '0%';
+      }
+    }
+  });
+  // Pad beat 0
+  const p0=document.getElementById('step-pad-0');
+  if(p0){p0.classList.add('on'); const v=p0.querySelector('.vel'); if(v)v.style.height='75%';}
+}
+
+function toggleStep(ch,idx){
+  if(!patterns) patterns=buildPatterns();
+  const map={kick:'kick',snare:'snare',hihat:'hihat',bass:'bass',lead:'lead',pad:'chord'};
+  const key=map[ch];
+  if(!key||!patterns[key]) return;
+  if(Array.isArray(patterns[key])){
+    const cur=patterns[key][idx];
+    patterns[key][idx]=cur ? null : (ch==='bass'||ch==='lead' ? GENRES[currentGenre].notes[0] : 1);
+    if(seqs[ch]) seqs[ch].events=patterns[key];
+  }
+  renderPattern();
+}
+
+function updateStep(step){
+  if(lastStep>=0){
+    document.querySelectorAll(`[id^="step-"][id$="-${lastStep}"]`).forEach(e=>e.classList.remove('playing'));
+    const sn=document.getElementById('snum-'+lastStep);
+    if(sn) sn.classList.remove('act');
+  }
+  document.querySelectorAll(`[id^="step-"][id$="-${step}"]`).forEach(e=>e.classList.add('playing'));
+  const sn=document.getElementById('snum-'+step);
+  if(sn) sn.classList.add('act');
+  lastStep=step;
+  const bl=document.getElementById('barLbl');
+  if(bl) bl.textContent='BAR '+MIHM.bars;
+}
+
+function clearStepUI(){
+  document.querySelectorAll('.step').forEach(e=>e.classList.remove('playing'));
+  document.querySelectorAll('.snum').forEach(e=>e.classList.remove('act'));
+  lastStep=-1;
+}
+
+// ── UI UPDATES ───────────────────────────────────────────────────
+function updateAllUI(){
+  const s=MIHM.s;
+  const J=MIHM.costFunction ? MIHM.costJ() : 0;
+  const irc=MIHM.irc;
+
+  // Trends
+  const trend=(arr)=>{
+    if(arr.length<4) return 'fl';
+    const diff=arr[arr.length-1]-arr[arr.length-4];
+    return diff>0.005?'up':diff<-0.005?'dn':'fl';
+  };
+  const trendSym=(arr)=>{
+    const t=trend(arr);
+    return t==='up'?'▲':t==='dn'?'▼':'—';
+  };
+
+  // Header KPIs
+  const ihgC=s.ihg<-1?'al':s.ihg<-0.5?'wa':'ok';
+  const ntiC=s.nti<0.35?'al':s.nti<0.55?'wa':'ok';
+  const rC=s.r<0.4?'al':s.r<0.6?'wa':'ok';
+  const cffC=Math.abs(s.cff)>0.5?'wa':'ok';
+  const jC=J>1.5?'al':J>0.7?'wa':'ok';
+  const ircC=irc<0.3?'al':irc<0.5?'wa':'ok';
+  const set=(id,v,c='nu')=>{const e=document.getElementById(id);if(e){e.textContent=v;e.className='kpi-v '+c;}};
+  set('h-ihg',s.ihg.toFixed(3),ihgC);
+  set('h-nti',s.nti.toFixed(3),ntiC);
+  set('h-r',s.r.toFixed(3),rC);
+  set('h-cff',s.cff.toFixed(3),cffC);
+  set('h-j',J.toFixed(3),jC);
+  set('h-irc',irc.toFixed(3),ircC);
+  const setT=(id,arr)=>{const e=document.getElementById(id);if(e){e.textContent=trendSym(arr);e.className='kpi-trend '+trend(arr);}};
+  setT('h-ihg-t',MIHM.hist.ihg);setT('h-nti-t',MIHM.hist.nti);
+  setT('h-r-t',MIHM.hist.r);setT('h-cff-t',MIHM.hist.irc);
+  setT('h-j-t',MIHM.hist.j);setT('h-irc-t',MIHM.hist.irc);
+
+  // Sidebar meters
+  const setM=(id,val,min,max,color)=>{
+    const v=document.getElementById('m-'+id); const b=document.getElementById('mf-'+id);
+    if(v){v.textContent=val.toFixed(3);v.style.color=color;}
+    if(b){b.style.width=Math.max(2,Math.min(100,((val-min)/(max-min))*100))+'%';b.style.background=color;}
+  };
+  setM('ihg',s.ihg,-2,0,s.ihg<-1?'var(--rojo)':s.ihg<-0.5?'var(--warn)':'var(--verde)');
+  setM('nti',s.nti,0,1,s.nti<0.35?'var(--rojo)':s.nti<0.55?'var(--warn)':'var(--verde)');
+  setM('r',s.r,0,1,s.r<0.4?'var(--rojo)':s.r<0.6?'var(--warn)':'var(--verde)');
+  setM('cff',s.cff,-1,1,'var(--azul)');
+  setM('ml',s.ml_success,0,1,'var(--purple)');
+
+  // Cost J
+  const cj=document.getElementById('costJ');
+  if(cj){cj.textContent=J.toFixed(4);cj.style.color=J>1.5?'var(--rojo)':J>0.7?'var(--warn)':'var(--oro)';}
+
+  // IRC
+  const irf=document.getElementById('ircFill');if(irf)irf.style.width=(irc*100)+'%';
+  const irv=document.getElementById('ircVal');if(irv)irv.textContent=irc.toFixed(3);
+
+  // PID
+  const kpE=document.getElementById('kpV');if(kpE)kpE.textContent=MIHM.pid.kp.toFixed(2);
+  const kiE=document.getElementById('kiV');if(kiE)kiE.textContent=MIHM.pid.ki.toFixed(3);
+  const kdE=document.getElementById('kdV');if(kdE)kdE.textContent=MIHM.pid.kd.toFixed(2);
+
+  // Intervencion
+  const iv=MIHM.getIntervencion();
+  const ib=document.getElementById('intervBox');
+  if(ib){ib.textContent=iv.msg;ib.className='interv-box '+iv.cls;}
+
+  // Reward ring
+  const rwd=LEARN.getCurrentReward();
+  const ring=document.getElementById('rewardRing');
+  if(ring){
+    const circ=113;
+    ring.style.strokeDashoffset=(circ-(rwd*circ))+'';
+    ring.style.stroke=rwd>0.65?'var(--verde)':rwd>0.4?'var(--warn)':'var(--rojo)';
+  }
+  const rv=document.getElementById('rewardVal');if(rv)rv.textContent=rwd.toFixed(3);
+  const rt=document.getElementById('rewardTrend');
+  if(rt){const t=LEARN.getRewardTrend();rt.textContent=t>0.01?'↑ mejorando':t<-0.01?'↓ degradando':'≈ estable';}
+
+  // Bar counter
+  const bc=document.getElementById('lp-bar-count');if(bc)bc.textContent='BAR '+MIHM.bars;
+  const bsb=document.getElementById('sb-bars');if(bsb)bsb.textContent=MIHM.bars;
+
+  // Status bar
+  const g=GENRES[currentGenre];
+  const ap=MIHM.getAudioParams();
+  const setText=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+  setText('sb-key',g.rootNote);
+  setText('sb-mode',g.mode);
+  setText('sb-genre',currentGenre.toUpperCase());
+  setText('sb-density',(s.r*100).toFixed(0)+'%');
+  setText('sb-tension',Math.abs(s.ihg).toFixed(2));
+  setText('sb-evo',ap.evolutionRate);
+
+  // BPM
+  const bpmD=document.getElementById('bpmDisp');
+  if(bpmD) bpmD.textContent=Math.round(Tone.Transport.bpm.value||GENRES[currentGenre].bpm);
+
+  // Waveform info
+  const wi=document.getElementById('wfInfo');
+  if(wi) wi.textContent=`BPM ${Math.round(Tone.Transport.bpm.value)} · BAR ${MIHM.bars} · J ${J.toFixed(3)} · IRC ${irc.toFixed(3)}`;
+
+  // Audio params display
+  renderAudioParams(ap);
+
+  updateMiniCharts();
+}
+
+function renderAudioParams(ap){
+  const el=document.getElementById('audioParamsDisplay');
+  if(!el) return;
+  el.innerHTML=Object.entries(ap).map(([k,v])=>
+    `<div style="display:flex;justify-content:space-between;font-family:var(--mono);font-size:7.5px;padding:2px 0;border-bottom:1px solid var(--bdr)">
+      <span style="color:var(--t3)">${k}</span>
+      <span style="color:var(--oro)">${typeof v==='number'?v.toFixed(3):v}</span>
+    </div>`).join('');
+}
+
+// ── CHARTS ───────────────────────────────────────────────────────
+let charts = {};
+function initCharts(){
+  const bg='rgba(0,0,0,0)';
+  function makeChart(id,labels,datasets,height){
+    const cv=document.getElementById(id); if(!cv) return null;
+    cv.height=height||60;
+    const ctx=cv.getContext('2d');
+    const draw=()=>{
+      const W=cv.offsetWidth*(window.devicePixelRatio||1);
+      const H=(height||60)*(window.devicePixelRatio||1);
+      if(cv.width!==W){cv.width=W;}
+      if(cv.height!==H){cv.height=H;}
+      ctx.clearRect(0,0,W,H);
+      datasets.forEach(ds=>{
+        const arr=ds.data;
+        if(arr.length<2) return;
+        const min=ds.min||Math.min(...arr);
+        const max=ds.max||Math.max(...arr);
+        const range=max-min||1;
+        ctx.beginPath();
+        ctx.strokeStyle=ds.color;
+        ctx.lineWidth=1.2*(window.devicePixelRatio||1);
+        arr.forEach((v,i)=>{
+          const x=(i/(arr.length-1))*W;
+          const y=H-((v-min)/range)*(H*0.88)-H*0.06;
+          i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+        });
+        ctx.stroke();
+        // Fill
+        ctx.fillStyle=ds.color.replace(')',',0.07)').replace('rgb','rgba').replace('var(--','').replace(')','');
+      });
+    };
+    const obj={draw};
+    return obj;
+  }
+  charts.ihg=makeChart('ihgChart',null,[{data:MIHM.hist.ihg,color:'var(--rojo)',min:-2,max:0}]);
+  charts.nti=makeChart('ntiChart',null,[{data:MIHM.hist.nti,color:'var(--verde)',min:0,max:1},{data:MIHM.hist.r,color:'var(--azul)',min:0,max:1}]);
+  charts.j  =makeChart('jChart',null,[{data:MIHM.hist.j,color:'var(--warn)',min:0,max:3}]);
+  charts.mihm=makeChart('mihmChart',null,[{data:MIHM.hist.ihg,color:'var(--rojo)',min:-2,max:0},{data:MIHM.hist.nti,color:'var(--verde)',min:0,max:1}],50);
+  charts.reward=makeChart('rewardChart',null,[{data:MIHM.hist.reward,color:'var(--verde)',min:0,max:1}],40);
+}
+
+function updateMiniCharts(){
+  Object.values(charts).forEach(c=>{if(c&&c.draw) try{c.draw();}catch(e){}});
+  // Simple canvas line draws for main charts
+  drawLineChart('ihgChart', MIHM.hist.ihg, '#b83838', -2, 0);
+  drawLineChart2('ntiChart', MIHM.hist.nti, '#1a9068', MIHM.hist.r, '#2a6898', 0, 1);
+  drawLineChart('jChart', MIHM.hist.j, '#c49520', 0, 3);
+  drawLineChart2('mihmChart', MIHM.hist.ihg, '#b83838', MIHM.hist.nti, '#1a9068', -2, 1, 50);
+  drawLineChart('rewardChart', MIHM.hist.reward, '#1a9068', 0, 1, 40);
+}
+
+function drawLineChart(id, data, color, min, max, h=60){
+  const cv=document.getElementById(id); if(!cv||!data||data.length<2) return;
+  const dpr=window.devicePixelRatio||1;
+  const W=cv.offsetWidth*dpr, H=h*dpr;
+  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  const range=max-min||1;
+  ctx.beginPath();
+  ctx.strokeStyle=color; ctx.lineWidth=1.2*dpr;
+  data.forEach((v,i)=>{
+    const x=(i/(data.length-1))*W;
+    const y=H-((v-min)/range)*(H*0.86)-H*0.07;
+    i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  // Zero line for IHG
+  if(min<0&&max>0){
+    const y0=H-((0-min)/range)*(H*0.86)-H*0.07;
+    ctx.beginPath();ctx.strokeStyle='rgba(255,255,255,0.06)';ctx.lineWidth=0.5*dpr;ctx.setLineDash([3,4]);
+    ctx.moveTo(0,y0);ctx.lineTo(W,y0);ctx.stroke();ctx.setLineDash([]);
+  }
+}
+
+function drawLineChart2(id, d1, c1, d2, c2, min, max, h=60){
+  const cv=document.getElementById(id); if(!cv) return;
+  const dpr=window.devicePixelRatio||1;
+  const W=cv.offsetWidth*dpr, H=h*dpr;
+  if(cv.width!==W||cv.height!==H){cv.width=W;cv.height=H;}
+  const ctx=cv.getContext('2d');
+  ctx.clearRect(0,0,W,H);
+  [d1,d2].forEach((data,di)=>{
+    if(!data||data.length<2) return;
+    const color=di===0?c1:c2;
+    const range=max-min||1;
+    ctx.beginPath();
+    ctx.strokeStyle=color;ctx.lineWidth=1.1*dpr;
+    data.forEach((v,i)=>{
+      const x=(i/(data.length-1))*W;
+      const y=H-((v-min)/range)*(H*0.86)-H*0.07;
+      i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+    });
+    ctx.stroke();
+  });
+}
+
+// ── WAVEFORM ─────────────────────────────────────────────────────
+function initWaveform(){
+  const cv=document.getElementById('wfCanvas'); if(!cv) return;
+  const resize=()=>{
+    const dpr=window.devicePixelRatio||1;
+    cv.width=cv.offsetWidth*dpr; cv.height=cv.offsetHeight*dpr;
+  };
+  resize();
+  window.addEventListener('resize',resize);
+  const draw=()=>{
+    const ctx=cv.getContext('2d');
+    const W=cv.width, H=cv.height;
+    ctx.clearRect(0,0,W,H);
+    if(ENG&&isPlaying){
+      const data=ENG.wform.getValue();
+      const mid=H/2;
+      ctx.beginPath();
+      ctx.strokeStyle='rgba(200,169,81,0.7)';
+      ctx.lineWidth=1.3*(window.devicePixelRatio||1);
+      data.forEach((v,i)=>{
+        const x=(i/data.length)*W;
+        const y=mid+v*mid*0.88;
+        i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);
+      });
+      ctx.stroke();
+      // FFT dots
+      try {
+        const fft=ENG.fft.getValue();
+        fft.forEach((v,i)=>{
+          const x=(i/fft.length)*W;
+          const h=Math.max(0,((v+80)/80)*H*0.4);
+          ctx.fillStyle=`rgba(216,240,0,${h/H*0.4})`;
+          ctx.fillRect(x,H-h,W/fft.length-1,h);
+        });
+      } catch(e){}
+    } else {
+      ctx.beginPath();ctx.strokeStyle='rgba(200,169,81,0.1)';ctx.lineWidth=0.5;
+      ctx.moveTo(0,H/2);ctx.lineTo(W,H/2);ctx.stroke();
+    }
+    requestAnimationFrame(draw);
+  };
+  draw();
+}
+
+// ── VU METERS ────────────────────────────────────────────────────
+function animVU(){
+  if(!ENG){ requestAnimationFrame(animVU); return; }
+  const meters={kick:ENG.kM,snare:ENG.sM,hihat:ENG.hM,bass:ENG.bM,lead:ENG.lM,pad:ENG.pM};
+  Object.entries(meters).forEach(([id,m])=>{
+    const el=document.getElementById('vu-'+id); if(!el||!m) return;
+    let v; try{v=m.getValue();}catch(e){v=-60;}
+    if(typeof v!=='number'||isNaN(v)) v=-60;
+    const pct=Math.max(0,Math.min(100,(v+60)/60*100));
+    el.style.height=pct+'%';
+    const color = pct>85?'var(--rojo)':pct>70?'var(--warn)':chDefs.find(c=>c.id===id)?.color||'var(--verde)';
+    el.style.background=color;
+  });
+  requestAnimationFrame(animVU);
+}
+
+// ── CONTROLS ─────────────────────────────────────────────────────
+async function togglePlay(){
+  if(isPlaying){ stopAudio(); isPlaying=false; setPlayState(false); }
+  else { await initAudio(); startSeq(); isPlaying=true; setPlayState(true); }
+}
+
+function stopEngine(){ stopAudio(); isPlaying=false; setPlayState(false); }
+
+function setPlayState(on){
+  const btn=document.getElementById('btnPlay');
+  if(btn){btn.textContent=on?'⏸':'▶';btn.classList.toggle('active',on);}
+  const dot=document.getElementById('liveDot'); if(dot)dot.classList.toggle('on',on);
+  const lbl=document.getElementById('statusLbl'); if(lbl)lbl.textContent=on?'GENERANDO':'DETENIDO';
+}
+
+function setGenre(g,btn){
+  const was=isPlaying;
+  if(was) stopAudio();
+  currentGenre=g;
+  DB.save('genre',g);
+  document.querySelectorAll('.g-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  patterns=null;
+  buildSeq();
+  if(was) setTimeout(()=>{ initAudio().then(()=>{ startSeq(); isPlaying=true; setPlayState(true); }); },100);
+  updateAllUI();
+  showNotif(`Género: ${g.toUpperCase()} · ${GENRES[g].root} ${GENRES[g].mode}`);
+}
+
+function setCHVol(id,db){
+  chState[id].vol=db;
+  const el=document.getElementById('db-'+id); if(el) el.textContent=db.toFixed(1)+' dB';
+  if(!ENG) return;
+  const map={kick:ENG.kV,snare:ENG.sV,hihat:ENG.hV,bass:ENG.bV,lead:ENG.lV,pad:ENG.pV};
+  if(map[id]) try{ map[id].volume.rampTo(db,0.04); }catch(e){}
+}
+
+function toggleMute(id){
+  chState[id].muted=!chState[id].muted;
+  document.getElementById('mute-'+id)?.classList.toggle('muted',chState[id].muted);
+}
+
+function toggleSolo(id){
+  chState[id].soloed=!chState[id].soloed;
+  document.getElementById('solo-'+id)?.classList.toggle('soloed',chState[id].soloed);
+}
+
+// BPM drag
+let bpmDrag=null;
+document.addEventListener('mousedown',e=>{
+  if(e.target.classList.contains('bpm-drag')||e.target.id==='bpmDisp'){
+    bpmDrag={x:e.clientX,bpm:Tone.Transport.bpm.value||95};
+  }
+});
+document.addEventListener('mousemove',e=>{
+  if(!bpmDrag) return;
+  const nb=Math.max(60,Math.min(200,bpmDrag.bpm+(e.clientX-bpmDrag.x)*0.5));
+  Tone.Transport.bpm.value=nb;
+  const d=document.getElementById('bpmDisp'); if(d) d.textContent=Math.round(nb);
+});
+document.addEventListener('mouseup',()=>bpmDrag=null);
+
+// ── API INTEGRATION ──────────────────────────────────────────────
+let apiOnline=false;
+
+async function apiReq(path,data=null,method='POST'){
+  const url=CFG.apiUrl+path;
+  try {
+    const opts={method,headers:{'Content-Type':'application/json'}};
+    if(data&&method!=='GET') opts.body=JSON.stringify(data);
+    const r=await fetch(url,{...opts,signal:AbortSignal.timeout(4000)});
+    return r.ok ? await r.json() : null;
+  } catch(e){ return null; }
+}
+
+async function checkAPI(){
+  const r=await apiReq('/health',null,'GET');
+  apiOnline=!!r;
+  const el=document.getElementById('sb-api');
+  if(el) el.textContent=r ? `online · ${r.version||''}` : 'offline (standalone)';
+  if(r?.state) MIHM.applyFromAPI(r.state);
+  updateAllUI();
+}
+
+async function apiSync(){
+  if(!apiOnline) return;
+  const r=await apiReq('/predict',{});
+  if(r?.state){ MIHM.applyFromAPI(r.state); if(r.irc) MIHM.irc=parseFloat(r.irc); }
+}
+
+async function callAutopoietic(){
+  const r=await apiReq('/generate_autopoietic',{impact:1.0});
+  if(r){ MIHM.applyFromAPI(r.new_state); if(r.irc) MIHM.irc=parseFloat(r.irc); updateAllUI(); showNotif('Autopoiético activado · IRC +0.15','ok'); }
+  else { MIHM.applyExternal({nti:.09,r:.06}); MIHM.irc=Math.min(1,MIHM.irc+.15); updateAllUI(); showNotif('Autopoiético (local) · IRC updated','ok'); }
+}
+
+async function callProposeDates(){
+  const r=await apiReq('/propose_release_dates',{});
+  const el=document.getElementById('proposedDates');
+  if(!el) return;
+  el.style.display='block';
+  if(r?.fechas_optimas){
+    el.innerHTML=r.fechas_optimas.map(f=>
+      `<div style="font-family:var(--mono);font-size:7.5px;padding:4px 0;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between">
+        <span style="color:var(--t2)">${f.fecha}</span>
+        <span style="color:var(--verde)">${(f.prob_exito*100).toFixed(0)}%</span>
+      </div>`).join('');
+  } else {
+    const base=new Date();
+    const dates=[
+      {d:30,p:0.81,r:'IRC alta proyectada'},
+      {d:60,p:0.69,r:'Ventana cultural'},
+      {d:90,p:0.54,r:'Riesgo moderado'}
+    ];
+    el.innerHTML=dates.map(f=>{
+      const date=new Date(base.getTime()+f.d*86400000).toISOString().split('T')[0];
+      return `<div style="font-family:var(--mono);font-size:7.5px;padding:4px 0;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between">
+        <span style="color:var(--t2)">${date}</span><span style="color:var(--verde)">${(f.p*100).toFixed(0)}%</span>
+      </div>`;
+    }).join('');
+  }
+}
+
+// ── SCRAPING ─────────────────────────────────────────────────────
+let scrapingCache=DB.load('scraping_cache',[]);
+
+async function fetchScraping(){
+  const el=document.getElementById('scrapingDisplay');
+  if(el) el.innerHTML='<div style="font-family:var(--mono);font-size:8px;color:var(--t3)">Cargando...</div>';
+  // Try API first
+  const r=await apiReq('/scraping',{genre:currentGenre,query:GENRES[currentGenre].rootNote});
+  if(r?.results){
+    scrapingCache=r.results;
+    DB.save('scraping_cache',scrapingCache.slice(0,20));
+  } else {
+    // Synthetic from MIHM state
+    scrapingCache=[
+      {title:`${GENRES[currentGenre].root} ${GENRES[currentGenre].mode} — Trending`, artist:'Sistema Friction', lyrics_fragment:`Fragmento detectado: energía ${(MIHM.s.nti*100).toFixed(0)}% · tensión ${Math.abs(MIHM.s.ihg).toFixed(2)}`, keywords:['urban','frecuencia','colectiva',currentGenre]},
+      {title:`IHG ${MIHM.s.ihg.toFixed(2)} — Referencia`, artist:'MIHM Engine', lyrics_fragment:`Modo emergente: ${GENRES[currentGenre].mode} · coherencia ${(MIHM.s.nti*100).toFixed(0)}%`, keywords:['MIHM','emergente','autopoiético']},
+    ];
+  }
+  renderScraping();
+}
+
+function renderScraping(){
+  const el=document.getElementById('scrapingDisplay'); if(!el) return;
+  if(!scrapingCache.length){el.innerHTML='<div style="font-family:var(--mono);font-size:8px;color:var(--t4)">Sin datos. Ejecuta scraping.</div>';return;}
+  el.innerHTML=scrapingCache.map(s=>`
+    <div class="scrape-item">
+      <div class="scrape-item-title">${s.title||s.name||'—'}</div>
+      <div style="font-family:var(--mono);font-size:7px;color:var(--t3);margin-bottom:4px">${s.artist||''}</div>
+      <div class="scrape-item-lyrics">${(s.lyrics_fragment||'').slice(0,120)}...</div>
+      <div style="margin-top:5px">${(s.keywords||[]).map(k=>`<span class="scrape-keyword ${k===currentGenre||k==='MIHM'?'hot':''}">${k}</span>`).join('')}</div>
+    </div>`).join('');
+}
+
+// ── UPLOAD ───────────────────────────────────────────────────────
+let tracksHistory=DB.load('tracks',[]);
+
+async function handleUpload(evt){
+  const file=evt.target.files[0]; if(!file) return;
+  const prog=document.getElementById('uploadProgress');
+  const pbar=document.getElementById('uploadPBar');
+  const stat=document.getElementById('uploadStatus');
+  if(prog) prog.style.display='block';
+  if(pbar) pbar.style.width='10%';
+  if(stat) stat.textContent='Preparando archivo…';
+
+  let step=10;
+  const tick=setInterval(()=>{ step=Math.min(85,step+5); if(pbar)pbar.style.width=step+'%'; },200);
+
+  try {
+    let result=null;
+    if(apiOnline){
+      const fd=new FormData(); fd.append('file',file);
+      if(stat) stat.textContent='Enviando al servidor de análisis…';
+      const r=await fetch(CFG.apiUrl+'/analyze_song',{method:'POST',body:fd,signal:AbortSignal.timeout(30000)});
+      if(r.ok) result=await r.json();
+    }
+
+    clearInterval(tick);
+    if(pbar) pbar.style.width='100%';
+
+    if(result){
+      MIHM.applyFromAPI(result.updated_state);
+      const entry={name:file.name,size:file.size,ts:Date.now(),features:result.features,state_after:result.updated_state};
+      tracksHistory.unshift(entry);
+      if(tracksHistory.length>20) tracksHistory.pop();
+      DB.save('tracks',tracksHistory);
+      renderUploadResult(result);
+      renderTracksHistory();
+      updateAllUI();
+      showNotif(`Track analizado: ${file.name}`, 'ok');
+    } else {
+      // Local analysis stub
+      const entry={name:file.name,size:file.size,ts:Date.now(),features:{bpm:95+Math.random()*40,spectral_entropy:4+Math.random()*4,onset_density:2+Math.random()*6},state_after:MIHM.s};
+      tracksHistory.unshift(entry);
+      DB.save('tracks',tracksHistory);
+      renderUploadResult({features:entry.features, updated_state:entry.state_after});
+      renderTracksHistory();
+      showNotif(`Track registrado: ${file.name} (offline)`, 'ok');
+    }
+  } catch(e){
+    clearInterval(tick);
+    if(stat) stat.textContent='Error: '+e.message;
+    showNotif('Error al analizar: '+e.message,'err');
+  }
+}
+
+function renderUploadResult(r){
+  const el=document.getElementById('uploadResult'); if(!el) return;
+  const f=r.features||{}; const s=r.updated_state||{};
+  el.innerHTML=`<div class="upload-result">
+    <div><span class="feat-key">BPM detectado: </span><span class="feat-val">${(f.bpm||0).toFixed(1)}</span></div>
+    <div><span class="feat-key">Entropía espectral: </span><span class="feat-val">${(f.spectral_entropy||0).toFixed(3)}</span></div>
+    <div><span class="feat-key">Densidad onsets: </span><span class="feat-val">${(f.onset_density||0).toFixed(3)}</span></div>
+    <div style="margin-top:6px;border-top:1px solid var(--bdr);padding-top:6px">
+      <div><span class="feat-key">IHG resultante: </span><span class="feat-val">${(s.ihg||0).toFixed(3)}</span></div>
+      <div><span class="feat-key">NTI resultante: </span><span class="feat-val">${(s.nti||0).toFixed(3)}</span></div>
+    </div>
+  </div>`;
+}
+
+function renderTracksHistory(){
+  const el=document.getElementById('tracksHistory'); if(!el) return;
+  if(!tracksHistory.length){el.innerHTML='<div style="font-family:var(--mono);font-size:7.5px;color:var(--t4)">Sin tracks analizados.</div>';return;}
+  el.innerHTML=tracksHistory.slice(0,8).map(t=>`
+    <div style="font-family:var(--mono);font-size:7.5px;padding:5px 0;border-bottom:1px solid var(--bdr);display:flex;justify-content:space-between;align-items:center">
+      <span style="color:var(--t2)">${t.name.slice(0,24)}${t.name.length>24?'…':''}</span>
+      <span style="color:var(--t4)">${new Date(t.ts).toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit'})}</span>
+    </div>`).join('');
+}
+
+// ── LEARNING LOG ─────────────────────────────────────────────────
+function renderLearningLog(){
+  const el=document.getElementById('learningLog'); if(!el) return;
+  el.innerHTML=LEARN.log.slice(0,30).map(e=>
+    `<div class="log-entry ${e.cls}"><span class="ts">[${e.ts}]</span> ${e.msg}</div>`).join('');
+}
+
+function forceSelfLearn(){
+  if(!patterns) patterns=buildPatterns();
+  const r=LEARN.forceCycle(patterns,MIHM.s);
+  showNotif(`Ciclo aprendizaje · reward=${r.toFixed(3)} · gen ${LEARN.generation}`,'ok');
+  renderLearningLog();
+  updateAllUI();
+  switchTab('learning',document.querySelector('.rp-tab:nth-child(2)'));
+}
+
+// ── TABS ─────────────────────────────────────────────────────────
+function switchTab(id,btn){
+  document.querySelectorAll('.rp-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.rp-tab').forEach(b=>b.classList.remove('active'));
+  const p=document.getElementById('tab-'+id); if(p) p.classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+
+// ── MODALS ───────────────────────────────────────────────────────
+function openModal(id){document.getElementById(id)?.classList.add('open');}
+function closeModal(id){document.getElementById(id)?.classList.remove('open');}
+
+// AUDIT
+let auditStep=1;
+function auditNext(){
+  if(auditStep<3){
+    document.getElementById('audit-s'+auditStep).style.display='none';
+    auditStep++;
+    document.getElementById('audit-s'+auditStep).style.display='block';
+    const p=document.getElementById('auditPBar'); if(p) p.style.width=(auditStep/3*100)+'%';
+    if(auditStep===3) document.getElementById('auditNext').textContent='APLICAR →';
+    document.getElementById('auditPrev').style.opacity='1';
+  } else {
+    const q1=document.getElementById('aq1')?.value;
+    const q2=document.getElementById('aq2')?.value;
+    const q3=document.getElementById('aq3')?.value;
+    const q4=document.getElementById('aq4')?.value;
+    if(!q1||!q2||!q3) return showNotif('Completa todos los campos','err');
+    // Apply to MIHM
+    if(q2==='1') MIHM.applyExternal({ihg:-0.3});
+    if(q2==='2-4') MIHM.applyExternal({ihg:-0.1,nti:0.05});
+    if(q2==='5-10') MIHM.applyExternal({nti:0.08});
+    if(q2==='10+') MIHM.applyExternal({nti:0.1,r:0.05,ihg:0.1});
+    if(q3==='critico') MIHM.applyExternal({nti:-0.15,r:-0.1});
+    if(q3==='medio') MIHM.applyExternal({nti:-0.05});
+    if(q3==='no') MIHM.applyExternal({nti:0.08,r:0.05});
+    if(q4) { const btn=document.querySelector(`[data-g="${q4}"]`); setGenre(q4,btn); }
+    closeModal('auditModal');
+    if(isPlaying){ stopAudio(); setTimeout(()=>{ startSeq(); isPlaying=true; setPlayState(true); },80); }
+    updateAllUI();
+    showNotif(`Auditoría aplicada · MIHM recalibrado · IHG ${MIHM.s.ihg.toFixed(3)}`,'ok');
+    LEARN.addLog(`Auditoría aplicada · proyecto: "${q1}" · team: ${q2}`,'learn');
+    DB.save('project',q1);
+  }
+}
+function auditPrev(){
+  if(auditStep>1){
+    document.getElementById('audit-s'+auditStep).style.display='none';
+    auditStep--;
+    document.getElementById('audit-s'+auditStep).style.display='block';
+    const p=document.getElementById('auditPBar'); if(p) p.style.width=(auditStep/3*100)+'%';
+    document.getElementById('auditNext').textContent='SIGUIENTE →';
+    if(auditStep===1) document.getElementById('auditPrev').style.opacity='.3';
+  }
+}
+
+// SETTINGS
+function saveSettings(){
+  CFG.apiUrl=document.getElementById('cfg-api')?.value||'http://localhost:5000';
+  CFG.groqKey=document.getElementById('cfg-groq')?.value||'';
+  CFG.project=document.getElementById('cfg-project')?.value||'Sin Título';
+  DB.save('cfg',CFG);
+  closeModal('settingsModal');
+  checkAPI();
+  showNotif('Configuración guardada','ok');
+}
+
+function exportConfig(){
+  const conf={
+    session:'musicscore-v2.1',
+    project:CFG.project,
+    api_url:CFG.apiUrl,
+    genre:currentGenre,
+    mihm_state:{...MIHM.s},
+    pid:{...MIHM.pid},
+    irc:MIHM.irc,
+    learning_weights:{...LEARN.weights},
+    generation:LEARN.generation,
+    timestamp:new Date().toISOString()
+  };
+  const j=JSON.stringify(conf,null,2);
+  const el=document.getElementById('cfg-json');
+  if(el) el.value=j;
+  // Also download
+  const blob=new Blob([j],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a'); a.href=url;
+  a.download=`sf_config_${Date.now()}.json`;
+  a.click(); URL.revokeObjectURL(url);
+  showNotif('Config exportada','ok');
+}
+
+function importConfig(){
+  const el=document.getElementById('cfg-json');
+  if(!el||!el.value) return;
+  try {
+    const c=JSON.parse(el.value);
+    if(c.mihm_state) { MIHM.s={...MIHM.s,...c.mihm_state}; MIHM.persist(); }
+    if(c.pid) { MIHM.pid={...MIHM.pid,...c.pid}; MIHM.persist(); }
+    if(c.irc) MIHM.irc=parseFloat(c.irc);
+    if(c.learning_weights) LEARN.weights={...LEARN.weights,...c.learning_weights};
+    if(c.genre) { const btn=document.querySelector(`[data-g="${c.genre}"]`); setGenre(c.genre||currentGenre,btn); }
+    if(c.api_url) { CFG.apiUrl=c.api_url; const ai=document.getElementById('cfg-api'); if(ai) ai.value=c.api_url; }
+    if(c.project) CFG.project=c.project;
+    updateAllUI();
+    showNotif('Config importada correctamente','ok');
+  } catch(e){ showNotif('JSON inválido: '+e.message,'err'); }
+}
+
+function clearPersistence(){
+  if(confirm('¿Borrar toda la memoria persistida? Esta acción es irreversible.')){
+    DB.clearAll();
+    showNotif('Memoria borrada · recargando…','ok');
+    setTimeout(()=>location.reload(),1200);
+  }
+}
+
+// ── NOTIFICATION ─────────────────────────────────────────────────
+let notifTimer=null;
+function showNotif(msg,type=''){
+  let n=document.querySelector('.notif');
+  if(!n){n=document.createElement('div');n.className='notif';document.body.appendChild(n);}
+  n.textContent=msg; n.className='notif '+type; n.classList.remove('hide');
+  clearTimeout(notifTimer);
+  notifTimer=setTimeout(()=>n.classList.add('hide'),3200);
+}
+
+// ── KEYBOARD SHORTCUTS ───────────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  const ta=document.activeElement.tagName;
+  if(ta==='INPUT'||ta==='TEXTAREA'||ta==='SELECT') return;
+  if(e.code==='Space'){e.preventDefault();togglePlay();}
+  if(e.code==='KeyR') { stopEngine(); MIHM.s={...DB.load('mihm_state',{ihg:-0.62,nti:0.351,r:0.45,cff:0,ml_success:0.5})}; updateAllUI(); showNotif('Estado restaurado desde memoria'); }
+  if(e.code==='KeyA') openModal('auditModal');
+  if(e.code==='KeyS') openModal('settingsModal');
+  const gk={Digit1:'reggaeton',Digit2:'trap',Digit3:'pop',Digit4:'hiphop',Digit5:'latin'};
+  if(gk[e.code]){ const btn=document.querySelector(`[data-g="${gk[e.code]}"]`); setGenre(gk[e.code],btn); }
+});
+
+// Upload drag-and-drop
+['dragenter','dragover'].forEach(ev=>document.getElementById('uploadZone')?.addEventListener(ev,e=>{e.preventDefault();document.getElementById('uploadZone')?.classList.add('dragging');}));
+['dragleave','drop'].forEach(ev=>document.getElementById('uploadZone')?.addEventListener(ev,e=>{e.preventDefault();document.getElementById('uploadZone')?.classList.remove('dragging');if(e.type==='drop'){const dt=e.dataTransfer;if(dt?.files[0]) handleUpload({target:{files:dt.files}});}}));
+
+// ── BOOT ─────────────────────────────────────────────────────────
+document.getElementById('splashBtn').addEventListener('click',async()=>{
+  const splash=document.getElementById('splash');
+  const studio=document.getElementById('studio');
+  splash.classList.add('gone');
+  setTimeout(async()=>{
+    splash.style.display='none';
+    studio.style.display='flex';
+    // Load config
+    const savedCfg=DB.load('cfg',null);
+    if(savedCfg) Object.assign(CFG,savedCfg);
+    const ai=document.getElementById('cfg-api'); if(ai) ai.value=CFG.apiUrl;
+    const gi=document.getElementById('cfg-groq'); if(gi) gi.value=CFG.groqKey;
+    const pi=document.getElementById('cfg-project'); if(pi) pi.value=CFG.project||'Sin Título';
+    // Set genre button
+    document.querySelector(`[data-g="${currentGenre}"]`)?.classList.add('active');
+    document.querySelectorAll('.g-btn:not([data-g="'+currentGenre+'"])').forEach(b=>b.classList.remove('active'));
+    // Build UI
+    buildMixer();
+    buildSeq();
+    initWaveform();
+    animVU();
+    initCharts();
+    renderScraping();
+    renderTracksHistory();
+    renderLearningLog();
+    updateAllUI();
+    // Check API
+    await checkAPI();
+    // Auto-start
+    setTimeout(async()=>{
+      await initAudio();
+      startSeq();
+      isPlaying=true;
+      setPlayState(true);
+      showNotif(`Sistema iniciado · Género: ${currentGenre.toUpperCase()} · MIHM activo · BAR ${MIHM.bars}`,'ok');
+      LEARN.addLog('Sistema iniciado · cargando estado persistido','learn');
+      // Initial scraping
+      fetchScraping();
+    },500);
+  },550);
+});
+</script>
+</body>
+</html>
