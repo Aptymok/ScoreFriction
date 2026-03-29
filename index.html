@@ -28,7 +28,7 @@ body{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:13px
 .auth-ttl{font-family:var(--mono);font-size:1.65rem;font-weight:300;margin-bottom:.25rem;}
 .auth-sub{font-size:11px;color:var(--t3);margin-bottom:1.6rem;line-height:1.6;}
 .f-lbl{display:block;font-family:var(--mono);font-size:7.5px;letter-spacing:.12em;color:var(--t3);text-transform:uppercase;margin-bottom:.3rem;}
-.f-inp{width:100%;background:var(--bg2);border:1px solid var(--bdr);color:var(--t1);font-family:var(--mono);font-size:12px;padding:8px 11px;outline:none;-webkit-appearance:none;transition:.15s;}
+.f-inp{width:100%;background:var(--bg2);border:1px solid var(--bdr);color:var(--t1);font-family:var(--mono);font-size:12px;padding:8px 11px;outline:none;transition:.15s;}
 .f-inp:focus{border-color:rgba(200,169,81,.38);}
 .f-inp::placeholder{color:var(--t4);}
 select.f-inp option{background:var(--bg2);}
@@ -925,10 +925,10 @@ select.f-inp option{background:var(--bg2);}
 
 <div class="mb" id="mb-api"><div class="modal"><button class="modal-x" onclick="M.close('mb-api')">✕</button>
   <div class="modal-ttl">Servidor backend</div>
-  <div class="fr"><label class="f-lbl">URL del servidor</label><input type="text" class="f-inp" id="api-url-inp" placeholder="https://system-friction.up.railway.app"></div>
+  <div class="fr"><label class="f-lbl">URL del servidor</label><input type="text" class="f-inp" id="api-url-inp" placeholder="https://scorefriction-production.up.railway.app";></div>
   <div class="code-b">
     <span style="color:var(--t4)"># Opciones:</span><br>
-    <span class="hi">Railway:</span> https://system-friction.up.railway.app<br>
+    <span class="hi">Railway:</span> "https://scorefriction-production.up.railway.app";<br>
     <span class="hi">Local:</span> http://localhost:5000
   </div>
   <div class="m-act"><button class="btn-g" onclick="M.close('mb-api')">Cancelar</button><button class="btn-p" style="width:auto;padding:8px 20px" onclick="API.saveURL()">Guardar y verificar</button></div>
@@ -942,7 +942,7 @@ const DB={
   d(k){localStorage.removeItem('sf_'+k);},
   clear(){Object.keys(localStorage).filter(k=>k.startsWith('sf_')).forEach(k=>localStorage.removeItem(k));}
 };
-let API_URL=localStorage.getItem('sf_api_url')||'https://system-friction.up.railway.app';
+let API_URL=localStorage.getItem('sf_api_url')||'https://scorefriction-production.up.railway.app';
 
 // ── HIDDEN ENGINE (MIHM black-box) ────────────────────────
 const ENG={
