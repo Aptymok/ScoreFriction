@@ -986,7 +986,7 @@ const ENG={
     }
     this._persist();
   },
-  onProjCreated(n){this.st.ihg=Math.max(-2,this.st.ihg-Math.min(0.8,n*0.06)*0.08);this._persist();},
+  onProj0Created(n){this.st.ihg=Math.max(-2,this.st.ihg-Math.min(0.8,n*0.06)*0.08);this._persist();},
   onProjDone(){this.st.ihg=Math.min(0,this.st.ihg+0.12);this.st.nti=Math.min(1,this.st.nti+0.06);this.st.r=Math.min(1,this.st.r+0.04);this._persist();API.pmEvent('project_done');},
   onTaskDone(){this.st.r=Math.min(1,this.st.r+0.02);this.st.nti=Math.min(1,this.st.nti+0.01);this._persist();API.pmEvent('task_done');},
   onTaskLate(){this.st.r=Math.max(0,this.st.r-0.03);this._persist();API.pmEvent('task_late');},
@@ -2308,25 +2308,27 @@ const STU2={
   _log(msg){const el=document.getElementById('stu-log');if(!el)return;const ts=new Date().toLocaleTimeString('es',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});el.textContent='['+ts+'] '+msg+'\n'+el.textContent;}
 };
 
+/* ───────────────────────────────────────────────────────
+   EXPONER MÓDULOS GLOBALES
+──────────────────────────────────────────────────────── */
 
-// ── EXPONER MÓDULOS A WINDOW (GLOBAL) ───────────────────
 window.AUD = AUD;
-window.OB = OB;
-window.M = M;
+window.OB  = OB;
+window.M   = M;
 window.AUTH = AUTH;
-window.NAV = NAV;
-window.OPS = OPS;
+window.NAV  = NAV;
+window.OPS  = OPS;
 window.PROJ = PROJ;
 window.TASK = TASK;
-window.CAL = CAL;
+window.CAL  = CAL;
 window.CAMP = CAMP;
 window.CHAT = CHAT;
-window.OBS = OBS;
-window.CFG = CFG;
-window.API = API;
+window.OBS  = OBS;
+window.CFG  = CFG;
+window.API  = API;
 window.STU2 = STU2;
 
-// ── ALIAS STU (compatibilidad botones antiguos) ─────────
+/* Alias legacy */
 const STU = {
   generate: () => STU2.generate(),
   reset: () => STU2.reset(),
@@ -2336,20 +2338,27 @@ const STU = {
   toggleStep: (c, i) => STU2.toggleStep(c, i)
 };
 window.STU = STU;
+
+/* ───────────────────────────────────────────────────────
+   ARRANQUE VISUAL GARANTIZADO (EVITA PANTALLA NEGRA)
+──────────────────────────────────────────────────────── */
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (DB.g("sess")) AUTH.boot();
+  else SC.show("sc-auth");
+});
 </script>
 
 <script>
+/* ───────────────────────────────────────────────────────
+   UNLOCK AUDIO CONTEXT (TONE.JS)
+──────────────────────────────────────────────────────── */
 document.addEventListener("click", async () => {
   if (window.Tone && Tone.context.state !== "running") {
-    try {
-      await Tone.start();
-      console.log("AudioContext OK");
-    } catch(e){}
+    try { await Tone.start(); } catch {}
   }
 }, { once: true });
 </script>
-
-
 
 </body>
 </html>
