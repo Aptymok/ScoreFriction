@@ -13,6 +13,8 @@ import uuid
 from datetime import datetime
 from flask import Flask, request, jsonify, send_file, send_from_directory
 from flask_cors import CORS
+from modules.scraping_spotify import SpotifyScraper
+scraper = SpotifyScraper()
 
 try:
     import numpy as np
@@ -53,9 +55,9 @@ from modules.proactive_orchestrator   import ProactiveOrchestrator
 # INICIALIZACIÓN CENTRAL
 # ══════════════════════════════════════════════════════════════════════
 
-app  = Flask(__name__)
-app.config.from_object(Config)
-CORS(app)
+app = Flask(__name__)
+# Esto le dice al backend: "Acepta llamadas de mi página de GitHub"
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 # Path absoluto para SQLite – independiente del directorio de trabajo
 _BACKEND_DIR  = os.path.dirname(os.path.abspath(__file__))
