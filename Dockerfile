@@ -24,4 +24,4 @@ ENV PORT=8080
 EXPOSE 8080
 
 # Arrancar desde la raíz con main:app
-CMD gunicorn main:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+CMD gunicorn backend.app:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
