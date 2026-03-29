@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <title>SCORE · System Friction</title>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300;400;500&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -935,6 +935,14 @@ select.f-inp option{background:var(--bg2);}
 </div></div>
 
 <script>
+// ── AUDITORÍA (stub mínimo para evitar crash) ───────────
+const AUD = {
+  open(){ document.getElementById('mb-audit')?.classList.add('on'); },
+  close(){ document.getElementById('mb-audit')?.classList.remove('on'); },
+  next(){},
+  prev(){}
+};
+
 // ── PERSIST ─────────────────────────────────────────────
 const DB={
   g(k,d=null){try{const v=localStorage.getItem('sf_'+k);return v!==null?JSON.parse(v):d;}catch(e){return d;}},
@@ -942,7 +950,8 @@ const DB={
   d(k){localStorage.removeItem('sf_'+k);},
   clear(){Object.keys(localStorage).filter(k=>k.startsWith('sf_')).forEach(k=>localStorage.removeItem(k));}
 };
-let API_URL=localStorage.getItem('sf_api_url')||'https://scorefriction-production.up.railway.app';
+let API_URL = localStorage.getItem('sf_api_url')
+  || 'https://scorefriction-production.up.railway.app';
 
 // ── HIDDEN ENGINE (MIHM black-box) ────────────────────────
 const ENG={
@@ -2300,6 +2309,15 @@ window.STU=STU;
 window.AUD=AUD;window.OB=OB;window.M=M;window.AUTH=AUTH;window.NAV=NAV;
 window.OPS=OPS;window.PROJ=PROJ;window.TASK=TASK;window.CAL=CAL;window.CAMP=CAMP;
 window.CHAT=CHAT;window.OBS=OBS;window.STU=STU;window.CFG=CFG;window.API=API;
+<script>
+document.addEventListener("click", async () => {
+  if (window.Tone && Tone.context.state !== "running") {
+    try {
+      await Tone.start();
+      console.log("AudioContext OK");
+    } catch(e){}
+  }
+}, { once: true });
 </script>
 </body>
 </html>
