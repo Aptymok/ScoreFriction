@@ -935,13 +935,16 @@ select.f-inp option{background:var(--bg2);}
 </div></div>
 
 <script>
-// ── AUDITORÍA (stub mínimo para evitar crash) ───────────
+// ── AUDITORÍA (stub mínimo) ─────────────
 const AUD = {
   open(){ document.getElementById('mb-audit')?.classList.add('on'); },
   close(){ document.getElementById('mb-audit')?.classList.remove('on'); },
   next(){},
   prev(){}
 };
+window.AUD = AUD;
+</script>
+``
 
 // ── PERSIST ─────────────────────────────────────────────
 const DB={
@@ -1099,10 +1102,10 @@ const AUTH={
   showReg(){document.getElementById('af-login').style.display='none';document.getElementById('af-reg').style.display='block';},
   boot(){
     const s=DB.g('sess',null);
-if (!s || (Date.now() - s.ts > 86400000 * 30)) {
-  SC.show('sc-auth');
-  return;
-}
+        if (!s || (Date.now() - s.ts > 86400000 * 30)) {
+          SC.show('sc-auth');
+          return;
+        }
     const u=DB.g('users',[]).find(u=>u.id===s.uid);
     if(!u){SC.show('sc-auth');return;}
     this.user=u;
