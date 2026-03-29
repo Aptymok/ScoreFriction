@@ -1,1 +1,1 @@
-web: python main.py
+web: gunicorn backend.app:app --bind 0.0.0.0:$PORT --chdir /app --workers 2 --timeout 120

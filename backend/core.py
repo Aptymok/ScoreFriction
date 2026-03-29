@@ -95,11 +95,11 @@ class MIHMState:
         self.r_history.append(self.r)
         self.save_history()
 
-        # ============================================================
-# PATCH PARA backend/core.py (MIHMState class)
-# Agregar el método apply_emergence dentro de la clase MIHMState
-# justo después del método save_history()
-# ============================================================
+    # ============================================================
+    # PATCH PARA backend/core.py (MIHMState class)
+    # Agregar el método apply_emergence dentro de la clase MIHMState
+    # justo después del método save_history()
+    # ============================================================
 
     def apply_emergence(self, generated):
         """Acopla el estado generado por LLM/procedural de vuelta al MIHM.
