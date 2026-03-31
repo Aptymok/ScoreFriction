@@ -755,6 +755,32 @@ def chat_proxy():
     except Exception as e:
         return jsonify({'response': f'Error LLM: {e}'}), 500
 
+
+
+
+
+@app.route('/command', methods=['POST'])
+def command():
+    """Ejecuta comandos simbólicos desde Anchor."""
+    data = request.get_json()
+    cmd = data.get('command', '').strip()
+    if not cmd:
+        return jsonify({'error': 'empty command'}), 400
+
+    # Aquí puedes conectar con mihm.apply_delta según el comando,
+    # o simplemente registrar y responder.
+    # Ejemplo mínimo viable:
+    u, J = mihm.apply_delta({}, action=f"command:{cmd}")
+    mihm.meta_control()
+    db.save_state(mihm.state, mihm.irc, f"command:{cmd}", J)
+
+    return jsonify({
+        'status': 'ok',
+        'executed': cmd,
+        'state': mihm.state,
+        'cost_j': J,
+        'irc': mihm.irc
+    })
 # ══════════════════════════════════════════════════════════════════════
 # MAIN
 # ══════════════════════════════════════════════════════════════════════
