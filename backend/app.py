@@ -762,25 +762,47 @@ def chat_proxy():
 @app.route('/command', methods=['POST'])
 def command():
     """Ejecuta comandos simbólicos desde Anchor."""
-    data = request.get_json()
-    cmd = data.get('command', '').strip()
-    if not cmd:
-        return jsonify({'error': 'empty command'}), 400
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({'error': 'Invalid JSON'}), 400
 
-    # Aquí puedes conectar con mihm.apply_delta según el comando,
-    # o simplemente registrar y responder.
-    # Ejemplo mínimo viable:
-    u, J = mihm.apply_delta({}, action=f"command:{cmd}")
-    mihm.meta_control()
-    db.save_state(mihm.state, mihm.irc, f"command:{cmd}", J)
+        cmd = data.get('command', '').strip()
+        if not cmd:
+            return jsonify({'error': 'empty command'}), 400
 
-    return jsonify({
-        'status': 'ok',
-        'executed': cmd,
-        'state': mihm.state,
-        'cost_j': J,
-        'irc': mihm.irc
-    })
+        # Aplicar delta vacío (solo para registrar la acción)
+        # Asegúrate de que mihm.apply_delta exista y acepte al menos dos argumentos
+        u = 0.0
+        J = mihm.cost_function()
+        if hasattr(mihm, 'apply_delta'):
+            # Si apply_delta espera un delta y una acción
+            u, J = mihm.apply_delta({}, action=f"command:{cmd}")
+        else:
+            # Fallback: solo actualizar el estado interno si es posible
+            mihm.process_delayed_updates()
+            J = mihm.cost_function()
+
+        # Meta-control (si existe)
+        if hasattr(mihm, 'meta_control'):
+            mihm.meta_control()
+
+        # Guardar en base de datos (si db está disponible)
+        if db:
+            db.save_state(mihm.state, mihm.irc, f"command:{cmd}", J)
+
+        return jsonify({
+            'status': 'ok',
+            'executed': cmd,
+            'state': mihm.state,
+            'cost_j': J,
+            'irc': mihm.irc
+        })
+    except Exception as e:
+        # Registrar el error en los logs del servidor
+        app.logger.error(f"Error en /command: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+        
 # ══════════════════════════════════════════════════════════════════════
 # MAIN
 # ══════════════════════════════════════════════════════════════════════
