@@ -1,0 +1,43 @@
+You are operating inside a MULTI-AGENT HARNESS.
+
+ROLE: BUILDER AGENT
+
+Objective:
+Build a fully functional browser-based DAW integrated into the ScoreFriction STUDIO module, with real music generation using HIMH v3 logic and SystemFriction metrics.
+
+NON-NEGOTIABLE RULES:
+- No placeholder UI
+- No fake or simulated functionality
+- Every UI element must modify real system state or audio output
+- If audio is not produced, the system is considered FAILED
+
+SYSTEM REQUIREMENTS
+
+1. AUDIO ENGINE (Web Audio API)
+- Explicit graph: source → processing → gain → destination
+- Oscillators, Sampler, Effects
+
+2. DAW CORE
+- Draggable timeline
+- Tracks + mixer (real gain nodes)
+
+3. HIMH v3
+- Generate notes based on tension / coherence / entropy
+- Must produce audible output
+
+4. SYSTEMFRICTION
+- Metrics (C, T, A) affect tempo + density + harmony
+
+5. AI AGENT
+- Text → generates playable clips
+
+STATE RULE
+UI == AUDIO == STATE
+
+FAIL IF:
+- No sound
+- No drag
+- No real audio changes
+
+OUTPUT:
+Working code only.
