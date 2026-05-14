@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<title>STEP Industrias</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Inter',sans-serif;
+    background:#05070b;
+    color:#fff;
+    overflow-x:hidden;
+}
+
+a{
+    text-decoration:none;
+    color:inherit;
+}
+
+img{
+    max-width:100%;
+}
+
+.container{
+    width:92%;
+    max-width:1440px;
+    margin:auto;
+}
+
+/* NAV */
+
+nav{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    z-index:999;
+    background:rgba(5,7,11,.82);
+    backdrop-filter:blur(12px);
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.nav-inner{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:20px 0;
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.logo-box{
+    width:42px;
+    height:42px;
+    border-radius:10px;
+    background:linear-gradient(135deg,#f3c15c,#8f6717);
+}
+
+.logo h1{
+    font-size:1.4rem;
+    font-weight:800;
+    letter-spacing:1px;
+}
+
+.logo span{
+    display:block;
+    font-size:.72rem;
+    color:#9da4b3;
+    letter-spacing:2px;
+}
+
+.nav-links{
+    display:flex;
+    gap:34px;
+    color:#c8d0dc;
+    font-size:.95rem;
+}
+
+.nav-actions{
+    display:flex;
+    align-items:center;
+    gap:14px;
+}
+
+.btn-primary{
+    background:#d4a63d;
+    color:#05070b;
+    padding:14px 22px;
+    border-radius:10px;
+    font-weight:700;
+    transition:.3s;
+}
+
+.btn-primary:hover{
+    transform:translateY(-2px);
+}
+
+/* HERO */
+
+.hero{
+    min-height:100vh;
+    position:relative;
+    display:flex;
+    align-items:center;
+    padding-top:120px;
+    overflow:hidden;
+}
+
+.hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+    linear-gradient(to right, rgba(5,7,11,.92) 28%, rgba(5,7,11,.55) 55%, rgba(5,7,11,.75)),
+    url('https://images.unsplash.com/photo-1565793298595-6a879b1d9492?q=80&w=1800&auto=format&fit=crop');
+    background-size:cover;
+    background-position:center;
+}
+
+.hero-grid{
+    position:relative;
+    z-index:2;
+    display:grid;
+    grid-template-columns:1.15fr .85fr;
+    gap:70px;
+    align-items:center;
+}
+
+.hero-left h2{
+    font-size:5rem;
+    line-height:1.02;
+    font-weight:800;
+    margin-bottom:26px;
+    max-width:780px;
+}
+
+.gold{
+    color:#d4a63d;
+}
+
+.hero-left p{
+    color:#b9c1ce;
+    font-size:1.12rem;
+    line-height:1.8;
+    max-width:680px;
+    margin-bottom:36px;
+}
+
+.hero-buttons{
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+}
+
+.btn-secondary{
+    border:1px solid rgba(255,255,255,.15);
+    padding:14px 22px;
+    border-radius:10px;
+    color:#fff;
+    background:rgba(255,255,255,.03);
+}
+
+.hero-card{
+    background:rgba(11,15,22,.82);
+    border:1px solid rgba(255,255,255,.06);
+    padding:38px;
+    border-radius:24px;
+    backdrop-filter:blur(20px);
+}
+
+.metric{
+    margin-bottom:28px;
+}
+
+.metric:last-child{
+    margin-bottom:0;
+}
+
+.metric h3{
+    font-size:3rem;
+    color:#d4a63d;
+    margin-bottom:6px;
+}
+
+.metric p{
+    color:#aab4c5;
+    line-height:1.6;
+}
+
+/* SECTION */
+
+section{
+    padding:110px 0;
+}
+
+.section-title{
+    margin-bottom:70px;
+}
+
+.section-title small{
+    color:#d4a63d;
+    letter-spacing:2px;
+    text-transform:uppercase;
+    font-weight:700;
+}
+
+.section-title h3{
+    font-size:3rem;
+    margin-top:14px;
+    max-width:760px;
+}
+
+.section-title p{
+    color:#9da7b7;
+    margin-top:18px;
+    max-width:720px;
+    line-height:1.8;
+}
+
+/* GRID */
+
+.features{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:24px;
+}
+
+.feature-card{
+    background:#0b1119;
+    border:1px solid rgba(255,255,255,.05);
+    padding:34px;
+    border-radius:22px;
+    transition:.35s;
+}
+
+.feature-card:hover{
+    transform:translateY(-8px);
+    border-color:rgba(212,166,61,.25);
+}
+
+.feature-icon{
+    width:58px;
+    height:58px;
+    border-radius:14px;
+    background:rgba(212,166,61,.1);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#d4a63d;
+    font-size:1.4rem;
+    margin-bottom:24px;
+}
+
+.feature-card h4{
+    margin-bottom:16px;
+    font-size:1.2rem;
+}
+
+.feature-card p{
+    color:#98a2b3;
+    line-height:1.8;
+}
+
+/* INDUSTRIES */
+
+.industries{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:28px;
+}
+
+.industry{
+    position:relative;
+    border-radius:24px;
+    overflow:hidden;
+    min-height:420px;
+    display:flex;
+    align-items:flex-end;
+}
+
+.industry::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:linear-gradient(to top, rgba(5,7,11,.95), rgba(5,7,11,.15));
+}
+
+.industry img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.industry-content{
+    position:relative;
+    z-index:2;
+    padding:34px;
+}
+
+.industry-content h4{
+    font-size:1.5rem;
+    margin-bottom:14px;
+}
+
+.industry-content p{
+    color:#b7bfcb;
+    line-height:1.7;
+}
+
+/* CTA */
+
+.cta{
+    background:
+    linear-gradient(135deg,#0f1722,#05070b);
+    border-top:1px solid rgba(255,255,255,.05);
+    border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.cta-box{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:40px;
+}
+
+.cta-box h3{
+    font-size:3rem;
+    max-width:720px;
+}
+
+.cta-box p{
+    margin-top:18px;
+    color:#9da7b7;
+    line-height:1.8;
+}
+
+/* FOOTER */
+
+footer{
+    padding:60px 0;
+    background:#04060a;
+}
+
+.footer-grid{
+    display:flex;
+    justify-content:space-between;
+    gap:30px;
+    flex-wrap:wrap;
+}
+
+.footer-col p{
+    color:#8f99aa;
+    line-height:1.8;
+    max-width:400px;
+    margin-top:18px;
+}
+
+.footer-links{
+    display:flex;
+    gap:24px;
+    color:#c8d0dc;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1100px){
+
+.hero-grid{
+    grid-template-columns:1fr;
+}
+
+.features{
+    grid-template-columns:repeat(2,1fr);
+}
+
+.industries{
+    grid-template-columns:1fr;
+}
+
+.hero-left h2{
+    font-size:4rem;
+}
+
+}
+
+@media(max-width:720px){
+
+.nav-links{
+    display:none;
+}
+
+.features{
+    grid-template-columns:1fr;
+}
+
+.hero-left h2{
+    font-size:3rem;
+}
+
+.section-title h3{
+    font-size:2.2rem;
+}
+
+.cta-box{
+    flex-direction:column;
+    align-items:flex-start;
+}
+
+.cta-box h3{
+    font-size:2.2rem;
+}
+
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="container nav-inner">
+
+<div class="logo">
+
+<div class="logo-text">
+    <h1>STEP</h1>
+    <span>INDUSTRIAS</span>
+</div>
+
+</div>
+        <div class="nav-links">
+            <a href="#">Soluciones</a>
+            <a href="#">Industrias</a>
+            <a href="#">Casos</a>
+            <a href="#">Nosotros</a>
+            <a href="#">Contacto</a>
+        </div>
+
+        <div class="nav-actions">
+            <a class="btn-primary" href="https://wa.me/5214491191572">
+                Solicitar cotización
+            </a>
+        </div>
+
+    </div>
+</nav>
+
+<section class="hero">
+
+    <div class="container hero-grid">
+
+        <div class="hero-left">
+
+            <h2>
+                Soluciones industriales que
+                <span class="gold">
+                    reducen fricción operacional.
+                </span>
+            </h2>
+
+            <p>
+                STEP Industrias transforma entornos industriales mediante superficies, materiales y sistemas diseñados para continuidad operativa, seguridad y desempeño medible.
+            </p>
+
+            <div class="hero-buttons">
+
+                <a href="#" class="btn-primary">
+                    Ver soluciones
+                </a>
+
+                <a href="#" class="btn-secondary">
+                    Descargar catálogo
+                </a>
+
+            </div>
+
+        </div>
+
+        <div class="hero-card">
+
+            <div class="metric">
+                <h3>-38%</h3>
+                <p>
+                    Reducción promedio de desgaste operativo en áreas industriales de alto tráfico.
+                </p>
+            </div>
+
+            <div class="metric">
+                <h3>24/7</h3>
+                <p>
+                    Diseñado para continuidad operativa y ambientes de producción continua.
+                </p>
+            </div>
+
+            <div class="metric">
+                <h3>AGS</h3>
+                <p>
+                    Ingeniería industrial premium para manufactura avanzada en Aguascalientes.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <small>Observabilidad Operacional</small>
+
+            <h3>
+                La mayoría de los problemas industriales comienzan en detalles invisibles.
+            </h3>
+
+            <p>
+                Fatiga acumulada, vibración, desgaste, humedad, ruido y micro-fricción generan degradación progresiva. STEP diseña soluciones para contener la entropía operacional antes del colapso.
+            </p>
+
+        </div>
+
+        <div class="features">
+
+            <div class="feature-card">
+                <div class="feature-icon">⚙</div>
+
+                <h4>Desgaste Prematuro</h4>
+
+                <p>
+                    Materiales y superficies diseñadas para reducir deterioro mecánico y fatiga operacional.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🛡</div>
+
+                <h4>Seguridad Industrial</h4>
+
+                <p>
+                    Sistemas antiderrapantes y de absorción de impacto para zonas críticas de operación.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+
+                <h4>Continuidad Operativa</h4>
+
+                <p>
+                    Menos interrupciones, menos riesgo de paro y mayor estabilidad en operación diaria.
+                </p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🔩</div>
+
+                <h4>Implementación Flexible</h4>
+
+                <p>
+                    Integración rápida en plantas existentes sin detener producción.
+                </p>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section>
+
+    <div class="container">
+
+        <div class="section-title">
+
+            <small>Aplicaciones Reales</small>
+
+            <h3>
+                Diseñado para entornos donde el error operativo tiene costo real.
+            </h3>
+
+        </div>
+
+        <div class="industries">
+
+            <div class="industry">
+
+                <img src="https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=1400&auto=format&fit=crop">
+
+                <div class="industry-content">
+
+                    <h4>Industria Automotriz</h4>
+
+                    <p>
+                        Soluciones para líneas de ensamblaje, zonas de mantenimiento y áreas de tráfico intensivo.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="industry">
+
+                <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?q=80&w=1400&auto=format&fit=crop">
+
+                <div class="industry-content">
+
+                    <h4>Logística y Almacenes</h4>
+
+                    <p>
+                        Protección de superficies y optimización de desplazamiento continuo de carga.
+                    </p>
+
+                </div>
+
+            </div>
+
+            <div class="industry">
+
+                <img src="https://images.unsplash.com/photo-1565008447742-97f6f38c985c?q=80&w=1400&auto=format&fit=crop">
+
+                <div class="industry-content">
+
+                    <h4>Manufactura Avanzada</h4>
+
+                    <p>
+                        Ambientes de precisión donde la estabilidad y seguridad son variables críticas.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<section class="cta">
+
+    <div class="container">
+
+        <div class="cta-box">
+
+            <div>
+
+                <h3>
+                    No solo distribuimos materiales. Entendemos operación.
+                </h3>
+
+                <p>
+                    Cada entorno industrial acumula fricción silenciosa. El objetivo no es reaccionar cuando el sistema falla. El objetivo es reducir la distancia entre desgaste y acción correctiva.
+                </p>
+
+            </div>
+
+            <a href="https://wa.me/5214491191572" class="btn-primary">
+                Hablar con STEP
+            </a>
+
+        </div>
+
+    </div>
+
+</section>
+
+<footer>
+
+    <div class="container footer-grid">
+
+        <div class="footer-col">
+
+            <div class="logo">
+                <div class="logo-box"></div>
+
+                <div>
+                    <h1>STEP</h1>
+                    <span>INDUSTRIAS</span>
+                </div>
+            </div>
+
+            <p>
+                Ingeniería industrial enfocada en seguridad, continuidad y reducción de fricción operacional.
+            </p>
+
+        </div>
+
+        <div class="footer-links">
+            <a href="#">Soluciones</a>
+            <a href="#">Proyectos</a>
+            <a href="#">Contacto</a>
+        </div>
+
+    </div>
+
+</footer>
+
+</body>
+</html>
